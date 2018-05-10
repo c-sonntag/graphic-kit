@@ -1,6 +1,6 @@
 #pragma once
 
-#include <commun/types.h>
+#include <graphic_toolkit/types.h>
 
 #include <vector>
 #include <list>
@@ -21,7 +21,7 @@
 #include <QOpenGLShaderProgram>
 
 
-namespace commun {
+namespace graphic_toolkit {
 
   std::unique_ptr<QOpenGLShaderProgram> opengl_quick_program( const QString & vertex_path, const QString & fragment_path );
 

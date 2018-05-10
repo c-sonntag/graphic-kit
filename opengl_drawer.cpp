@@ -1,6 +1,6 @@
-#include <commun/opengl_drawer.h>
+#include <graphic_toolkit/opengl_drawer.h>
 
-namespace commun {
+namespace graphic_toolkit {
 
   std::unique_ptr<QOpenGLShaderProgram> opengl_quick_program( const QString & vertex_path, const QString & fragment_path )
   {

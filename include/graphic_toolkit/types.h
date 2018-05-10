@@ -1,12 +1,7 @@
 #pragma once
 
-#include <vector>
-#include <string>
+namespace graphic_toolkit {
 
-namespace hypercube {
-  namespace commun {
+  using uint = unsigned int;
 
-    using uint = unsigned int;
-
-  }
 }
