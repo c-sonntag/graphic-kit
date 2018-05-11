@@ -8,3 +8,4 @@ DEPENDSPATH += $$PWD
 ##
 SOURCES += $$PWD/*.cpp
 HEADERS += $$PWD/include/graphic_toolkit/*.h
+FORMS += $$PWD/*.ui

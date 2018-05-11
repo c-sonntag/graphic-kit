@@ -1,0 +1,155 @@
+#ifndef QT_EASIEST_MATRICE_CONTROLER_H
+#define QT_EASIEST_MATRICE_CONTROLER_H
+
+#include <QWidget>
+#include <QEvent>
+#include <QOpenGLWidget>
+
+#include <QTime>
+
+#include <QVector2D>
+#include <QVector3D>
+#include <QMatrix4x4>
+#include <QPoint>
+
+#include <memory>
+
+namespace Ui {
+  class qt_easiest_matrice_controler;
+}
+
+namespace graphic_toolkit {
+
+  class qt_easiest_matrice_controler : public QWidget
+  {
+    Q_OBJECT
+
+   public:
+    enum class ProjectionMode { Ortho, Perspective };
+    enum class DisplacementMode { FreeView, FreeCamera };
+
+   public:
+    //struct slots_receiver
+    //{
+    //  virtual void set_viewOrtho() = 0;
+    //  virtual void set_viewPerspective() = 0;
+    //  virtual void set_fov( float value ) = 0;
+    //  virtual void set_zoom( float value ) = 0;
+    //};
+
+   public:
+    explicit qt_easiest_matrice_controler( QWidget * parent = nullptr );
+    virtual ~qt_easiest_matrice_controler() override;
+
+   protected:
+    QTime timer;
+
+   public:
+    void init_after_gl( QOpenGLWidget * _glwidget );
+    void repaint_glcanvas( bool force = false );
+    void refresh_form();
+
+   private slots:
+    void on_radioButton_viewOrtho_clicked();
+    void on_radioButton_viewPerspective_clicked();
+    void on_doubleSpinBox_fov_valueChanged( double value );
+    void on_doubleSpinBox_zoom_valueChanged( double value );
+    void on_radioButton_freeView_clicked();
+    void on_radioButton_freeCamera_clicked();
+    void on_pushButton_resetView_clicked();
+
+   protected:
+    static constexpr float camera_move_speed = 0.10f;
+    static constexpr float camera_angle_speed = 0.001f;
+    static constexpr float view_rotation_speed = 2.f;
+    static constexpr float view_move_speed = 0.01f;
+
+   protected:
+    static constexpr float correction_zoom_ortho = -10.f;
+    static constexpr float correction_zoom_perspective = -10.f;
+    static constexpr float default_zoom = 1.f;
+    static constexpr float default_fov = 45.f;
+
+   protected:
+    QVector2D camera_angle;
+    QVector3D camera_right;
+    QVector3D camera_up;
+    QVector3D camera_position;
+    QVector3D camera_direction;
+    QVector3D view_angle;
+    float zoom;
+    float fov;
+
+   protected:
+    void reset_view();
+    void compute_camera();
+
+   protected:
+    ProjectionMode projection_mode = ProjectionMode::Perspective;
+    float current_aspect = 4.f / 3.f;
+
+   protected:
+    QMatrix4x4 view;
+    QMatrix4x4 projection;
+    QMatrix4x4 view_projection;
+
+   protected:
+    inline void compute_view_projection() {view_projection = projection * view;}
+    void compute_view();
+    void compute_projection();
+
+   public:
+    inline const QMatrix4x4 & get_view_projection() const {
+      return view_projection;
+    }
+
+   protected:
+    bool key_ctrl_down = false;
+    bool key_shift_down = false;
+    QPoint mouse_last_position;
+    QPoint mouse_click_position;
+    bool mouse_tracking = false;
+    QVector2D mouse_once_direction;
+
+   public:
+    void receive_resize( int w, int h );
+    void receive_mousePressEvent( QMouseEvent * e );
+    void receive_mouseReleaseEvent( QMouseEvent * e );
+    void receive_mouseMoveEvent( QMouseEvent * e );
+    void receive_wheelEvent( QWheelEvent * event );
+
+   protected:
+    bool eventFilter( QObject * object, QEvent * event ) override;
+
+   protected:
+    DisplacementMode displacement_mode = DisplacementMode::FreeView;
+    void compute_mouse_freeView( const QMouseEvent * e, const QVector2D & diff );
+    void compute_mouse_freeCamera( const QMouseEvent * e, const QVector2D & diff );
+    bool compute_keyboard_freeView( const QKeyEvent * e );
+    bool compute_keyboard_freeCamera( const QKeyEvent * e );
+
+   public:
+    void change_displacement( DisplacementMode mode );
+    void change_displacement_only( DisplacementMode mode );
+
+   public:
+    void change_projection( ProjectionMode mode );
+    void set_fov( float value );
+    void set_zoom( float value );
+
+   protected:
+    void change_projection_only( ProjectionMode mode );
+    void set_fov_only( float value );
+    void set_zoom_only( float value );
+
+   private:
+    QOpenGLWidget * glwidget = nullptr;
+    Ui::qt_easiest_matrice_controler * const ui;
+
+    //private:
+    //std::shared_ptr<slots_receiver> receiver_sp;
+  };
+
+}
+
+#endif // QT_EASIEST_MATRICE_CONTROLER_H
