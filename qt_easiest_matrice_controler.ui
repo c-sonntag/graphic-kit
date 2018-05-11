@@ -119,7 +119,7 @@
          <string>FreeView</string>
         </property>
         <attribute name="buttonGroup">
-         <string notr="true">buttonGroup_displacement</string>
+         <string notr="true">buttonGroup</string>
         </attribute>
        </widget>
       </item>
@@ -129,7 +129,17 @@
          <string>FreeCamera</string>
         </property>
         <attribute name="buttonGroup">
-         <string notr="true">buttonGroup_displacement</string>
+         <string notr="true">buttonGroup</string>
+        </attribute>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="radioButton_freeView_timerRotation">
+        <property name="text">
+         <string>FreeView (TimerRotation)</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">buttonGroup</string>
         </attribute>
        </widget>
       </item>
@@ -165,6 +175,6 @@
  <connections/>
  <buttongroups>
   <buttongroup name="buttonGroup_view"/>
-  <buttongroup name="buttonGroup_displacement"/>
+  <buttongroup name="buttonGroup"/>
  </buttongroups>
 </ui>

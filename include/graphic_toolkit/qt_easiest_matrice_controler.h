@@ -6,6 +6,7 @@
 #include <QOpenGLWidget>
 
 #include <QTime>
+#include <QBasicTimer>
 
 #include <QVector2D>
 #include <QVector3D>
@@ -26,7 +27,7 @@ namespace graphic_toolkit {
 
    public:
     enum class ProjectionMode { Ortho, Perspective };
-    enum class DisplacementMode { FreeView, FreeCamera };
+    enum class DisplacementMode { FreeView, FreeCamera, FreeView_TimerRotation };
 
    public:
     //struct slots_receiver
@@ -42,7 +43,7 @@ namespace graphic_toolkit {
     virtual ~qt_easiest_matrice_controler() override;
 
    protected:
-    QTime timer;
+    QTime chrono;
 
    public:
     void init_after_gl( QOpenGLWidget * _glwidget );
@@ -52,17 +53,23 @@ namespace graphic_toolkit {
    private slots:
     void on_radioButton_viewOrtho_clicked();
     void on_radioButton_viewPerspective_clicked();
+
     void on_doubleSpinBox_fov_valueChanged( double value );
     void on_doubleSpinBox_zoom_valueChanged( double value );
+
     void on_radioButton_freeView_clicked();
     void on_radioButton_freeCamera_clicked();
+    void on_radioButton_freeView_timerRotation_clicked();
+
     void on_pushButton_resetView_clicked();
+
 
    protected:
     static constexpr float camera_move_speed = 0.10f;
     static constexpr float camera_angle_speed = 0.001f;
     static constexpr float view_rotation_speed = 2.f;
     static constexpr float view_move_speed = 0.01f;
+    static constexpr float view_angle_rotation_speed = 0.1f;
 
    protected:
     static constexpr float correction_zoom_ortho = -10.f;
@@ -71,6 +78,8 @@ namespace graphic_toolkit {
     static constexpr float default_fov = 45.f;
 
    protected:
+    float view_angle_rotation_mult = 0.f;
+    QVector2D view_angle_rotation_axe;
     QVector2D camera_angle;
     QVector3D camera_right;
     QVector3D camera_up;
@@ -109,22 +118,33 @@ namespace graphic_toolkit {
     QPoint mouse_last_position;
     QPoint mouse_click_position;
     bool mouse_tracking = false;
+    QVector2D mouse_move_cumul;
     QVector2D mouse_once_direction;
+
 
    public:
     void receive_resize( int w, int h );
     void receive_mousePressEvent( QMouseEvent * e );
     void receive_mouseReleaseEvent( QMouseEvent * e );
     void receive_mouseMoveEvent( QMouseEvent * e );
-    void receive_wheelEvent( QWheelEvent * event );
+    void receive_wheelEvent( QWheelEvent * e );
 
-   protected:
+  protected:
     bool eventFilter( QObject * object, QEvent * event ) override;
 
    protected:
+    QBasicTimer timer;
+    void timer_start();
+    void timer_stop();
+    void timerEvent( QTimerEvent * e ) override;
+
+   protected:
     DisplacementMode displacement_mode = DisplacementMode::FreeView;
-    void compute_mouse_freeView( const QMouseEvent * e, const QVector2D & diff );
-    void compute_mouse_freeCamera( const QMouseEvent * e, const QVector2D & diff );
+    void compute_mouseMove_freeView( const QMouseEvent * e, const QVector2D & diff );
+    void compute_mouseMove_freeCamera( const QMouseEvent * e, const QVector2D & diff );
+    void compute_mouseMove_freeView_and_timerRotation( const QMouseEvent * e, const QVector2D & diff );
+    void compute_mouseRelease_freeView_and_timerRotation( const QMouseEvent * e, const QVector2D & diff );
+    void compute_timer_freeView_and_timerRotation( const QTimerEvent * e );
     bool compute_keyboard_freeView( const QKeyEvent * e );
     bool compute_keyboard_freeCamera( const QKeyEvent * e );
 

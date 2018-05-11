@@ -6,8 +6,6 @@
 
 #include <cmath>
 
-#include <iostream>
-
 // ---- ---- ---- ----
 
 graphic_toolkit::qt_easiest_matrice_controler::qt_easiest_matrice_controler( QWidget * parent ) :
@@ -18,7 +16,6 @@ graphic_toolkit::qt_easiest_matrice_controler::qt_easiest_matrice_controler( QWi
 
   //
   QCoreApplication::instance()->installEventFilter( this );
-  //QCoreApplication::instance()->connect( this );
 
   //
   reset_view();
@@ -35,16 +32,18 @@ graphic_toolkit::qt_easiest_matrice_controler::~qt_easiest_matrice_controler()
 void graphic_toolkit::qt_easiest_matrice_controler::init_after_gl( QOpenGLWidget * _glwidget )
 {
   glwidget = _glwidget;
-  timer.start();
+
+  // For repaint_glcanvas
+  chrono.start();
 }
 
 void graphic_toolkit::qt_easiest_matrice_controler::repaint_glcanvas( bool force )
 {
-  if ( ( timer.elapsed() > 5 ) || force )
+  if ( ( chrono.elapsed() > 5 ) || force )
   {
     if ( glwidget )
     {
-      timer.restart();
+      chrono.restart();
       glwidget->repaint();
     }
   }
@@ -98,6 +97,10 @@ void graphic_toolkit::qt_easiest_matrice_controler::on_radioButton_freeCamera_cl
   change_displacement_only( DisplacementMode::FreeCamera );
 }
 
+void graphic_toolkit::qt_easiest_matrice_controler::on_radioButton_freeView_timerRotation_clicked()
+{
+  change_displacement_only( DisplacementMode::FreeView_TimerRotation );
+}
 
 void graphic_toolkit::qt_easiest_matrice_controler::on_pushButton_resetView_clicked()
 {
@@ -211,6 +214,7 @@ void graphic_toolkit::qt_easiest_matrice_controler::receive_mousePressEvent( QMo
 {
   mouse_click_position = e->pos();
   mouse_last_position = mouse_click_position;
+  mouse_move_cumul = QVector2D( 0.f, 0.f );
 
   if ( !mouse_tracking )
   {
@@ -233,6 +237,9 @@ void graphic_toolkit::qt_easiest_matrice_controler::receive_mouseReleaseEvent( Q
   if ( !mouse_once_direction.isNull() )
     mouse_once_direction = QVector2D( 0.f, 0.f );
 
+  if ( displacement_mode == DisplacementMode::FreeView_TimerRotation )
+    compute_mouseRelease_freeView_and_timerRotation( e, mouse_move_cumul );
+
 }
 
 void graphic_toolkit::qt_easiest_matrice_controler::receive_mouseMoveEvent( QMouseEvent * e )
@@ -246,10 +253,10 @@ void graphic_toolkit::qt_easiest_matrice_controler::receive_mouseMoveEvent( QMou
     if ( mouse_click_position == e->pos() )
       return;
 
-
   //
   QVector2D diff( e->pos() - ( mouse_tracking ? mouse_click_position : mouse_last_position ) );
   mouse_last_position = e->pos();
+  mouse_move_cumul += diff;
 
   //
   if ( key_shift_down && mouse_once_direction.isNull() )
@@ -271,9 +278,11 @@ void graphic_toolkit::qt_easiest_matrice_controler::receive_mouseMoveEvent( QMou
 
   //
   if ( displacement_mode == DisplacementMode::FreeView )
-    compute_mouse_freeView( e, diff );
+    compute_mouseMove_freeView( e, diff );
   else if ( displacement_mode == DisplacementMode::FreeCamera )
-    compute_mouse_freeCamera( e, diff );
+    compute_mouseMove_freeCamera( e, diff );
+  else if ( displacement_mode == DisplacementMode::FreeView_TimerRotation )
+    compute_mouseMove_freeView_and_timerRotation( e, diff );
 
 }
 
@@ -287,14 +296,34 @@ void graphic_toolkit::qt_easiest_matrice_controler::receive_wheelEvent( QWheelEv
     set_zoom( zoom + ( movCorrection / 10.f ) );
 }
 
+
+// ---- ----
+
+void graphic_toolkit::qt_easiest_matrice_controler::timer_start()
+{
+  // Use QBasicTimer because its faster than QTimer
+  if ( !timer.isActive() )
+    timer.start( 12, this );
+}
+
+void graphic_toolkit::qt_easiest_matrice_controler::timer_stop()
+{
+  timer.stop();
+}
+
+void graphic_toolkit::qt_easiest_matrice_controler::timerEvent( QTimerEvent * e )
+{
+  //
+  if ( displacement_mode == DisplacementMode::FreeView_TimerRotation )
+    compute_timer_freeView_and_timerRotation( e );
+  else
+    view_angle_rotation_mult = 0.0f;
+}
+
 // ---- ----
 
 bool graphic_toolkit::qt_easiest_matrice_controler::eventFilter( QObject * o, QEvent * event )
 {
-  //const float diff_time( timer.elapsed() );
-  //const float diff_time( 0.1f );
-  //
-
   if ( !( event->type() == QEvent::KeyPress ) && !( event->type() == QEvent::KeyRelease ) )
     return QObject::eventFilter( o, event );
 
@@ -338,7 +367,7 @@ bool graphic_toolkit::qt_easiest_matrice_controler::eventFilter( QObject * o, QE
 
 // ---- ---- ---- ----
 
-void graphic_toolkit::qt_easiest_matrice_controler::compute_mouse_freeView( const QMouseEvent * e, const QVector2D & diff )
+void graphic_toolkit::qt_easiest_matrice_controler::compute_mouseMove_freeView( const QMouseEvent * e, const QVector2D & diff )
 {
   if ( key_ctrl_down )
   {
@@ -373,14 +402,12 @@ void graphic_toolkit::qt_easiest_matrice_controler::compute_mouse_freeView( cons
   }
 }
 
-void graphic_toolkit::qt_easiest_matrice_controler::compute_mouse_freeCamera( const QMouseEvent * e, const QVector2D & diff )
+void graphic_toolkit::qt_easiest_matrice_controler::compute_mouseMove_freeCamera( const QMouseEvent * e, const QVector2D & diff )
 {
-  //if ( key_ctrl_down )
-  //
-  //
-  //else
+  if ( key_ctrl_down )
+    compute_mouseMove_freeView( e, diff );
 
-  if ( e->buttons() & Qt::LeftButton )
+  else if ( e->buttons() & Qt::LeftButton )
   {
     camera_angle += diff * camera_angle_speed;
     compute_camera();
@@ -388,9 +415,68 @@ void graphic_toolkit::qt_easiest_matrice_controler::compute_mouse_freeCamera( co
   }
 }
 
+void graphic_toolkit::qt_easiest_matrice_controler::compute_mouseMove_freeView_and_timerRotation( const QMouseEvent * e, const QVector2D & diff )
+{
+  if ( !key_ctrl_down )
+    compute_mouseMove_freeView( e, diff );
+}
+
+void graphic_toolkit::qt_easiest_matrice_controler::compute_mouseRelease_freeView_and_timerRotation( const QMouseEvent *, const QVector2D & diff )
+{
+  if ( key_ctrl_down )
+  {
+    const QVector2D diff_correction( -diff.x(), diff.y() );
+
+    // Rotation axis is perpendicular to the mouse position difference
+    // vector
+    const QVector2D n = QVector2D( diff_correction.y(), diff_correction.x() ).normalized();
+
+    // Accelerate angular speed relative to the length of the mouse sweep
+    const float acc( diff_correction.length() * view_angle_rotation_speed );
+
+    // Calculate new rotation axis as weighted sum
+    view_angle_rotation_axe = ( view_angle_rotation_axe * view_angle_rotation_mult + n * acc ).normalized();
+
+    // Increase angular speed
+    view_angle_rotation_mult += acc;
+
+    //
+    timer_start();
+  }
+}
+
+void graphic_toolkit::qt_easiest_matrice_controler::compute_timer_freeView_and_timerRotation( const QTimerEvent * )
+{
+
+
+  //
+  if ( key_ctrl_down )
+  {
+    // Decrease angular speed (friction)
+    view_angle_rotation_mult *= 0.99f;
+    // Stop rotation when speed goes below threshold
+    if ( view_angle_rotation_mult < 0.01f )
+    {
+      view_angle_rotation_mult = 0.0f;
+      timer_stop();
+    }
+    else
+    {
+      // Update rotation
+      view_angle += view_angle_rotation_axe * view_angle_rotation_mult;
+      compute_view();
+    }
+  }
+  else
+  {
+    view_angle_rotation_mult = 0.0f;
+    timer_stop();
+  }
+}
+
 // ---- ----
 
-bool graphic_toolkit::qt_easiest_matrice_controler::compute_keyboard_freeView( const QKeyEvent * e )
+bool graphic_toolkit::qt_easiest_matrice_controler::compute_keyboard_freeView( const QKeyEvent * )
 {
   return false;
 }
@@ -430,6 +516,8 @@ void graphic_toolkit::qt_easiest_matrice_controler::change_displacement( Displac
     ui->radioButton_freeView->click();
   else if ( mode == DisplacementMode::FreeCamera )
     ui->radioButton_freeCamera->click();
+  else if ( mode == DisplacementMode::FreeView_TimerRotation )
+    ui->radioButton_freeView_timerRotation->click();
 }
 
 void graphic_toolkit::qt_easiest_matrice_controler::change_displacement_only( DisplacementMode mode )
@@ -490,5 +578,7 @@ void graphic_toolkit::qt_easiest_matrice_controler::set_zoom_only( float value )
     repaint_glcanvas();
   }
 }
+
+
 
 
