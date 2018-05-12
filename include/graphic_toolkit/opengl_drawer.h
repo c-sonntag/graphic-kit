@@ -116,22 +116,6 @@ namespace graphic_toolkit {
       using uniform_sets_t = std::list<uniform_set>;
       using uniform_sets_up_t = std::unique_ptr<uniform_sets_t>;
 
-     protected:
-
-      //struct uniform_set_conditonal
-      //{
-      // protected:
-      //  bool actived;
-      //  uniform_sets_t uniform_sets;
-      //
-      // public:
-      //  void inline set( QOpenGLShaderProgram & program ) const {
-      //    if ( actived )
-      //      for ( const draw_range::uniform_set & us : uniform_sets )
-      //        us.set( program );
-      //  }
-      //};
-
      public:
       using uniform_sets_conditional_t = std::unordered_map<std::string, uniform_sets_t>;
       using uniform_sets_conditional_up_t = std::unique_ptr<uniform_sets_conditional_t>;
@@ -185,11 +169,7 @@ namespace graphic_toolkit {
 
     template<typename TAttribPointerTypeCurrent, typename ...TAttribPointerTypeNext, typename... Args>
     void insert( size_t offset, attrib_pointer & va, Args & ... va_next ) {
-
-      //
       attrib_pointers_strides.emplace_back( va, offset, static_cast<TAttribPointerTypeCurrent *>( nullptr ) );
-
-      //
       insert<TAttribPointerTypeNext...>(
         offset + sizeof( TAttribPointerTypeCurrent ),
         va_next...
@@ -199,15 +179,12 @@ namespace graphic_toolkit {
    public:
     template< typename... Args >
     inline opengl_buffer_drawer( Args ... attributes ) {
-
-      //
       attrib_pointers_strides.reserve( nb_types );
       insert<TListTypes...>( 0, attributes... );
-
     }
 
     ~opengl_buffer_drawer() {
-      destroyBuffer();
+      destroyAll();
     }
 
    private:
@@ -240,33 +217,42 @@ namespace graphic_toolkit {
     };
 
    protected:
-    std::list<make_rows_data> to_draw;
+    using make_rows_data_sp_t = std::shared_ptr<make_rows_data>;
+    std::list<make_rows_data_sp_t> to_draw;
     typename draw_range::uniform_sets_conditional_activation_t uniform_sets_conditional_activation;
 
    protected:
-    make_rows_data & get_or_create_mvd( GLenum draw_mode ) {
-      for ( make_rows_data & mvd : to_draw ) {
-        if ( mvd.draw_mode == draw_mode )
-          return mvd;
+    make_rows_data_sp_t get_or_create_mvd( GLenum draw_mode ) {
+      for ( make_rows_data_sp_t & mvd_sp : to_draw ) {
+        if ( mvd_sp->draw_mode == draw_mode )
+          return mvd_sp;
       }
-      make_rows_data & mvd( *to_draw.emplace( to_draw.end(), draw_mode ) );
-      return mvd;
+      make_rows_data_sp_t mvd_sp( *to_draw.emplace( to_draw.end(), new make_rows_data( draw_mode ) ) );
+      return mvd_sp;
     }
 
    protected:
     struct draw_buffer
     {
+     public:
+      const make_rows_data_sp_t mvd_sp;
       const GLenum draw_mode;
       const RowsRange & range;
       const uint buffer_length, buffer_bytesize;
+
+     public:
       QOpenGLBuffer buffer;
 
-      inline draw_buffer( const make_rows_data & mvd ) :
-        draw_mode( mvd.draw_mode ), range( mvd.range ),
-        buffer_length( mvd.rows.size() ), buffer_bytesize( buffer_length * sizeof( Row ) ) {
+     public:
+      inline draw_buffer( make_rows_data_sp_t _mvd_sp ) :
+        mvd_sp( _mvd_sp ),
+        draw_mode( mvd_sp->draw_mode ),
+        range( mvd_sp->range ),
+        buffer_length( mvd_sp->rows.size() ),
+        buffer_bytesize( buffer_length * sizeof( Row ) ) {
         buffer.create();
         buffer.bind();
-        buffer.allocate( mvd.rows.data(), static_cast<int>( buffer_bytesize ) );
+        buffer.allocate( mvd_sp->rows.data(), static_cast<int>( buffer_bytesize ) );
       }
 
       ~draw_buffer() {
@@ -279,7 +265,7 @@ namespace graphic_toolkit {
 
    public:
 
-    void init() {
+    void initBuffers() {
 
       //
       if ( initialized )
@@ -290,9 +276,13 @@ namespace graphic_toolkit {
         throw std::runtime_error( "opengl_buffer_drawer is currently in writing mode" );
 
       //
-      for ( const make_rows_data & mvd : to_draw ) {
-        if ( !mvd.rows.empty() ) {
-          buffers.emplace_back( mvd );
+      std::vector<make_rows_data_sp_t *> to_draw_need_add_buffer;
+      to_draw_need_add_buffer.reserve( to_draw.size() );
+
+      //
+      for ( make_rows_data_sp_t mvd_sp : to_draw ) {
+        if ( !mvd_sp->rows.empty() ) {
+          buffers.emplace_back( mvd_sp );
 
           // const draw_buffer & db = buffers.back();
           // std::cout << "Add buffer : " << std::endl
@@ -317,6 +307,9 @@ namespace graphic_toolkit {
       }
 
       //
+
+
+      //
       initialized = true;
     }
 
@@ -327,24 +320,19 @@ namespace graphic_toolkit {
 
    public:
 
-    void reset() {
+    void destroyBuffers() {
+      buffers.clear(); // RAII destroy
+      initialized = false;
+    }
 
-      //
-      destroyBuffer();
+    void destroyDrawers() {
       to_draw.clear();
-
-      //
       writing = false;
     }
 
-
-    void destroyBuffer() {
-      if ( !initialized )
-        return;
-
-      //
-      buffers.clear(); // RAII destroy
-      initialized = false;
+    void destroyAll() {
+      destroyBuffers();
+      destroyDrawers();
     }
 
 
@@ -421,7 +409,7 @@ namespace graphic_toolkit {
     {
      protected:
       BufferDrawer & bd;
-      make_rows_data & mvd;
+      make_rows_data_sp_t mvd_sp;
       //make_rows_data & mvd;
       const bool need_range;
 
@@ -433,19 +421,19 @@ namespace graphic_toolkit {
       typename draw_range::uniform_sets_conditional_up_t uniform_sets_conditional_up;
 
      public:
-      inline maker( BufferDrawer & _bd, make_rows_data & _mvd, bool _need_range ) :
+      inline maker( BufferDrawer & _bd, make_rows_data_sp_t _mvd_sp, bool _need_range ) :
         bd( _bd ),
-        mvd( _mvd ),
+        mvd_sp( std::move( _mvd_sp ) ),
         need_range( _need_range ),
-        start( mvd.rows.size() ),
+        start( mvd_sp->rows.size() ),
         count( 0 ), released( false ) {
 
         //
-        if ( mvd.locked )
-          throw std::runtime_error( "maker type(" + std::to_string( mvd.draw_mode ) + ") is already locked" );
+        if ( mvd_sp->locked )
+          throw std::runtime_error( "maker type(" + std::to_string( mvd_sp->draw_mode ) + ") is already locked" );
 
         //
-        mvd.locked = true;
+        mvd_sp->locked = true;
         bd.lockWriting();
 
       }
@@ -475,13 +463,13 @@ namespace graphic_toolkit {
         if ( released ) return;
         //
         bd.unlockWriting();
-        mvd.locked = false;
+        mvd_sp->locked = false;
         released = true;
         //
         if ( !need_range ) {
 
           //
-          const bool have_already_range = !mvd.range.empty();
+          const bool have_already_range = !mvd_sp->range.empty();
           const bool have_current_uniform_set = uniform_sets_up || uniform_sets_conditional_up;
 
           //
@@ -490,28 +478,33 @@ namespace graphic_toolkit {
 
           //
           if ( !have_already_range && have_current_uniform_set ) {
-            if ( mvd.rows.size() < count )
+            if ( mvd_sp->rows.size() < count )
               throw std::runtime_error( "Waw, total vertice can't be less of count vertice" );
-            mvd.range.emplace_back( 0, mvd.rows.size() - count );
+            mvd_sp->range.emplace_back( 0, mvd_sp->rows.size() - count );
           }
         }
         //
-        mvd.range.emplace_back( start, count, std::move( uniform_sets_up ), std::move( uniform_sets_conditional_up ) );
+        mvd_sp->range.emplace_back( start, count, std::move( uniform_sets_up ), std::move( uniform_sets_conditional_up ) );
       }
 
      public:
       inline void reserve( size_t n ) {
-        mvd.rows.reserve( n );
+        mvd_sp->rows.reserve( n );
       }
-
 
      public:
       template< class... Args >
       inline void add( Args && ... args ) {
         proceed_add();
-        mvd.rows.emplace_back( args... );
+        mvd_sp->rows.emplace_back( args... );
       }
 
+     public:
+      inline uint get_start() {
+        return start;
+      }
+
+     public:
       template< class... Args >
       inline void set_uniform( const std::string & var_name, Args... values ) {
         if ( !uniform_sets_up ) {
@@ -549,9 +542,9 @@ namespace graphic_toolkit {
 
    protected:
 
-#define ADD_METHOD_MAKER( need_range, name, draw_type ) \
+#define ADD_METHOD_MAKER( need_range, name, make_rows_data_sp_type ) \
   inline maker new_ ## name() { \
-    return maker( *this, get_or_create_mvd(draw_type), need_range ); \
+    return maker( *this, get_or_create_mvd(make_rows_data_sp_type), need_range ); \
   }
 
    public:
