@@ -42,7 +42,8 @@ namespace graphic_toolkit {
     using Row = std::tuple<TListTypes...>;
     //using Row = typename type_wrapper<TListTypes...>::first;
     using Rows = std::vector<Row>;
-    using RowsProperties = std::vector<draw_property_up_t>;
+    using Indices = std::vector<GLuint>;
+    using Properties = std::vector<draw_property_up_t>;
 
    public:
     struct attrib_pointer
@@ -127,10 +128,10 @@ namespace graphic_toolkit {
       using indices_up_t = std::unique_ptr<indices_t>;
 
      public:
-      const uint start;
+      const uint vertex_start, index_start;
 
      public:
-      uint count;
+      uint vertex_count, index_count;
 
      protected:
       uniform_sets_up_t uniform_sets_up;
@@ -278,7 +279,8 @@ namespace graphic_toolkit {
      public:
       const GLenum draw_mode;
       Rows rows;
-      RowsProperties properties;
+      Indices indicies;
+      Properties properties;
       bool locked;
 
      public:
@@ -306,29 +308,44 @@ namespace graphic_toolkit {
    protected:
     struct draw_buffer
     {
-     public:
+     protected:
       const make_rows_data_sp_t mvd_sp;
+
+     public:
       const GLenum draw_mode;
-      const RowsProperties & properties;
-      const uint buffer_length, buffer_bytesize;
+      const Properties & properties;
+      const uint buffer_vertex_length, buffer_vertex_bytesize;
+      const uint buffer_index_length, buffer_index_bytesize;
 
      protected:
-      QOpenGLBuffer buffer;
+      QOpenGLBuffer buffer_vertex;
+      QOpenGLBuffer buffer_index;
 
      public:
       inline draw_buffer( make_rows_data_sp_t _mvd_sp ) :
         mvd_sp( _mvd_sp ),
         draw_mode( mvd_sp->draw_mode ),
         properties( mvd_sp->properties ),
-        buffer_length( mvd_sp->rows.size() ),
-        buffer_bytesize( buffer_length * sizeof( Row ) ) {
-        buffer.create();
-        buffer.bind();
-        buffer.allocate( mvd_sp->rows.data(), static_cast<int>( buffer_bytesize ) );
-      }
+        buffer_vertex_length( mvd_sp->rows.size() ), buffer_vertex_bytesize( buffer_vertex_length * sizeof( Row ) ),
+        buffer_index_length( mvd_sp->rows.size() ), buffer_index_bytesize( buffer_index_length * sizeof( Row ) ),
+        buffer_vertex( QOpenGLBuffer::Type::VertexBuffer ),
+        buffer_index( QOpenGLBuffer::Type::IndexBuffer )
+      { }
 
       ~draw_buffer() {
-        buffer.destroy();
+        buffer_vertex.destroy();
+      }
+
+      inline void init_vertex() {
+        buffer_vertex.create();
+        buffer_vertex.bind();
+        buffer_vertex.allocate( mvd_sp->rows.data(), static_cast<int>( buffer_vertex_bytesize ) );
+      }
+
+      inline void init_index() {
+        buffer_index.create();
+        buffer_index.bind();
+        buffer_index.allocate( mvd_sp->indicies.data(), static_cast<int>( buffer_index_bytesize ) );
       }
 
      protected:
@@ -348,14 +365,14 @@ namespace graphic_toolkit {
      protected:
       void gl_draw( const BufferDrawer & bd, QOpenGLFunctions_3_3_Core & gl, QOpenGLShaderProgram & program ) const {
         if ( properties.empty() )
-          gl.glDrawArrays( draw_mode, 0, static_cast<int>( buffer_length ) );
+          gl.glDrawArrays( draw_mode, 0, static_cast<int>( buffer_vertex_bytesize ) );
         else {
-          for ( const draw_property_up_t & dp_up : properties ) {
-            dp_up->apply_uniform_sets( bd, program );
-            //if ( dp. )
-            // else
-            if ( dp_up->count > 0 )
-              gl.glDrawArrays( draw_mode, static_cast<int>( dp_up->start ), static_cast<int>( dp_up->count ) );
+          for ( const draw_property & dp : properties ) {
+            dp.apply_uniform_sets( bd, program );
+            if ( dp.indices_up )
+              gl.glDrawElements( draw_mode, dp.indices_up->size(), GL_UNSIGNED_INT, nullptr );
+            else if ( dp.count )
+              gl.glDrawArrays( draw_mode, static_cast<int>( dp.start ), static_cast<int>( dp.count ) );
           }
         }
       }
@@ -500,7 +517,6 @@ namespace graphic_toolkit {
         const uint start;
 
        protected:
-        friend maker;
         inline indices_buffer( typename draw_property::indices_t & _indices, uint _start ) :
           indices( _indices ), start( std::move( _start ) ) { }
 
@@ -526,7 +542,7 @@ namespace graphic_toolkit {
       inline maker( BufferDrawer & _bd, make_rows_data_sp_t _mvd_sp, bool _need_range ) :
         bd( _bd ),
         mvd_sp( std::move( _mvd_sp ) ),
-        property_up( draw_property_up_t( new draw_property( mvd_sp->rows.size() ) ) ),
+        property_up( new draw_property_up_t( mvd_sp->rows.size() ) ),
         need_range( _need_range ),
         released( false ) {
 
@@ -634,7 +650,7 @@ namespace graphic_toolkit {
      public:
       inline indices_buffer upgrade_to_indices() {
         check();
-        return indices_buffer( property_up->upgrade_to_indices(), property_up->start );
+        return indices_wrapper( property_up->upgrade_to_indices(), property_up->start );
       }
 
     };
