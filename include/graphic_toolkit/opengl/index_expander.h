@@ -4,18 +4,13 @@
 
 #include <graphic_toolkit/opengl/index_buffer.h>
 
-#include <graphic_toolkit/opengl/index_buffer.h>
-
 #include <memory>
 
 namespace graphic_toolkit {
   namespace opengl {
 
     template<typename  ... TListTypes>
-    class primitives_heap;
-
-    template<typename  ... TListTypes>
-    class vertex_expander;
+    struct vertex_expander;
 
     // ---- ---- ---- ----
 
@@ -25,14 +20,23 @@ namespace graphic_toolkit {
       using index_buffer_t = index_buffer;
 
      public:
-      const primitive_type primitive;
-      const size_t start;
+      struct property
+      {
+       public:
+        const size_t start;
+
+       public:
+        size_t get_count() const;
+
+       protected:
+        size_t m_count;
+      };
+
+     public:
+      using property_up_t = std::unique_ptr<property>;
 
      protected:
-      size_t count;
-
-     protected:
-      index_expander( index_buffer_t & buffer );
+      index_expander( index_buffer_t & _indices );
 
      public:
       ~index_expander();

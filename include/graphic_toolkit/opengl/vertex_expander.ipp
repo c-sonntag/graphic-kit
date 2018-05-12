@@ -10,34 +10,73 @@
 namespace graphic_toolkit {
   namespace opengl {
 
+
+    template<typename  ... TListTypes>
+    inline vertex_expander<TListTypes...>::property::property( primitive_type _primitive, size_t _start ) :
+      primitive( std::move( _primitive ) ),
+      start( td::move( _start ) )
+    { }
+
+    template<typename  ... TListTypes>
+    inline size_t vertex_expander<TListTypes...>::property::get_count() const
+    {
+      return m_count;
+    }
+
+    // ---- ---- ---- ----
+
     template<typename  ... TListTypes>
     inline vertex_expander<TListTypes...>::vertex_expander( primitives_heap_t & _primitives_heap, primitive_type _primitive ) :
       primitives_heap( _primitives_heap ),
-      primitive( std::move( _primitive ) ),
-      start( primitives_heap.vertices.rows.size() )
+      vertices( primitives_heap.vertices ),
+      property_up( std::make_unique<property>( primitive, vertex_buffer.rows.size() ) )
     {
-      primitives_heap.lock();
+      vertices.lock();
     }
 
     template<typename  ... TListTypes>
     inline vertex_expander<TListTypes...>::~vertex_expander()
     {
-      count = primitives_heap.vertices.rows.size() - start;
-      primitives_heap.unlock();
+      property_up->m_count = vertices.rows.size() - start;
+      primitives_heap.ex
+      vertices.unlock();
     }
+
+    // ---- ---- ---- ----
 
     template<typename  ... TListTypes>
     template< class... Args >
     inline void vertex_expander<TListTypes...>::push( Args && ... args )
     {
-      primitives_heap.vertices.rows.push( args... );
+      vertices.rows.push( args... );
     }
 
     template<typename  ... TListTypes>
     inline void vertex_expander<TListTypes...>::reserve( size_t n )
     {
-      primitives_heap.vertices.rows.reserve( start + n );
+      vertices.rows.reserve( start + n );
     }
+
+
+    // ---- ---- ---- ----
+
+    template<typename  ... TListTypes>
+    template< class... Args >
+    inline void vertex_expander<TListTypes...>::set_uniform( const std::string & var_name, Args... values )
+    {
+      //check();
+      //return property_up->insert_uniform_set( var_name, values... );
+    }
+
+    template<typename  ... TListTypes>
+    template< class... Args >
+    inline void vertex_expander<TListTypes...>::set_uniform_on_condition( const std::string & condition_name, const std::string & var_name, Args... values )
+    {
+      //check();
+      //return property_up->insert_conditional_uniform_set( bd, condition_name, initial_cond, var_name, values... );
+    }
+
+    // ---- ---- ---- ----
 
     template<typename  ... TListTypes>
     inline index_expander & vertex_expander<TListTypes...>::expand_to_index()
