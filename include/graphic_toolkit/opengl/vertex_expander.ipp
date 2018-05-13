@@ -24,14 +24,14 @@ namespace graphic_toolkit {
       ),
       vertices( _vertices )
     {
-      expander_support.lock();
+      //expander_support.lock();
     }
 
     template<typename  ... TListTypes>
     inline vertex_expander<TListTypes...>::~vertex_expander()
     {
-      expander_property->count = vertices.rows.size() - expander_property->start;
-      expander_support.unlock( std::move( expander_property ) );
+      expander_property_up->count = vertices.rows.size() - expander_property_up->start;
+      //expander_support.unlock( std::move( expander_property_up ) );
     }
 
     // ---- ---- ---- ----
@@ -46,7 +46,7 @@ namespace graphic_toolkit {
     template<typename  ... TListTypes>
     inline void vertex_expander<TListTypes...>::reserve( size_t n )
     {
-      vertices.rows.reserve( expander_property->start + n );
+      vertices.rows.reserve( expander_property_up->start + n );
     }
 
   }

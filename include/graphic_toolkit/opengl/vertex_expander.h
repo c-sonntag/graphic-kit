@@ -25,6 +25,7 @@ namespace graphic_toolkit {
     {
      public:
       using abstract_expander_property::abstract_expander_property;
+      virtual ~vertex_expander_property() = default;
 
      protected:
       void gl_draw( const expander_property_support & bd, QOpenGLFunctions_3_3_Core & gl, QOpenGLShaderProgram & program ) const;

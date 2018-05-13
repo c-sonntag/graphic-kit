@@ -112,6 +112,12 @@ namespace graphic_toolkit {
         return;
 
       //
+      if ( vertices.buffer.isCreated() )
+        vertices.buffer.bind();
+      if ( indices.buffer.isCreated() )
+        indices.buffer.bind();
+
+      //
       gl_attrib_pointer( gl );
 
       //

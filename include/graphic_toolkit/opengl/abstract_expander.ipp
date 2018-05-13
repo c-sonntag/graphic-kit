@@ -72,10 +72,18 @@ namespace graphic_toolkit {
     // ---- ---- ---- ----
 
     template<class TExpanderProperty>
-    inline abstract_expander<TExpanderProperty>::abstract_expander( expander_property_support & _expander_support, expander_property_up_t _expander_property ) :
+    inline abstract_expander<TExpanderProperty>::abstract_expander( expander_property_support & _expander_support, expander_property_up_t _expander_property_up ) :
       expander_support( _expander_support ),
-      expander_property( std::move(_expander_property) )
-    {}
+      expander_property_up( std::move(_expander_property_up) )
+    {
+        expander_support.lock();
+    }
+
+    template<class TExpanderProperty>
+    inline abstract_expander<TExpanderProperty>::~abstract_expander()
+    {
+      expander_support.unlock( std::move( expander_property_up ) );
+    }
 
     // ---- ----
 
@@ -83,14 +91,14 @@ namespace graphic_toolkit {
     template< class... Args >
     inline void abstract_expander<TExpanderProperty>::set_uniform( const std::string & var_name, Args... values )
     {
-      expander_property->set_uniform( var_name, values... );
+      expander_property_up->set_uniform( var_name, values... );
     }
 
     template<class TExpanderProperty>
     template< class... Args >
     inline void abstract_expander<TExpanderProperty>::set_uniform_on_condition( const std::string & condition_name, const std::string & var_name, Args... values )
     {
-      expander_property->set_uniform_on_condition( condition_name, var_name, values... );
+      expander_property_up->set_uniform_on_condition( condition_name, var_name, values... );
     }
 
 

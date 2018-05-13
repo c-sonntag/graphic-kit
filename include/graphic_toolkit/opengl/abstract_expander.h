@@ -88,10 +88,11 @@ namespace graphic_toolkit {
 
      protected:
       expander_property_support & expander_support;
-      expander_property_up_t expander_property;
+      expander_property_up_t expander_property_up;
 
      public:
-      abstract_expander( expander_property_support & _expander_support, expander_property_up_t _expander_property );
+      abstract_expander( expander_property_support & _expander_support, expander_property_up_t _expander_property_up );
+      virtual ~abstract_expander();
 
      public:
 
