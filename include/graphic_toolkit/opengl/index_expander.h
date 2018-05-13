@@ -52,6 +52,9 @@ namespace graphic_toolkit {
       vertex_buffer_t & vertices;
       index_buffer_t & indices;
 
+    protected:
+      const size_t vertex_start_decal;
+
      protected:
       friend primitives_heap<TListTypes...>;
       index_expander( expander_property_support & _expander_support, vertex_buffer_t & _vertices, index_buffer_t & _indices, primitive_type _primitive );

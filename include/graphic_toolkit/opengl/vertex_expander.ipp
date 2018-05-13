@@ -26,7 +26,7 @@ namespace graphic_toolkit {
     inline vertex_expander<TListTypes...>::vertex_expander( expander_property_support & _expander_support, vertex_buffer_t & _vertices, primitive_type _primitive ) :
       abstract_expander(
         _expander_support,
-        std::make_unique<vertex_expander_property>( _primitive, _vertices.rows.size() )
+        std::make_unique<vertex_expander_property>( std::move(_primitive), _vertices.rows.size() )
       ),
       vertices( _vertices )
     { }

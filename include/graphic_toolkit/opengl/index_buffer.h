@@ -14,6 +14,10 @@ namespace graphic_toolkit {
       using indice_t = GLuint;
       using indices_t = std::vector<indice_t>;
 
+    public:
+     static constexpr size_t indice_size = sizeof( indice_t );
+     static constexpr GLenum gl_indice_type = GL_UNSIGNED_INT;
+
      public:
       QOpenGLBuffer buffer;
       indices_t indices;

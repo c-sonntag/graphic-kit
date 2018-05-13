@@ -147,6 +147,11 @@ namespace graphic_toolkit {
     template< typename  ... TListTypes >
     inline void primitives_heap<TListTypes...>::expander_property_support_inherited::unlock( abstract_expander_property_up_t property_up )
     {
+      if ( !heap.busy )
+        throw std::runtime_error( "primitives_heap is not locked, or you want to unlock it" );
+      if ( !property_up )
+        throw std::runtime_error( "primitives_heap unlocker, need a valid 'abstract_expander_property' unque_ptr" );
+      //
       heap.expanders_properties.emplace_back( std::move( property_up ) );
       heap.busy = false;
     }
@@ -179,13 +184,13 @@ namespace graphic_toolkit {
     template< typename  ... TListTypes >
     inline typename primitives_heap<TListTypes...>::vertex_expander primitives_heap<TListTypes...>::complete_primitive( primitive_type primitive )
     {
-      return vertex_expander( property_support, vertices, primitive );
+      return vertex_expander( property_support, vertices, std::move(primitive) );
     }
 
     template< typename  ... TListTypes >
     inline typename primitives_heap<TListTypes...>::index_expander primitives_heap<TListTypes...>::complete_indexed_primitive( primitive_type primitive )
     {
-      return index_expander( property_support, vertices, indices, primitive );
+      return index_expander( property_support, vertices, indices, std::move(primitive) );
     }
 
     // ---- ---- ---- ----

@@ -16,7 +16,13 @@ namespace graphic_toolkit {
     inline void index_expander_property::gl_draw( const expander_property_support &, QOpenGLFunctions_3_3_Core & gl, QOpenGLShaderProgram & ) const
     {
       if ( ( vertex_count > 0 ) && ( index_count > 0 ) )
-        gl.glDrawRangeElements( GLenum( primitive ), GLint( index_start ), GLint( index_start + index_count ), GLint( index_count ), GL_UNSIGNED_INT, nullptr );
+        gl.glDrawElementsBaseVertex(
+          GLenum( primitive ),
+          GLint( index_count ),
+          index_buffer::gl_indice_type,
+          reinterpret_cast<const GLvoid *>( index_start * sizeof( index_buffer::indice_size ) ),
+          GLint( vertex_start )
+        );
     }
 
     // ---- ---- ---- ----
@@ -25,13 +31,12 @@ namespace graphic_toolkit {
     inline index_expander<TListTypes...>::index_expander( expander_property_support & _expander_support, vertex_buffer_t & _vertices, index_buffer_t & _indices, primitive_type _primitive ) :
       abstract_expander(
         _expander_support,
-        std::make_unique<index_expander_property>( _primitive, _vertices.rows.size(), _indices.indices.size() )
+        std::make_unique<index_expander_property>( std::move( _primitive ), _vertices.rows.size(), _indices.indices.size() )
       ),
       vertices( _vertices ),
-      indices( _indices )
-    {
-      //expander_support.lock();
-    }
+      indices( _indices ),
+      vertex_start_decal( expander_property_up->vertex_start )
+    {  }
 
     template<typename  ... TListTypes>
     inline index_expander<TListTypes...>::~index_expander()
