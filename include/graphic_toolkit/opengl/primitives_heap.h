@@ -64,7 +64,7 @@ namespace graphic_toolkit {
       void init_buffer();
       void reset_buffer();
       void reset_expanders();
-      void destroy_all();
+      void reset_all();
 
      protected:
       void gl_attrib_pointer( QOpenGLFunctions_3_3_Core & gl );
@@ -80,9 +80,12 @@ namespace graphic_toolkit {
      public:
       using abstract_expander_property_up_t = std::unique_ptr<opengl::abstract_expander_property>;
 
-     private:
-      bool is_busy;
+     protected:
+      bool busy;
       std::list<abstract_expander_property_up_t> expanders_properties;
+
+     protected:
+      void check_not_busy() const;
 
      protected:
       struct expander_property_support_inherited : public opengl::expander_property_support
@@ -94,6 +97,13 @@ namespace graphic_toolkit {
         void lock();
         void unlock( abstract_expander_property_up_t property_up );
       } property_support;
+
+     public:
+      bool is_init() const;
+      bool is_busy() const;
+
+     public:
+      conditional_uniform_set & conditionals_uniforms_sets;
 
      public:
       using vertex_expander = opengl::vertex_expander<TListTypes...>;

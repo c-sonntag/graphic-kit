@@ -26,7 +26,7 @@ namespace graphic_toolkit {
      public:
       vertex_buffer();
 
-     protected:
+    // protected:
       size_t buffer_length, buffer_bytesize;
 
      public:

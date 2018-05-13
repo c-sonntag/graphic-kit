@@ -30,7 +30,7 @@ namespace graphic_toolkit {
       virtual void unlock( abstract_expander_property_up_t property_up ) = 0;
 
      public:
-      conditional_uniform_set conditional_uniforms_sets;
+      conditional_uniform_set conditionals_uniforms_sets;
     };
 
     // ---- ----
@@ -80,13 +80,18 @@ namespace graphic_toolkit {
     template<typename  ... TListTypes>
     class primitives_heap;
 
+    template<class TExpanderProperty>
     struct abstract_expander
     {
+     public:
+      using expander_property_up_t = std::unique_ptr<TExpanderProperty>;
+
      protected:
       expander_property_support & expander_support;
+      expander_property_up_t expander_property;
 
      public:
-      abstract_expander( expander_property_support & _expander_support );
+      abstract_expander( expander_property_support & _expander_support, expander_property_up_t _expander_property );
 
      public:
 
@@ -95,6 +100,14 @@ namespace graphic_toolkit {
       // Disable copy from lvalue.
       abstract_expander( const abstract_expander & ) = delete;
       abstract_expander & operator=( const abstract_expander & ) = delete;
+
+     public:
+
+      template< class... Args >
+      void set_uniform( const std::string & var_name, Args... values );
+
+      template< class... Args >
+      void set_uniform_on_condition( const std::string & condition_name, const std::string & var_name, Args... values );
 
     };
 

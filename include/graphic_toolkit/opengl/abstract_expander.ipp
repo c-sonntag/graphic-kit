@@ -21,7 +21,7 @@ namespace graphic_toolkit {
           us.set( program );
       if ( uniform_sets_conditional_up )
         for ( const typename uniform_sets_conditional_t::value_type & usc_pair : *uniform_sets_conditional_up )
-          if ( bd.conditional_uniforms_sets.is_set( usc_pair.first ) )
+          if ( bd.conditionals_uniforms_sets.is_set( usc_pair.first ) )
             for ( const uniform_set & usc_us : usc_pair.second )
               usc_us.set( program );
     }
@@ -69,11 +69,29 @@ namespace graphic_toolkit {
       usc_pair_it->second.emplace_back( var_name, values... );
     }
 
+    // ---- ---- ---- ----
+
+    template<class TExpanderProperty>
+    inline abstract_expander<TExpanderProperty>::abstract_expander( expander_property_support & _expander_support, expander_property_up_t _expander_property ) :
+      expander_support( _expander_support ),
+      expander_property( std::move(_expander_property) )
+    {}
+
     // ---- ----
 
-    abstract_expander::abstract_expander( expander_property_support & _expander_support ) :
-      expander_support( _expander_support )
-    {}
+    template<class TExpanderProperty>
+    template< class... Args >
+    inline void abstract_expander<TExpanderProperty>::set_uniform( const std::string & var_name, Args... values )
+    {
+      expander_property->set_uniform( var_name, values... );
+    }
+
+    template<class TExpanderProperty>
+    template< class... Args >
+    inline void abstract_expander<TExpanderProperty>::set_uniform_on_condition( const std::string & condition_name, const std::string & var_name, Args... values )
+    {
+      expander_property->set_uniform_on_condition( condition_name, var_name, values... );
+    }
 
 
   }

@@ -33,7 +33,7 @@ namespace graphic_toolkit {
     // ---- ----
 
     template<typename  ... TListTypes>
-    struct vertex_expander : public abstract_expander
+    struct vertex_expander : public abstract_expander<vertex_expander_property>
     {
      public:
       using vertex_expander_property_up_t = std::unique_ptr<vertex_expander_property>;
@@ -41,9 +41,6 @@ namespace graphic_toolkit {
 
      protected:
       vertex_buffer_t & vertices;
-
-     protected:
-      vertex_expander_property_up_t vertex_property;
 
      protected:
       friend primitives_heap<TListTypes...>;

@@ -8,8 +8,7 @@ namespace graphic_toolkit {
   namespace opengl {
 
 
-
-    void vertex_expander_property::gl_draw( const expander_property_support &, QOpenGLFunctions_3_3_Core & gl, QOpenGLShaderProgram & ) const
+    inline void vertex_expander_property::gl_draw( const expander_property_support &, QOpenGLFunctions_3_3_Core & gl, QOpenGLShaderProgram & ) const
     {
       if ( count > 0 )
         gl.glDrawArrays( GLenum( primitive ), GLint( start ), GLint( count ) );
@@ -19,9 +18,11 @@ namespace graphic_toolkit {
 
     template<typename  ... TListTypes>
     inline vertex_expander<TListTypes...>::vertex_expander( expander_property_support & _expander_support, vertex_buffer_t & _vertices, primitive_type _primitive ) :
-      abstract_expander( _expander_support ),
-      vertices( _vertices ),
-      vertex_property( std::make_unique<vertex_expander_property>( _primitive, vertices.rows.size() ) )
+      abstract_expander(
+        _expander_support,
+        std::make_unique<vertex_expander_property>( _primitive, _vertices.rows.size() )
+      ),
+      vertices( _vertices )
     {
       expander_support.lock();
     }
@@ -29,8 +30,8 @@ namespace graphic_toolkit {
     template<typename  ... TListTypes>
     inline vertex_expander<TListTypes...>::~vertex_expander()
     {
-      vertex_property->count = vertices.rows.size() - vertex_property->start;
-      expander_support.unlock( std::move( vertex_property ) );
+      expander_property->count = vertices.rows.size() - expander_property->start;
+      expander_support.unlock( std::move( expander_property ) );
     }
 
     // ---- ---- ---- ----
@@ -45,7 +46,7 @@ namespace graphic_toolkit {
     template<typename  ... TListTypes>
     inline void vertex_expander<TListTypes...>::reserve( size_t n )
     {
-      vertices.rows.reserve( vertex_property->start + n );
+      vertices.rows.reserve( expander_property->start + n );
     }
 
   }
