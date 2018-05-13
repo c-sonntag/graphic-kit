@@ -45,17 +45,13 @@ namespace graphic_toolkit {
 
      public:
       const primitive_type primitive;
-      const size_t start;
-
-     public:
-      size_t count;
 
      public:
       uniform_sets_up_t uniform_sets_up;
       uniform_sets_conditional_up_t uniform_sets_conditional_up;
 
      public:
-      abstract_expander_property( primitive_type _primitive, size_t _start );
+      abstract_expander_property( primitive_type _primitive );
       virtual ~abstract_expander_property() = default;
 
      protected:

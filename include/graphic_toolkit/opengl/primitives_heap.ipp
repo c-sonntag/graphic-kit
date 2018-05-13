@@ -182,11 +182,11 @@ namespace graphic_toolkit {
       return vertex_expander( property_support, vertices, primitive );
     }
 
-    // template< typename  ... TListTypes >
-    // inline primitives_heap<TListTypes...>::index_expander primitives_heap<TListTypes...>::complete_indexed_primitive( primitive_type primitive )
-    // {
-    //   return index_expander( *this, primitive );
-    // }
+    template< typename  ... TListTypes >
+    inline typename primitives_heap<TListTypes...>::index_expander primitives_heap<TListTypes...>::complete_indexed_primitive( primitive_type primitive )
+    {
+      return index_expander( property_support, vertices, indices, primitive );
+    }
 
     // ---- ---- ---- ----
 

@@ -6,10 +6,8 @@
 namespace graphic_toolkit {
   namespace opengl {
 
-    inline abstract_expander_property::abstract_expander_property( primitive_type _primitive, size_t _start ) :
-      primitive( std::move( _primitive ) ),
-      start( std::move( _start ) ),
-      count( 0 )
+    inline abstract_expander_property::abstract_expander_property( primitive_type _primitive ) :
+      primitive( std::move( _primitive ) )
     { }
 
     // ---- ----
@@ -74,9 +72,9 @@ namespace graphic_toolkit {
     template<class TExpanderProperty>
     inline abstract_expander<TExpanderProperty>::abstract_expander( expander_property_support & _expander_support, expander_property_up_t _expander_property_up ) :
       expander_support( _expander_support ),
-      expander_property_up( std::move(_expander_property_up) )
+      expander_property_up( std::move( _expander_property_up ) )
     {
-        expander_support.lock();
+      expander_support.lock();
     }
 
     template<class TExpanderProperty>

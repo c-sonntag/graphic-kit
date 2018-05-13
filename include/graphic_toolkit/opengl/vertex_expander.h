@@ -3,8 +3,8 @@
 #define graphic_toolkit_opengl_vertex_expander_h
 
 #include <graphic_toolkit/opengl/primitive_type.h>
+
 #include <graphic_toolkit/opengl/vertex_buffer.h>
-#include <graphic_toolkit/opengl/uniform_set.h>
 
 #include <graphic_toolkit/opengl/abstract_expander.h>
 
@@ -24,8 +24,14 @@ namespace graphic_toolkit {
     struct vertex_expander_property : public abstract_expander_property
     {
      public:
-      using abstract_expander_property::abstract_expander_property;
+      vertex_expander_property( primitive_type _primitive, size_t _start );
       virtual ~vertex_expander_property() = default;
+
+     public:
+      const size_t start;
+
+     public:
+      size_t count;
 
      protected:
       void gl_draw( const expander_property_support & bd, QOpenGLFunctions_3_3_Core & gl, QOpenGLShaderProgram & program ) const;
