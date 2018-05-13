@@ -6,6 +6,7 @@ DEPENDSPATH += $$PWD
 
 #
 ##
-SOURCES += $$PWD/*.cpp
-HEADERS += $$PWD/include/graphic_toolkit/*.h
-FORMS += $$PWD/*.ui
+SOURCES += $$files($$PWD/*.cpp, true)
+HEADERS += $$files($$PWD/include/graphic_toolkit/*.h, true)
+HEADERS += $$files($$PWD/include/graphic_toolkit/*.ipp, true)
+FORMS += $$files($$PWD/*.ui, true)
