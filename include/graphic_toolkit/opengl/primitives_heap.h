@@ -12,7 +12,7 @@
 #include <graphic_toolkit/opengl/vertex_buffer.h>
 #include <graphic_toolkit/opengl/index_buffer.h>
 
-#include <graphic_toolkit/opengl/abtract_expander_property.h>
+#include <graphic_toolkit/opengl/abstract_expander.h>
 
 #include <vector>
 #include <array>
@@ -38,9 +38,16 @@ namespace graphic_toolkit {
      public:
       static constexpr uint nb_types { sizeof...( TListTypes ) };
 
+     public:
+      using primitives_heap_t = primitives_heap<TListTypes...>;
+
+     public:
+      using vertices_t = opengl::vertex_buffer<TListTypes...>;
+      using indices_t = opengl::index_buffer;
+
      protected:
-      opengl::vertex_buffer<TListTypes...> vertices;
-      opengl::index_buffer indices;
+      vertices_t vertices;
+      indices_t indices;
 
      protected:
       using attrib_pointers_t = attribs_pointers_by_offset<TListTypes...>;
@@ -59,6 +66,9 @@ namespace graphic_toolkit {
       void reset_expanders();
       void destroy_all();
 
+     protected:
+      void gl_attrib_pointer( QOpenGLFunctions_3_3_Core & gl );
+
      public:
       void draw( QOpenGLFunctions_3_3_Core & gl, QOpenGLShaderProgram & program );
 
@@ -68,26 +78,26 @@ namespace graphic_toolkit {
       void attrib_array_disable_all( QOpenGLFunctions_3_3_Core & gl );
 
      public:
-      using expander_property_up_t = std::unique_ptr<opengl::abtract_expander_property>;
-      using vertex_expander = opengl::vertex_expander<TListTypes...>;
-      using index_expander = opengl::index_expander<TListTypes...>;
+      using abstract_expander_property_up_t = std::unique_ptr<opengl::abstract_expander_property>;
 
      private:
       bool is_busy;
-      std::list<expander_property_up_t> expanders_properties;
+      std::list<abstract_expander_property_up_t> expanders_properties;
 
      protected:
-      //expander_property_support property_support;
-      // friend vertex_expander;
-      // friend index_expander;
-      struct expander_property_support : public opengl::expander_property_support
+      struct expander_property_support_inherited : public opengl::expander_property_support
       {
        protected:
-        primitives_heap & heap;
+        primitives_heap_t & heap;
        public:
+        expander_property_support_inherited( primitives_heap_t & _heap );
         void lock();
-        void unlock( expander_property_up_t property_up );
+        void unlock( abstract_expander_property_up_t property_up );
       } property_support;
+
+     public:
+      using vertex_expander = opengl::vertex_expander<TListTypes...>;
+      using index_expander = opengl::index_expander<TListTypes...>;
 
      public:
       vertex_expander complete_primitive( primitive_type primitive );

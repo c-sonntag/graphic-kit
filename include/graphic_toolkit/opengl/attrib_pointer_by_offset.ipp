@@ -48,6 +48,7 @@ inline void attribs_pointers_by_offset<TListTypes...>::insert_attributes( size_t
     sizeof( row_type ),
     static_cast<TAttribPointerTypeCurrent *>( nullptr )
   );
+
   insert_attributes<TAttribPointerTypeNext...>(
     offset + sizeof( TAttribPointerTypeCurrent ),
     va_next...

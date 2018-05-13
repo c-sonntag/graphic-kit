@@ -2,44 +2,35 @@
 
 #include <graphic_toolkit/opengl/vertex_expander.h>
 
-#include <graphic_toolkit/opengl/primitives_heap.h>
-#include <graphic_toolkit/opengl/index_expander.h>
-
 #include <stdexcept>
 
 namespace graphic_toolkit {
   namespace opengl {
 
 
-    template<typename  ... TListTypes>
-    inline vertex_expander<TListTypes...>::property::property( primitive_type _primitive, size_t _start ) :
-      primitive( std::move( _primitive ) ),
-      start( td::move( _start ) )
-    { }
 
-    template<typename  ... TListTypes>
-    inline size_t vertex_expander<TListTypes...>::property::get_count() const
+    void vertex_expander_property::gl_draw( const expander_property_support &, QOpenGLFunctions_3_3_Core & gl, QOpenGLShaderProgram & ) const
     {
-      return m_count;
+      if ( count > 0 )
+        gl.glDrawArrays( GLenum( primitive ), GLint( start ), GLint( count ) );
     }
 
     // ---- ---- ---- ----
 
     template<typename  ... TListTypes>
-    inline vertex_expander<TListTypes...>::vertex_expander( primitives_heap_t & _primitives_heap, primitive_type _primitive ) :
-      primitives_heap( _primitives_heap ),
-      vertices( primitives_heap.vertices ),
-      property_up( std::make_unique<property>( primitive, vertex_buffer.rows.size() ) )
+    inline vertex_expander<TListTypes...>::vertex_expander( expander_property_support & _expander_support, vertex_buffer_t & _vertices, primitive_type _primitive ) :
+      abstract_expander( _expander_support ),
+      vertices( _vertices ),
+      vertex_property( std::make_unique<vertex_expander_property>( _primitive, vertices.rows.size() ) )
     {
-      vertices.lock();
+      expander_support.lock();
     }
 
     template<typename  ... TListTypes>
     inline vertex_expander<TListTypes...>::~vertex_expander()
     {
-      property_up->m_count = vertices.rows.size() - start;
-      primitives_heap.ex
-      vertices.unlock();
+      vertex_property->count = vertices.rows.size() - vertex_property->start;
+      expander_support.unlock( std::move( vertex_property ) );
     }
 
     // ---- ---- ---- ----
@@ -48,50 +39,14 @@ namespace graphic_toolkit {
     template< class... Args >
     inline void vertex_expander<TListTypes...>::push( Args && ... args )
     {
-      vertices.rows.push( args... );
+      vertices.rows.emplace_back( args... );
     }
 
     template<typename  ... TListTypes>
     inline void vertex_expander<TListTypes...>::reserve( size_t n )
     {
-      vertices.rows.reserve( start + n );
+      vertices.rows.reserve( vertex_property->start + n );
     }
-
-
-    // ---- ---- ---- ----
-
-    template<typename  ... TListTypes>
-    template< class... Args >
-    inline void vertex_expander<TListTypes...>::set_uniform( const std::string & var_name, Args... values )
-    {
-      //check();
-      //return property_up->insert_uniform_set( var_name, values... );
-    }
-
-    template<typename  ... TListTypes>
-    template< class... Args >
-    inline void vertex_expander<TListTypes...>::set_uniform_on_condition( const std::string & condition_name, const std::string & var_name, Args... values )
-    {
-      //check();
-      //return property_up->insert_conditional_uniform_set( bd, condition_name, initial_cond, var_name, values... );
-    }
-
-    // ---- ---- ---- ----
-
-    template<typename  ... TListTypes>
-    inline index_expander & vertex_expander<TListTypes...>::expand_to_index()
-    {
-      //
-      if ( index_expander_up )
-        throw std::runtime_error( "This vertex_expander already contains one index_expander_up" );
-
-      //
-      index_expander_up = std::make_unique<index_expander>( *this );
-
-      //
-      return *index_expander_up;
-    }
-
 
   }
 }

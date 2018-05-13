@@ -1,6 +1,6 @@
 #pragma once
-#ifndef graphic_toolkit_opengl_abtract_expander_property_h
-#define graphic_toolkit_opengl_abtract_expander_property_h
+#ifndef graphic_toolkit_opengl_abstract_expander_h
+#define graphic_toolkit_opengl_abstract_expander_h
 
 #include <graphic_toolkit/opengl/primitive_type.h>
 #include <graphic_toolkit/opengl/uniform_set.h>
@@ -13,25 +13,29 @@
 namespace graphic_toolkit {
   namespace opengl {
 
+    struct abstract_expander_property;
+
+    // ---- ----
 
     struct expander_property_support
     {
      public:
-      using up_t = std::unique_ptr<expander_property_support>;
+      using abstract_expander_property_up_t = std::unique_ptr<abstract_expander_property>;
 
      public:
       virtual ~expander_property_support() = default;
 
      public:
       virtual void lock() = 0;
-      virtual void unlock( up_t property_up ) = 0;
+      virtual void unlock( abstract_expander_property_up_t property_up ) = 0;
 
      public:
-      conditional_uniform_set conditional_uniform_set;
+      conditional_uniform_set conditional_uniforms_sets;
     };
 
+    // ---- ----
 
-    struct abtract_expander_property
+    struct abstract_expander_property
     {
      public:
       using uniform_sets_t = std::list<uniform_set>;
@@ -51,10 +55,16 @@ namespace graphic_toolkit {
       uniform_sets_conditional_up_t uniform_sets_conditional_up;
 
      public:
-      abtract_expander_property( primitive_type _primitive, size_t _start );
-      virtual ~abtract_expander_property() = default;
+      abstract_expander_property( primitive_type _primitive, size_t _start );
+      virtual ~abstract_expander_property() = default;
+
+     protected:
+      void apply_uniform_sets( const expander_property_support & bd, QOpenGLShaderProgram & program ) const;
 
      public:
+      void draw( const expander_property_support & bd, QOpenGLFunctions_3_3_Core & gl, QOpenGLShaderProgram & program ) const;
+
+     protected:
       virtual void gl_draw( const expander_property_support & bd, QOpenGLFunctions_3_3_Core & gl, QOpenGLShaderProgram & program ) const = 0;
 
      public:
@@ -65,12 +75,33 @@ namespace graphic_toolkit {
       void set_uniform_on_condition( const std::string & condition_name, const std::string & var_name, Args... values );
     };
 
+    // ---- ----
 
+    template<typename  ... TListTypes>
+    class primitives_heap;
+
+    struct abstract_expander
+    {
+     protected:
+      expander_property_support & expander_support;
+
+     public:
+      abstract_expander( expander_property_support & _expander_support );
+
+     public:
+
+      // Enable move.
+      abstract_expander( abstract_expander && ) = default;
+      // Disable copy from lvalue.
+      abstract_expander( const abstract_expander & ) = delete;
+      abstract_expander & operator=( const abstract_expander & ) = delete;
+
+    };
 
 
   }
 }
 
 
-#include <graphic_toolkit/opengl/abtract_expander_property.ipp>
+#include <graphic_toolkit/opengl/abstract_expander.ipp>
 #endif

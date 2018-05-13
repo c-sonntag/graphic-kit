@@ -11,19 +11,40 @@ namespace graphic_toolkit {
     template< typename  ... TListTypes >
     template< typename... Args >
     inline primitives_heap<TListTypes...>::primitives_heap( Args ... attributes ) :
-      initialized( false ), is_busy( false ),
-      attrib_pointers( attributes... )
+      attrib_pointers( attributes... ),
+      initialized( false ),  is_busy( false ),
+      property_support( *this )
     { }
 
     // ---- ---- ---- ----
+
+    template< typename  ... TListTypes >
+    void primitives_heap<TListTypes...>::gl_attrib_pointer( QOpenGLFunctions_3_3_Core & gl )
+    {
+      for ( const attrib_pointer_by_offset & apo : attrib_pointers )
+        gl.glVertexAttribPointer(
+          apo.gl_location,
+          apo.gl_tuple_size,
+          apo.gl_type,
+          apo.gl_normalized,
+          vertices_t::row_size,
+          reinterpret_cast<const GLvoid *>( apo.opposed_offset ) /**< std::tuple have data inverted order */
+        );
+    }
+
 
     template< typename  ... TListTypes >
     void primitives_heap<TListTypes...>::draw( QOpenGLFunctions_3_3_Core & gl, QOpenGLShaderProgram & program )
     {
       if ( !initialized )
         return;
-      for ( draw_buffer & db : expanders )
-        db.draw( *this, gl, program );
+
+      //
+      gl_attrib_pointer( gl );
+
+      //
+      for ( const abstract_expander_property_up_t & aep_up : expanders_properties )
+        aep_up->draw( property_support, gl, program );
     }
 
     // ---- ---- ---- ----
@@ -55,31 +76,38 @@ namespace graphic_toolkit {
     // ---- ---- ---- ----
 
     template< typename  ... TListTypes >
-    inline void primitives_heap<TListTypes...>::lock()
+    inline primitives_heap<TListTypes...>::expander_property_support_inherited::expander_property_support_inherited( primitives_heap_t & _heap ) :
+      heap( _heap )
+    {}
+
+    template< typename  ... TListTypes >
+    inline void primitives_heap<TListTypes...>::expander_property_support_inherited::lock()
     {
-      if ( is_busy )
+      if ( heap.is_busy )
         throw std::runtime_error( "primitives_heap is already locked" );
-      is_busy = true;
+      heap.is_busy = true;
     }
 
     template< typename  ... TListTypes >
-    void primitives_heap<TListTypes...>::unlock( typename expander::property_up_t property_up )
+    void primitives_heap<TListTypes...>::expander_property_support_inherited::unlock( abstract_expander_property_up_t property_up )
     {
-      expanders.emplace_back( std::move( property_up ) );
-      is_busy = false;
+      heap.expanders_properties.emplace_back( std::move( property_up ) );
+      heap.is_busy = false;
     }
 
     // ---- ---- ---- ----
 
     template< typename  ... TListTypes >
-    inline primitives_heap<TListTypes...>::vertex_expander complete_primitive( primitive_type primitive ) {
-        return vertex_expander( *this, primitive );
+    inline typename primitives_heap<TListTypes...>::vertex_expander primitives_heap<TListTypes...>::complete_primitive( primitive_type primitive )
+    {
+      return vertex_expander( property_support, vertices, primitive );
     }
 
-    template< typename  ... TListTypes >
-    inline primitives_heap<TListTypes...>::index_expander complete_indexed_primitive( primitive_type primitive ) {
-        return index_expander( *this, primitive );
-    }
+    // template< typename  ... TListTypes >
+    // inline primitives_heap<TListTypes...>::index_expander primitives_heap<TListTypes...>::complete_indexed_primitive( primitive_type primitive )
+    // {
+    //   return index_expander( *this, primitive );
+    // }
 
     // ---- ---- ---- ----
 
