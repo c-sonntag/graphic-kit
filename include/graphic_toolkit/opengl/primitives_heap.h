@@ -19,9 +19,6 @@
 #include <list>
 
 namespace graphic_toolkit {
-
-  void test();
-
   namespace opengl {
 
     template<typename  ... TListTypes>

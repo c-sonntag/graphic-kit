@@ -38,28 +38,6 @@ namespace graphic_toolkit {
       if ( !indices.indices.empty() )
         indices.allocate();
 
-
-
-      std::cout << "vertices buffer : " << std::endl
-                << " buffer_length : " << vertices.buffer_length << std::endl
-                << " row_size : " << vertices_t::row_size << std::endl
-                << " buffer_bytesize : " << vertices.buffer_bytesize << std::endl;
-
-      std::cout << " attrib pointer " << " :" << std::endl;
-      for ( const attrib_pointer_by_offset & aps : attrib_pointers )
-      {
-        std::cout << "  gl_location : " << aps.gl_location << std::endl
-                  << "  gl_tuple_size : " << aps.gl_tuple_size << std::endl
-                  << "  gl_type : " << aps.gl_type << std::endl
-                  << "  gl_normalized : " << ( aps.gl_normalized ? "1" : "0" ) << std::endl
-                  << "  offset : " << aps.offset << std::endl
-                  << "  opposed_offset : " << aps.opposed_offset << std::endl
-                  << "  ctype : " << aps.ctype.name() << std::endl
-                  << "  bytesize : " << aps.bytesize << std::endl
-                  << "  --- " << std::endl;
-      }
-      std::cout << std::endl;
-
       //
       initialized = true;
     }
