@@ -45,6 +45,20 @@ namespace graphic_toolkit {
    protected:
     QTime chrono;
 
+   protected:
+    struct locker_repaint_glcanvas
+    {
+     protected:
+      qt_easiest_matrice_controler & emc;
+      bool can_unlock;
+     public:
+      locker_repaint_glcanvas( qt_easiest_matrice_controler * const emc );
+      ~locker_repaint_glcanvas();
+    };
+
+   protected:
+    bool repaint_glcanvas_wait_end = false;
+
    public:
     void init_after_gl( QOpenGLWidget * _glwidget );
     void repaint_glcanvas( bool force = false );
@@ -129,7 +143,7 @@ namespace graphic_toolkit {
     void receive_mouseMoveEvent( QMouseEvent * e );
     void receive_wheelEvent( QWheelEvent * e );
 
-  protected:
+   protected:
     bool eventFilter( QObject * object, QEvent * event ) override;
 
    protected:

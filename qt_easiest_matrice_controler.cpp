@@ -29,6 +29,25 @@ graphic_toolkit::qt_easiest_matrice_controler::~qt_easiest_matrice_controler()
 
 // ---- ---- ---- ----
 
+inline graphic_toolkit::qt_easiest_matrice_controler::locker_repaint_glcanvas::locker_repaint_glcanvas( qt_easiest_matrice_controler * const _emc_p ) :
+  emc( *_emc_p ), can_unlock( !emc.repaint_glcanvas_wait_end )
+{
+  if ( can_unlock )
+    emc.repaint_glcanvas_wait_end = true;
+}
+
+inline graphic_toolkit::qt_easiest_matrice_controler::locker_repaint_glcanvas::~locker_repaint_glcanvas()
+{
+  if ( can_unlock )
+  {
+    emc.repaint_glcanvas_wait_end = false;
+    emc.repaint_glcanvas( true );
+  }
+}
+
+
+// ---- ---- ---- ----
+
 void graphic_toolkit::qt_easiest_matrice_controler::init_after_gl( QOpenGLWidget * _glwidget )
 {
   glwidget = _glwidget;
@@ -39,7 +58,7 @@ void graphic_toolkit::qt_easiest_matrice_controler::init_after_gl( QOpenGLWidget
 
 void graphic_toolkit::qt_easiest_matrice_controler::repaint_glcanvas( bool force )
 {
-  if ( ( chrono.elapsed() > 5 ) || force )
+  if ( ( ( chrono.elapsed() > 5 ) || force ) && !repaint_glcanvas_wait_end )
   {
     if ( glwidget )
     {
@@ -51,6 +70,8 @@ void graphic_toolkit::qt_easiest_matrice_controler::repaint_glcanvas( bool force
 
 void graphic_toolkit::qt_easiest_matrice_controler::refresh_form()
 {
+  locker_repaint_glcanvas locker( this );
+
   //
   change_projection( projection_mode );
   change_displacement( displacement_mode );
@@ -175,7 +196,7 @@ void graphic_toolkit::qt_easiest_matrice_controler::compute_view()
 
 void graphic_toolkit::qt_easiest_matrice_controler::compute_projection()
 {
-  static constexpr float zNear( 0.1f ), zFar( 1000.f );
+  static constexpr float zNear( 0.001f ), zFar( 1000.f );
 
   // Reset projection
   projection.setToIdentity();
@@ -556,27 +577,30 @@ void graphic_toolkit::qt_easiest_matrice_controler::set_zoom( float value )
 
 void graphic_toolkit::qt_easiest_matrice_controler::change_projection_only( ProjectionMode mode )
 {
+  locker_repaint_glcanvas locker( this );
+
+  //
   projection_mode = mode;
   compute_view();
   compute_projection();
-  repaint_glcanvas();
 }
 
 void graphic_toolkit::qt_easiest_matrice_controler::set_fov_only( float value )
 {
+  locker_repaint_glcanvas locker( this );
+
   fov = value;
   compute_projection();
 }
 
 void graphic_toolkit::qt_easiest_matrice_controler::set_zoom_only( float value )
 {
+  locker_repaint_glcanvas locker( this );
+
   zoom = value;
   compute_view();
   if ( projection_mode == ProjectionMode::Ortho )
-  {
     compute_projection();
-    repaint_glcanvas();
-  }
 }
 
 
