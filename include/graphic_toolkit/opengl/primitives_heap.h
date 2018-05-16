@@ -84,6 +84,9 @@ namespace graphic_toolkit {
      protected:
       void check_not_busy() const;
 
+     public:
+      bool empty() const;
+
      protected:
       struct expander_property_support_inherited : public opengl::expander_property_support
       {

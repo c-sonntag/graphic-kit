@@ -165,6 +165,11 @@ namespace graphic_toolkit {
         throw std::runtime_error( "primitives_heap is currently busy" );
     }
 
+    template< typename  ... TListTypes >
+    inline bool primitives_heap<TListTypes...>::empty() const {
+        return expanders_properties.empty();
+    }
+
     // ---- ---- ---- ----
 
     template< typename  ... TListTypes >
