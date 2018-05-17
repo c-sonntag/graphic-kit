@@ -394,9 +394,16 @@ bool graphic_toolkit::qt_easiest_matrice_controler::eventFilter( QObject * o, QE
 
 // ---- ---- ---- ----
 
+bool graphic_toolkit::qt_easiest_matrice_controler::want_rotation() const
+{
+  return inverted_rotation_move_touch ? !key_ctrl_down : key_ctrl_down;
+}
+
+// ---- ---- ---- ----
+
 void graphic_toolkit::qt_easiest_matrice_controler::compute_mouseMove_freeView( const QMouseEvent * e, const QVector2D & diff )
 {
-  if ( key_ctrl_down )
+  if ( want_rotation() )
   {
     //
     const QVector2D force( diff * view_rotation_speed );
@@ -431,7 +438,7 @@ void graphic_toolkit::qt_easiest_matrice_controler::compute_mouseMove_freeView( 
 
 void graphic_toolkit::qt_easiest_matrice_controler::compute_mouseMove_freeCamera( const QMouseEvent * e, const QVector2D & diff )
 {
-  if ( key_ctrl_down )
+  if ( want_rotation() )
     compute_mouseMove_freeView( e, diff );
 
   else if ( e->buttons() & Qt::LeftButton )
@@ -444,13 +451,13 @@ void graphic_toolkit::qt_easiest_matrice_controler::compute_mouseMove_freeCamera
 
 void graphic_toolkit::qt_easiest_matrice_controler::compute_mouseMove_freeView_and_timerRotation( const QMouseEvent * e, const QVector2D & diff )
 {
-  if ( !key_ctrl_down )
+  if ( !want_rotation() )
     compute_mouseMove_freeView( e, diff );
 }
 
 void graphic_toolkit::qt_easiest_matrice_controler::compute_mouseRelease_freeView_and_timerRotation( const QMouseEvent *, const QVector2D & diff )
 {
-  if ( key_ctrl_down )
+  if ( want_rotation() )
   {
     const QVector2D diff_correction( -diff.x(), diff.y() );
 
@@ -475,9 +482,8 @@ void graphic_toolkit::qt_easiest_matrice_controler::compute_mouseRelease_freeVie
 void graphic_toolkit::qt_easiest_matrice_controler::compute_timer_freeView_and_timerRotation( const QTimerEvent * )
 {
 
-
   //
-  if ( key_ctrl_down )
+  if ( want_rotation() )
   {
     // Decrease angular speed (friction)
     view_angle_rotation_mult *= 0.99f;
@@ -551,6 +557,13 @@ void graphic_toolkit::qt_easiest_matrice_controler::change_displacement_only( Di
 {
   displacement_mode = mode;
   compute_view();
+}
+
+// ---- ----
+
+void graphic_toolkit::qt_easiest_matrice_controler::change_displacement_inverted_rotation_move_touch( bool value )
+{
+  inverted_rotation_move_touch = value;
 }
 
 

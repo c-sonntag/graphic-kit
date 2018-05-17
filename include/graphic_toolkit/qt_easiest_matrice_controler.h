@@ -127,6 +127,9 @@ namespace graphic_toolkit {
     }
 
    protected:
+    bool inverted_rotation_move_touch = false;
+
+   protected:
     bool key_ctrl_down = false;
     bool key_shift_down = false;
     QPoint mouse_last_position;
@@ -134,7 +137,6 @@ namespace graphic_toolkit {
     bool mouse_tracking = false;
     QVector2D mouse_move_cumul;
     QVector2D mouse_once_direction;
-
 
    public:
     void receive_resize( int w, int h );
@@ -153,6 +155,9 @@ namespace graphic_toolkit {
     void timerEvent( QTimerEvent * e ) override;
 
    protected:
+    bool want_rotation() const;
+
+   protected:
     DisplacementMode displacement_mode = DisplacementMode::FreeView;
     void compute_mouseMove_freeView( const QMouseEvent * e, const QVector2D & diff );
     void compute_mouseMove_freeCamera( const QMouseEvent * e, const QVector2D & diff );
@@ -165,6 +170,9 @@ namespace graphic_toolkit {
    public:
     void change_displacement( DisplacementMode mode );
     void change_displacement_only( DisplacementMode mode );
+
+   public:
+    void change_displacement_inverted_rotation_move_touch( bool value );
 
    public:
     void change_projection( ProjectionMode mode );
