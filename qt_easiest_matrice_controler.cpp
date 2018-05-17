@@ -1,5 +1,7 @@
-#include "include/graphic_toolkit/qt_easiest_matrice_controler.h"
+#include <graphic_toolkit/qt_easiest_matrice_controler.h>
 #include "ui_qt_easiest_matrice_controler.h"
+
+#include <graphic_toolkit/constants.h>
 
 #include <QMouseEvent>
 #include <QCoreApplication>
@@ -7,6 +9,8 @@
 #include <cmath>
 
 // ---- ---- ---- ----
+
+using namespace graphic_toolkit::constants;
 
 graphic_toolkit::qt_easiest_matrice_controler::qt_easiest_matrice_controler( QWidget * parent ) :
   QWidget( parent ),
@@ -133,7 +137,8 @@ void graphic_toolkit::qt_easiest_matrice_controler::on_pushButton_resetView_clic
 
 void graphic_toolkit::qt_easiest_matrice_controler::reset_view()
 {
-  camera_angle = QVector2D( 0.f, 0.f );
+  //camera_angle = QVector2D( 0.f, 0.f );
+  camera_angle = QVector2D( pi, 0.f );
   camera_position = QVector3D( 0.f, 0.f, 0.f );
   view_angle = QVector3D( 0.f, 0.f, 0.f );
   //
@@ -141,6 +146,7 @@ void graphic_toolkit::qt_easiest_matrice_controler::reset_view()
   set_fov( default_fov );
   //
   compute_camera();
+  compute_view();
   repaint_glcanvas();
 }
 
@@ -153,9 +159,9 @@ void graphic_toolkit::qt_easiest_matrice_controler::compute_camera()
                      );
 
   camera_right = QVector3D(
-                   std::sin( camera_angle.x() - 3.14f / 2.0f ),
+                   std::sin( camera_angle.x() - pi / 2.0f ),
                    0,
-                   std::cos( camera_angle.x() - 3.14f / 2.0f )
+                   std::cos( camera_angle.x() - pi / 2.0f )
                  );
 
   camera_up = QVector3D( QVector3D::crossProduct( camera_right, camera_direction ) );

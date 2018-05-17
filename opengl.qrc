@@ -1,7 +1,8 @@
 <RCC>
     <qresource prefix="/graphic-toolkit">
-        <file>opengl/quick_text/512x512-Times_New_Roman.bmp</file>
         <file>opengl/quick_text/text_triangles.frag</file>
         <file>opengl/quick_text/text_triangles.vert</file>
+        <file>opengl/quick_text/512x512-Calibri-32x36.bmp</file>
+        <file>opengl/quick_text/512x512-Times_New_Roman-32x32.bmp</file>
     </qresource>
 </RCC>

@@ -4,6 +4,7 @@
 
 #include <graphic_toolkit/types.h>
 #include <graphic_toolkit/opengl/primitives_heap.h>
+#include <graphic_toolkit/opengl/normal_colors.h>
 
 #include <QOpenGLFunctions_3_3_Core>
 #include <QOpenGLShaderProgram>
@@ -15,15 +16,45 @@
 namespace graphic_toolkit {
   namespace opengl {
 
-    static constexpr const char * fonts_list_text[] { "Times_New_Roman", };
-    static constexpr uint fonts_list_text_count( sizeof( fonts_list_text ) / sizeof( const char * ) );
+    enum class quick_text_font_name : uint
+    {
+      TimesNewRoman_ascii_extented = 0,
+      Calibri_ascii_extented = 1,
+    };
+
+    enum class quick_text_horizontal_align : uint
+    {
+      left, center, right
+    };
 
     /** @see http://www.opengl-tutorial.org/fr/intermediate-tutorials/tutorial-11-2d-text/ */
     struct quick_text
     {
      public:
-      enum font_name : uint
-      { TimesNewRoman = 0 };
+      using font_name_t = quick_text_font_name;
+
+     protected:
+      struct font_property
+      {
+        std::string font_basename;
+        uint width, height;
+        uint cell_width, cell_height;
+        uint start_char, end_char;
+        float coef_width, coef_height;
+        float coef_extra_spacement;
+        bool row_read;  /**< (not tested) If the char are top-to-bottom and not left-to-right */
+      };
+
+     protected:
+      static const font_property fonts_list[];
+      static const uint fonts_list_count;
+
+     private:
+      static font_property get_font( uint font_id );
+      static QImage get_text_texture( const font_property & font );
+
+     public:
+      const font_property font;
 
      protected:
       std::unique_ptr<QOpenGLShaderProgram> text_program_up;
@@ -34,18 +65,18 @@ namespace graphic_toolkit {
       using text_heap_t =  primitives_heap<QVector2D, QVector2D>;
       text_heap_t text_heap;
 
-     protected:
-      static QImage get_text_texture( uint font_id );
-
      public:
-      quick_text( font_name font_id );
+      quick_text( quick_text_font_name font_id );
 
      public:
       void draw( QOpenGLFunctions_3_3_Core & gl, const QMatrix4x4 & projection_view );
       bool empty() const;
 
      public:
-      void add( const std::string & t, const float size, const QVector3D & pos, const QVector3D & angle );
+      void reset();
+
+     public:
+      void add( const std::string & t, const float size, const QVector3D & pos, const QVector3D & degree_angle_3d, const QVector3D & color = normal_colors::white, quick_text_horizontal_align align_h = quick_text_horizontal_align::left );
 
 
     };
