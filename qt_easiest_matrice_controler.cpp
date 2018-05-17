@@ -315,7 +315,7 @@ void graphic_toolkit::qt_easiest_matrice_controler::receive_mouseMoveEvent( QMou
 
 void graphic_toolkit::qt_easiest_matrice_controler::receive_wheelEvent( QWheelEvent * e )
 {
-  const float movCorrection { float( e->delta() ) / 120.f };
+  const float movCorrection { -float( e->delta() ) / 120.f };
   //
   if ( key_ctrl_down )
     set_fov( fov + movCorrection );
