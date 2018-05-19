@@ -25,11 +25,11 @@ namespace graphic_toolkit {
 
       // Compile vertex shader
       if ( !program.addShaderFromSourceFile( QOpenGLShader::Vertex, vertex_path ) )
-        throw std::runtime_error( "Compile vertex shader" );
+        throw std::runtime_error( ( "Compile vertex shader : " + vertex_path ).toStdString() );
 
       // Compile fragment shader
       if ( !program.addShaderFromSourceFile( QOpenGLShader::Fragment, fragment_path ) )
-        throw std::runtime_error( "Compile fragment shader" );
+        throw std::runtime_error( ( "Compile fragment shader :" + fragment_path ).toStdString() );
 
       // Link shader pipeline
       if ( !program.link() )
