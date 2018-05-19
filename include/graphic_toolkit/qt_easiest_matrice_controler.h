@@ -86,12 +86,8 @@ namespace graphic_toolkit {
     static constexpr float view_angle_rotation_speed = 0.1f;
 
    protected:
-    static constexpr float correction_zoom_ortho = -10.f;
-    static constexpr float correction_zoom_perspective = -10.f;
-
-   protected:
     float default_z = 8.f;
-    float default_zoom = 1.f;
+    float default_zoom = 100.f;
     float default_fov = 45.f;
 
    public:

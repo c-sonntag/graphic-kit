@@ -173,18 +173,17 @@ namespace graphic_toolkit {
 
   inline float qt_easiest_matrice_controler::smooth_zoom()
   {
-    return std::exp( zoom );
+    const float zoom_correction(
+      100 + ( ( projection_mode == ProjectionMode::Perspective ) ?
+              1.f : 0.f )
+    );
+    return std::exp( zoom_correction + -zoom );
   }
 
   // ---- ---- ---- ----
 
   void qt_easiest_matrice_controler::compute_view()
   {
-    //
-    QVector3D adapted_position( camera_position );
-    if ( projection_mode == ProjectionMode::Ortho )
-      adapted_position.setZ( correction_zoom_ortho );
-
     //
     view.setToIdentity();
 
@@ -196,7 +195,12 @@ namespace graphic_toolkit {
     );
 
     //
-    view.translate( camera_direction * smooth_zoom() );
+    float zoom( smooth_zoom() );
+    if ( projection_mode == ProjectionMode::Perspective )
+      zoom -= default_z;
+
+    //
+    view.translate( camera_direction * zoom );
 
     //
     view.rotate( view_angle.x() / 16.0f, 1.f, 0, 0 );
@@ -222,7 +226,7 @@ namespace graphic_toolkit {
     // Set ortho projection
     if ( projection_mode == ProjectionMode::Ortho )
       projection.ortho(
-        -zoom * current_aspect, smooth_zoom() * current_aspect,
+        -zoom * current_aspect, zoom * current_aspect,
         -zoom, zoom,
         zNear, zFar
       );
