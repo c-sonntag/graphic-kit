@@ -11,7 +11,22 @@
 namespace graphic_toolkit {
   namespace opengl {
 
-    std::unique_ptr<QOpenGLShaderProgram> quick_program( const QString & vertex_path, const QString & fragment_path );
+    struct quick_program
+    {
+     public:
+      const QString vertex_path;
+      const QString fragment_path;
+
+     public:
+      QOpenGLShaderProgram program;
+
+     public:
+      quick_program( QString _vertex_path, QString _fragment_path, bool build_now = false );
+
+     public:
+      void build();
+
+    };
 
   }
 }

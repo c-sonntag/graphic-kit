@@ -4,6 +4,7 @@
 
 #include <graphic_toolkit/types.h>
 #include <graphic_toolkit/opengl/primitives_heap.h>
+#include <graphic_toolkit/opengl/quick_program.h>
 #include <graphic_toolkit/opengl/normal_colors.h>
 
 #include <QOpenGLFunctions_3_3_Core>
@@ -57,8 +58,8 @@ namespace graphic_toolkit {
       const font_property font;
 
      protected:
-      std::unique_ptr<QOpenGLShaderProgram> text_program_up;
-      QOpenGLTexture text_texture;
+      quick_program text_program;
+      std::unique_ptr<QOpenGLTexture> text_texture_up = nullptr;
 
      protected:
       // Text position, UV Mapping
@@ -67,6 +68,9 @@ namespace graphic_toolkit {
 
      public:
       quick_text( quick_text_font_name font_id );
+
+     public:
+      void init_gl();
 
      public:
       void draw( QOpenGLFunctions_3_3_Core & gl, const QMatrix4x4 & projection_view );

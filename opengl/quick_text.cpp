@@ -57,8 +57,7 @@ namespace graphic_toolkit {
 
     quick_text::quick_text( quick_text_font_name font_id ) :
       font( get_font( uint( font_id ) ) ),
-      text_program_up( quick_program( ":/graphic-toolkit/opengl/quick_text/text_triangles.vert", ":/graphic-toolkit/opengl/quick_text/text_triangles.frag" ) ),
-      text_texture( get_text_texture( font ) ),
+      text_program( ":/graphic-toolkit/opengl/quick_text/text_triangles.vert", ":/graphic-toolkit/opengl/quick_text/text_triangles.frag" ),
       text_heap(
         attrib_pointer( 0, 2, GL_FLOAT, true ), // vertex
         attrib_pointer( 1, 2, GL_FLOAT, true )  // uv
@@ -70,39 +69,54 @@ namespace graphic_toolkit {
       //  QOpenGLTexture::Filter::Linear
       //);
 
-      text_texture.setMinMagFilters(
+    }
+
+    void quick_text::init_gl()
+    {
+      //
+      text_program.build();
+
+      //
+      text_texture_up = std::make_unique<QOpenGLTexture>( get_text_texture( font ) );
+
+      //
+      text_texture_up->setMinMagFilters(
         QOpenGLTexture::Filter::Nearest,
         QOpenGLTexture::Filter::Nearest
       );
 
-      text_texture.setWrapMode( QOpenGLTexture::Repeat );
-
+      text_texture_up->setWrapMode( QOpenGLTexture::Repeat );
     }
 
-    // ---- ----
+    // ---- ---- --- ----
 
     void quick_text::draw( QOpenGLFunctions_3_3_Core & gl, const QMatrix4x4 & projection_view )
     {
+        //
+      if ( !text_texture_up )
+        throw std::runtime_error( "[quick_text::draw] need a valid text_texture_up" );
+
+      //
       if ( !text_heap.is_init() )
         text_heap.init_buffer();
 
       //
-      text_program_up->bind();
-      text_program_up->setUniformValue( "vp_matrix", projection_view );
+      text_program.program.bind();
+      text_program.program.setUniformValue( "vp_matrix", projection_view );
 
-      //text_program_up->setUniformValue( "text_position", projection_view );
-      //text_program_up->setUniformValue( "text_angle", projection_view );
+      //text_program.program.setUniformValue( "text_position", projection_view );
+      //text_program.program.setUniformValue( "text_angle", projection_view );
 
       //
-      text_texture.bind();
-      text_program_up->setUniformValue( "text_sampler", text_texture.textureId() - GL_TEXTURE0 );
+      text_texture_up->bind();
+      text_program.program.setUniformValue( "text_sampler", text_texture_up->textureId() - GL_TEXTURE0 );
 
       //
       gl.glEnable( GL_BLEND );
       gl.glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 
       //
-      text_heap.auto_draw( gl, *text_program_up );
+      text_heap.auto_draw( gl, text_program.program );
 
       //
       gl.glDisable( GL_BLEND );

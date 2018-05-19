@@ -4,6 +4,7 @@
 
 #include <graphic_toolkit/opengl/attrib_pointer.h>
 
+#include <typeinfo>
 #include <vector>
 
 namespace graphic_toolkit {
