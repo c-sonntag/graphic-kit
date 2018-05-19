@@ -335,10 +335,10 @@ namespace graphic_toolkit {
 
   void qt_easiest_matrice_controler::receive_wheelEvent( QWheelEvent * e )
   {
-    const float movCorrection { -float( e->delta() ) / 120.f };
+    const float movCorrection { float( e->delta() ) / 120.f };
     //
     if ( key_ctrl_down )
-      set_fov( fov + movCorrection );
+      set_fov( fov - movCorrection );
     else
       set_zoom( zoom + ( movCorrection / 10.f ) );
   }
