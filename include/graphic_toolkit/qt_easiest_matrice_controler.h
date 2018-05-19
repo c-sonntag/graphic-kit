@@ -88,8 +88,16 @@ namespace graphic_toolkit {
    protected:
     static constexpr float correction_zoom_ortho = -10.f;
     static constexpr float correction_zoom_perspective = -10.f;
-    static constexpr float default_zoom = 1.f;
-    static constexpr float default_fov = 45.f;
+
+   protected:
+    float default_z = 8.f;
+    float default_zoom = 1.f;
+    float default_fov = 45.f;
+
+   public:
+    inline void change_default_z( float _value ) {default_z = _value;}
+    inline void change_default_zoom( float _value ) {default_zoom = _value;}
+    inline void change_default_fov( float _value ) {default_fov = _value;}
 
    protected:
     float view_angle_rotation_mult = 0.f;
@@ -103,8 +111,10 @@ namespace graphic_toolkit {
     float zoom;
     float fov;
 
-   protected:
+   public:
     void reset_view();
+
+   protected:
     void compute_camera();
 
    protected:
@@ -118,6 +128,9 @@ namespace graphic_toolkit {
 
    protected:
     inline void compute_view_projection() {view_projection = projection * view;}
+    inline float smooth_zoom();
+
+   protected:
     void compute_view();
     void compute_projection();
 
