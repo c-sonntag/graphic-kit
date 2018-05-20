@@ -15,7 +15,14 @@ namespace graphic_toolkit {
 
     inline void index_expander_property::gl_draw( const expander_property_support &, QOpenGLFunctions_3_3_Core & gl, QOpenGLShaderProgram & ) const
     {
-      if ( ( vertex_count > 0 ) && ( index_count > 0 ) )
+      if ( indice_is_global && ( index_count > 0 ) )
+        gl.glDrawElements(
+          GLenum( primitive ),
+          GLint( index_count ),
+          index_buffer::gl_indice_type,
+          reinterpret_cast<const GLvoid *>( index_start * sizeof( index_buffer::indice_size ) )
+        );
+      else if ( ( vertex_count > 0 ) && ( index_count > 0 ) )
         gl.glDrawElementsBaseVertex(
           GLenum( primitive ),
           GLint( index_count ),
@@ -59,6 +66,16 @@ namespace graphic_toolkit {
     {
       indices.indices.emplace_back( i );
     }
+
+    // ---- ---- ---- ----
+
+    template<typename  ... TListTypes>
+    inline void index_expander<TListTypes...>::set_global_indice( bool v )
+    {
+      expander_property_up->indice_is_global = v;
+    }
+
+    // ---- ---- ---- ----
 
     template<typename  ... TListTypes>
     inline void index_expander<TListTypes...>::reserve_vertices( size_t n )

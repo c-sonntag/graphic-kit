@@ -70,6 +70,7 @@ namespace graphic_toolkit {
     template< typename  ... TListTypes >
     inline void primitives_heap<TListTypes...>::gl_attrib_pointer( QOpenGLFunctions_3_3_Core & gl )
     {
+      /**< @see #way3 https://stackoverflow.com/a/39684775  */
       for ( const attrib_pointer_by_offset & apo : attrib_pointers )
         gl.glVertexAttribPointer(
           apo.gl_location,
@@ -152,7 +153,10 @@ namespace graphic_toolkit {
       if ( !property_up )
         throw std::runtime_error( "primitives_heap unlocker, need a valid 'abstract_expander_property' unque_ptr" );
       //
-      heap.expanders_properties.emplace_back( std::move( property_up ) );
+      if ( property_up->primitive != primitive_type::none )
+        heap.expanders_properties.emplace_back( std::move( property_up ) );
+
+      //
       heap.busy = false;
     }
 
@@ -166,8 +170,9 @@ namespace graphic_toolkit {
     }
 
     template< typename  ... TListTypes >
-    inline bool primitives_heap<TListTypes...>::empty() const {
-        return expanders_properties.empty();
+    inline bool primitives_heap<TListTypes...>::empty() const
+    {
+      return expanders_properties.empty();
     }
 
     // ---- ---- ---- ----
@@ -189,13 +194,13 @@ namespace graphic_toolkit {
     template< typename  ... TListTypes >
     inline typename primitives_heap<TListTypes...>::vertex_expander primitives_heap<TListTypes...>::complete_primitive( primitive_type primitive )
     {
-      return vertex_expander( property_support, vertices, std::move(primitive) );
+      return vertex_expander( property_support, vertices, std::move( primitive ) );
     }
 
     template< typename  ... TListTypes >
     inline typename primitives_heap<TListTypes...>::index_expander primitives_heap<TListTypes...>::complete_indexed_primitive( primitive_type primitive )
     {
-      return index_expander( property_support, vertices, indices, std::move(primitive) );
+      return index_expander( property_support, vertices, indices, std::move( primitive ) );
     }
 
     // ---- ---- ---- ----

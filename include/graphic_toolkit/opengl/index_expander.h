@@ -34,6 +34,9 @@ namespace graphic_toolkit {
      public:
       size_t vertex_count, index_count;
 
+     public:
+      bool indice_is_global = false;
+
      protected:
       void gl_draw( const expander_property_support & bd, QOpenGLFunctions_3_3_Core & gl, QOpenGLShaderProgram & program ) const;
     };
@@ -52,7 +55,7 @@ namespace graphic_toolkit {
       vertex_buffer_t & vertices;
       index_buffer_t & indices;
 
-    protected:
+     protected:
       const size_t vertex_start_decal;
 
      protected:
@@ -75,6 +78,9 @@ namespace graphic_toolkit {
       void push_vertex( Args && ... args );
 
       void push_index( index_buffer_t::indice_t i );
+
+     public:
+      void set_global_indice( bool v );
 
      public:
       void reserve_vertices( size_t n );

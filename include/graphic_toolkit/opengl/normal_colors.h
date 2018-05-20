@@ -20,8 +20,10 @@ namespace graphic_toolkit {
 
       /** @see Hue on https://www.w3schools.com/colors/colors_picker.asp */
 
-      constexpr QVector3D orange( normalize(255, 191, 0) );
-      constexpr QVector3D yellow( normalize(255, 255, 0) );
+      constexpr QVector3D orange( normalize( 255, 191, 0 ) );
+      constexpr QVector3D yellow( normalize( 255, 255, 0 ) );
+      constexpr QVector3D nvidia_green_1( normalize( 153, 255, 51 ) );
+      constexpr QVector3D nvidia_green_2( normalize( 204, 255, 51 ) );
 
 
     }
