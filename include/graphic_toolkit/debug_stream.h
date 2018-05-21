@@ -18,6 +18,13 @@ inline std::ostream & operator<<( std::ostream & os, const QVector2D & v2 )
   return os;
 }
 
+inline std::ostream & operator<<( std::ostream & os, const QSize & size )
+{
+  os << std::setprecision( 2 );
+  os << std::setw( 5 ) << size.width() << "," << std::setw( 5 ) << size.height();
+  return os;
+}
+
 inline std::ostream & operator<<( std::ostream & os, const QVector3D & v3 )
 {
   os << std::setprecision( 2 );
