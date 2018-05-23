@@ -9,10 +9,11 @@
 namespace graphic_toolkit {
   namespace opengl {
 
+
     const quick_text::font_property quick_text::fonts_list[]
     {
-      {"Times_New_Roman", 512, 512, 32, 32, 32, 255, 1.0f, 1.4f, 1.1f, false },
-      {"Calibri", 512, 512, 32, 36, 32, 255, 1.7f, 2.2f, 1.1f, false },
+      {"Times_New_Roman", 512, 512, 32, 32, 32, 255, 1.0f, 1.4f, 1.1f },
+      {"Calibri", 512, 512, 32, 36, 32, 255, 1.7f, 2.2f, 1.1f },
     };
 
     const uint quick_text::fonts_list_count( sizeof( quick_text::fonts_list ) / sizeof( quick_text::font_property ) );
@@ -53,7 +54,7 @@ namespace graphic_toolkit {
       return QImage( texture_bmp_file_path );
     }
 
-    // ---- ----
+    // ---- ---- --- ----
 
     quick_text::quick_text( quick_text_font_name font_id ) :
       font( get_font( uint( font_id ) ) ),
@@ -90,9 +91,17 @@ namespace graphic_toolkit {
 
     // ---- ---- --- ----
 
+    inline void quick_text::check_not_busy() const
+    {
+      if ( busy )
+        throw std::runtime_error( "primitives_heap is currently busy" );
+    }
+
+    // ---- ---- --- ----
+
     void quick_text::draw( QOpenGLFunctions_3_3_Core & gl, const QMatrix4x4 & projection_view )
     {
-        //
+      //
       if ( !text_texture_up )
         throw std::runtime_error( "[quick_text::draw] need a valid text_texture_up" );
 
@@ -139,31 +148,71 @@ namespace graphic_toolkit {
 
     // ---- ---- ---- ----
 
-    void quick_text::add( const std::string & t, const float size, const QVector3D & pos, const QVector3D & degree_angle_3d, const QVector3D & color, quick_text_horizontal_align align_h )
+    void quick_text::lock()
     {
-      const uint t_length( t.size() );
+      check_not_busy();
+      busy = true;
+    }
+
+    void quick_text::unlock()
+    {
+      busy = false;
+    }
+
+    // ---- ---- ---- ----
+
+    text_expander::~text_expander()
+    {
+      qt.lock();
+      push_text();
+      qt.unlock();
+    }
+
+    // ---- ----
+
+    float text_expander::get_width() const
+    {
+      return text.size() * qt.font.cell_width * size;
+    }
+
+    float text_expander::get_height() const
+    {
+      return size;
+    }
+
+    // ---- ----
+
+    void text_expander::push_text()
+    {
+
+      /**<
+       * @todo add return line parser
+       * @todo add align_v
+       */
+
+      const uint t_length( text.size() );
 
       //
-      const uint nb_carac_per_column( font.height / font.cell_height );
-      const uint nb_carac_per_line( font.width / font.cell_width );
+      const uint nb_carac_per_column( qt.font.height / qt.font.cell_height );
+      const uint nb_carac_per_line( qt.font.width / qt.font.cell_width );
 
       //
       const float nb_carac_per_line_f( nb_carac_per_line ) ;
       const float nb_carac_per_column_f( nb_carac_per_column ) ;
 
       //
-      const float cell_width( font.cell_width );
-      const float cell_height( font.cell_height );
+      const float cell_width( qt.font.cell_width );
+      const float cell_height( qt.font.cell_height );
 
       //
-      const float cell_width_normal( font.coef_width / cell_width );
-      const float cell_height_normal( font.coef_height / cell_height );
+      const float cell_width_normal( qt.font.coef_width / cell_width );
+      const float cell_height_normal( qt.font.coef_height / cell_height );
 
       //
       const float half_size( size / 2.f );
 
       //
-      text_heap_t::vertex_expander triangles( text_heap.complete_primitive( primitive_type::triangles ) );
+      quick_text::text_heap_t::vertex_expander triangles( qt.text_heap.complete_primitive( primitive_type::triangles ) );
 
       //
       QMatrix4x4 text_model;
@@ -179,9 +228,9 @@ namespace graphic_toolkit {
 
       //
       const float position_decal(
-        ( align_h == quick_text_horizontal_align::left ) ?
+        ( align_h == text_horizontal_align::left ) ?
         0.f :
-        ( ( align_h == quick_text_horizontal_align::center ) ?
+        ( ( align_h == text_horizontal_align::center ) ?
           -( float( t_length ) / 2.f ) :
           -float( t_length )
         )
@@ -190,27 +239,27 @@ namespace graphic_toolkit {
       //
       for ( uint i = 0 ; i < t_length ; ++i )
       {
-        const float column( ( float( i ) + position_decal ) * font.coef_extra_spacement );
+        const float column( ( float( i ) + position_decal ) * qt.font.coef_extra_spacement );
 
         const QVector2D vertex_up_left( column * size, half_size );
         const QVector2D vertex_up_right( column * size + size, half_size );
         const QVector2D vertex_down_right( column * size + size, -half_size );
         const QVector2D vertex_down_left( column * size, -half_size );
 
-        const uint character_base( static_cast<uint>( t[i] ) );
-        if ( ( character_base < font.start_char ) || ( character_base > font.end_char ) )
+        const uint character_base( static_cast<uint>( text[i] ) );
+        if ( ( character_base < qt.font.start_char ) || ( character_base > qt.font.end_char ) )
           continue;
 
         //
-        const uint character( character_base - font.start_char );
+        const uint character( character_base - qt.font.start_char );
 
         //
         const float character_mod( character % nb_carac_per_line );
         const float character_div( character / nb_carac_per_line );
 
         //
-        const float uv_x( ( font.row_read ? character_div : character_mod ) / nb_carac_per_line_f );
-        const float uv_y( ( font.row_read ? character_mod : character_div ) / nb_carac_per_column_f );
+        const float uv_x( character_mod / nb_carac_per_line_f );
+        const float uv_y( character_div / nb_carac_per_column_f );
 
         //
         const QVector2D uv_up_left( uv_x, uv_y );

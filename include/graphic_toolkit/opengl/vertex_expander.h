@@ -54,7 +54,6 @@ namespace graphic_toolkit {
       vertex_expander( expander_property_support & _expander_support, vertex_buffer_t & _vertices, primitive_type _primitive );
 
      public:
-
       // Enable move.
       vertex_expander( vertex_expander && ) = default;
       // Disable copy from lvalue.

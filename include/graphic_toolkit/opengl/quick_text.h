@@ -23,10 +23,19 @@ namespace graphic_toolkit {
       Calibri_ascii_extented = 1,
     };
 
-    enum class quick_text_horizontal_align : uint
-    {
-      left, center, right
-    };
+    // ---- ----
+
+    enum class text_horizontal_align : uint
+    { left, center, right };
+
+    enum class text_vertical_align : uint
+    { top, middle, bottom };
+
+    // ---- ----
+
+    struct text_expander;
+
+    // ---- ----
 
     /** @see http://www.opengl-tutorial.org/fr/intermediate-tutorials/tutorial-11-2d-text/ */
     struct quick_text
@@ -43,7 +52,6 @@ namespace graphic_toolkit {
         uint start_char, end_char;
         float coef_width, coef_height;
         float coef_extra_spacement;
-        bool row_read;  /**< (not tested) If the char are top-to-bottom and not left-to-right */
       };
 
      protected:
@@ -72,6 +80,12 @@ namespace graphic_toolkit {
      public:
       void init_gl();
 
+     protected:
+      bool busy = false;
+
+     protected:
+      void check_not_busy() const;
+
      public:
       void draw( QOpenGLFunctions_3_3_Core & gl, const QMatrix4x4 & projection_view );
       bool empty() const;
@@ -79,11 +93,75 @@ namespace graphic_toolkit {
      public:
       void reset();
 
+     protected:
+      friend text_expander;
+      void lock();
+      void unlock();
+
      public:
-      void add( const std::string & t, const float size, const QVector3D & pos, const QVector3D & degree_angle_3d, const QVector3D & color = normal_colors::white, quick_text_horizontal_align align_h = quick_text_horizontal_align::left );
-
-
+      inline text_expander complete_text();
+      inline text_expander complete_text( std::string t );
     };
+
+    // ---- ---- ---- ----
+
+    struct text_expander
+    {
+     public:
+      std::string text;
+      float size = 15.f;
+      QVector3D pos = QVector3D( 0.f, 0.f, 0.f );
+      QVector3D degree_angle_3d = QVector3D( 0.f, 0.f, 0.f );
+      QVector3D color = normal_colors::white;
+      text_horizontal_align align_h = text_horizontal_align::left;
+      text_vertical_align align_v = text_vertical_align::top;
+      bool text_auto_width = true;
+
+     protected:
+      friend quick_text;
+      quick_text & qt;
+      inline text_expander( quick_text & _qt );
+      inline text_expander( quick_text & _qt, std::string t );
+
+     public:
+      // Enable move.
+      text_expander( text_expander && ) = default;
+      // Disable copy from lvalue.
+      text_expander( const text_expander & ) = delete;
+      text_expander & operator=( const text_expander & ) = delete;
+
+     public:
+      ~text_expander();
+
+     public:
+      float get_width() const;
+      float get_height() const;
+
+     protected:
+      void push_text();
+    };
+
+    // ---- ---- ---- ----
+
+    inline text_expander::text_expander( quick_text & _qt ) :
+      qt( _qt )
+    {}
+
+    inline text_expander::text_expander( quick_text & _qt, std::string t ) :
+      text( std::move( t ) ), qt( _qt )
+    {}
+
+    // ---- ----
+
+    inline text_expander quick_text::complete_text()
+    {
+      return text_expander( *this );
+    }
+
+    inline text_expander quick_text::complete_text( std::string t )
+    {
+      return text_expander( *this, std::move( t ) );
+    }
 
   }
 }

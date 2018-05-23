@@ -78,7 +78,7 @@ namespace graphic_toolkit {
       using abstract_expander_property_up_t = std::unique_ptr<opengl::abstract_expander_property>;
 
      protected:
-      bool busy;
+      bool busy = false;
       std::list<abstract_expander_property_up_t> expanders_properties;
 
      protected:
