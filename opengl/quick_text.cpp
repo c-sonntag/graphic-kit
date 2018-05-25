@@ -1,92 +1,130 @@
 #include <graphic_toolkit/opengl/quick_text.h>
 
+#include <graphic_toolkit/opengl/quick_text_expander.h>
 #include <graphic_toolkit/opengl/quick_program.h>
+#include <graphic_toolkit/opengl/quick_text_bff_wrapper.h>
 
+#include <QFile>
 #include <QFileInfo>
+#include <QDataStream>
 
+#include <list>
+#include <memory>
 #include <stdexcept>
 
 namespace graphic_toolkit {
   namespace opengl {
 
 
-    const quick_text::font_property quick_text::fonts_list[]
+    struct font_ressource
     {
-      {"Times_New_Roman", 512, 512, 32, 32, 32, 255, 1.0f, 1.4f, 1.1f },
-      {"Calibri", 512, 512, 32, 36, 32, 255, 1.7f, 2.2f, 1.1f },
+      quick_text_fonts id;
+      std::string base_name;
     };
 
-    const uint quick_text::fonts_list_count( sizeof( quick_text::fonts_list ) / sizeof( quick_text::font_property ) );
+    const static font_ressource font_ressource_list[]
+    {
+      {quick_text_fonts::CalibriLight_512, "CalibriLight-32x32-512-lum"},
+      {quick_text_fonts::Calibri_512_rgb, "CalibriLight-32x32-512-rgb"},
+      {quick_text_fonts::CalibriLight_1024, "CalibriLight-64x64-1024-lum"},
+    };
+    const static uint font_ressource_list_count( sizeof( font_ressource_list ) / sizeof( font_ressource ) );
 
     // ---- ---- ---- ----
 
-    inline quick_text::font_property quick_text::get_font( uint font_id )
+    static quick_program text_program( ":/graphic-toolkit/opengl/quick_text/text_triangles.vert", ":/graphic-toolkit/opengl/quick_text/text_triangles.frag" );
+
+    // ---- ---- ---- ----
+
+    struct font_allocated_assoc
     {
-      if ( font_id >= fonts_list_count )
-        throw std::runtime_error( "[graphic_toolkit::quick_text] Can't find this font_id" );
+      int count = 0;
+      quick_text_fonts id;
+      quick_text_bbf_wrapper bbf_font;
+      inline font_allocated_assoc( quick_text_fonts _id, QFile & in ) :
+        id( _id ), bbf_font( in ) {}
+    };
+
+    static std::list<font_allocated_assoc> loaded_fonts;
+
+    inline font_allocated_assoc & create_font( quick_text_fonts id )
+    {
+      for ( font_allocated_assoc & faa : loaded_fonts )
+        if ( faa.id == id )
+          return faa;
+
+      for ( uint i( 0 ); i < font_ressource_list_count; ++i )
+      {
+        //
+        if ( font_ressource_list[i].id != id ) continue;
+        const font_ressource fr( font_ressource_list[i] );
+
+        //
+        QString file_ressource_path( ":/graphic-toolkit/opengl/quick_text/" + QString::fromStdString( fr.base_name ) + ".bff" );
+        QFileInfo file_info( file_ressource_path );
+        const bool exist_file { file_info.exists() && file_info.isFile() };
+
+        //
+        if ( !exist_file )
+          throw std::runtime_error( "[graphic_toolkit::quick_text] Imposible to locate from ressource the bff texture : " + fr.base_name );
+
+        //
+        QFile bff_file( file_ressource_path );
+        if ( !bff_file.open( QIODevice::OpenModeFlag::ReadOnly ) )
+          throw std::runtime_error( "[graphic_toolkit::quick_text] Can't open ressource in ReadOnly : " + file_ressource_path.toStdString() );
+
+        //
+        return *loaded_fonts.emplace( loaded_fonts.end(), id, bff_file );
+      }
 
       //
-      return fonts_list[font_id];
+      throw std::runtime_error( "[quick_text::create_font] Can't find this font_id : " + std::to_string( uint( id ) ) );
     }
 
-
-    inline QImage quick_text::get_text_texture( const font_property & font )
+    inline void auto_free_font()
     {
-
-      //
-      QString texture_bmp_file_path(
-        ":/graphic-toolkit/opengl/quick_text/"
-        + QString::number( font.width ) + "x" + QString::number( font.height )
-        + "-" + QString::fromStdString( font.font_basename )
-        + "-" + QString::number( font.cell_width ) + "x" + QString::number( font.cell_height )
-        + ".bmp"
+      static const auto remove_lesser_count(
+        []( const font_allocated_assoc & faa ) -> bool
+      { return faa.count <= 0; }
       );
-
-      //
-      QFileInfo file_info( texture_bmp_file_path );
-      const bool exist_file { file_info.exists() && file_info.isFile() };
-
-      //
-      if ( !exist_file )
-        throw std::runtime_error( "[graphic_toolkit::quick_text] Imposible to locate text texture : " + texture_bmp_file_path.toStdString() );
-
-      //
-      return QImage( texture_bmp_file_path );
+      loaded_fonts.remove_if( remove_lesser_count );
     }
 
-    // ---- ---- --- ----
+    // ---- ---- ---- ----
 
-    quick_text::quick_text( quick_text_font_name font_id ) :
-      font( get_font( uint( font_id ) ) ),
-      text_program( ":/graphic-toolkit/opengl/quick_text/text_triangles.vert", ":/graphic-toolkit/opengl/quick_text/text_triangles.frag" ),
+    quick_text::quick_text( quick_text_fonts _font_id ) :
+      font_id( _font_id ),
       text_heap(
         attrib_pointer( 0, 2, GL_FLOAT, true ), // vertex
         attrib_pointer( 1, 2, GL_FLOAT, true )  // uv
       )
+    {}
+
+    quick_text::~quick_text()
     {
-      //
-      //text_texture.setMinMagFilters(
-      //  QOpenGLTexture::Filter::LinearMipMapLinear,
-      //  QOpenGLTexture::Filter::Linear
-      //);
+      if ( faa_p )
+      {
+        --faa_p->count;
+        faa_p = nullptr;
+        bff_font_p = nullptr;
+        auto_free_font();
+      }
 
     }
+
+    // ---- ----
 
     void quick_text::init_gl()
     {
       //
       text_program.build();
 
-      //
-      text_texture_up = std::make_unique<QOpenGLTexture>( get_text_texture( font ) );
-
-      //
-      text_texture_up->setMinMagFilters(
-        QOpenGLTexture::Filter::Nearest,
-        QOpenGLTexture::Filter::Nearest
-      );
-
-      text_texture_up->setWrapMode( QOpenGLTexture::Repeat );
+      if ( !faa_p )
+      {
+        faa_p = &create_font( font_id );
+        ++faa_p->count;
+        bff_font_p = &faa_p->bbf_font;
+      }
     }
 
     // ---- ---- --- ----
@@ -102,7 +140,7 @@ namespace graphic_toolkit {
     void quick_text::draw( QOpenGLFunctions_3_3_Core & gl, const QMatrix4x4 & projection_view )
     {
       //
-      if ( !text_texture_up )
+      if ( !bff_font_p )
         throw std::runtime_error( "[quick_text::draw] need a valid text_texture_up" );
 
       //
@@ -117,8 +155,8 @@ namespace graphic_toolkit {
       //text_program.program.setUniformValue( "text_angle", projection_view );
 
       //
-      text_texture_up->bind();
-      text_program.program.setUniformValue( "text_sampler", text_texture_up->textureId() - GL_TEXTURE0 );
+      bff_font_p->texture.bind();
+      text_program.program.setUniformValue( "text_sampler", bff_font_p->texture.textureId() - GL_TEXTURE0 );
 
       //
       gl.glEnable( GL_BLEND );
@@ -161,121 +199,17 @@ namespace graphic_toolkit {
 
     // ---- ---- ---- ----
 
-    text_expander::~text_expander()
+    text_expander quick_text::complete_text()
     {
-      qt.lock();
-      push_text();
-      qt.unlock();
+      return text_expander( *this );
     }
 
-    // ---- ----
-
-    float text_expander::get_width() const
+    text_expander quick_text::complete_text( std::string t )
     {
-      return text.size() * qt.font.cell_width * size;
+      return text_expander( *this, std::move( t ) );
     }
 
-    float text_expander::get_height() const
-    {
-      return size;
-    }
 
-    // ---- ----
-
-    void text_expander::push_text()
-    {
-
-      /**<
-       * @todo add return line parser
-       * @todo add align_v
-       */
-
-      const uint t_length( text.size() );
-
-      //
-      const uint nb_carac_per_column( qt.font.height / qt.font.cell_height );
-      const uint nb_carac_per_line( qt.font.width / qt.font.cell_width );
-
-      //
-      const float nb_carac_per_line_f( nb_carac_per_line ) ;
-      const float nb_carac_per_column_f( nb_carac_per_column ) ;
-
-      //
-      const float cell_width( qt.font.cell_width );
-      const float cell_height( qt.font.cell_height );
-
-      //
-      const float cell_width_normal( qt.font.coef_width / cell_width );
-      const float cell_height_normal( qt.font.coef_height / cell_height );
-
-      //
-      const float half_size( size / 2.f );
-
-      //
-      quick_text::text_heap_t::vertex_expander triangles( qt.text_heap.complete_primitive( primitive_type::triangles ) );
-
-      //
-      QMatrix4x4 text_model;
-      text_model.setToIdentity();
-      text_model.translate( pos );
-      text_model.rotate( degree_angle_3d.x(), 1.f, 0, 0 );
-      text_model.rotate( degree_angle_3d.y(), 0, 1.f, 0 );
-      text_model.rotate( degree_angle_3d.z(), 0, 0, 1.f );
-
-      //
-      triangles.set_uniform( "text_model", text_model );
-      triangles.set_uniform( "text_color", color );
-
-      //
-      const float position_decal(
-        ( align_h == text_horizontal_align::left ) ?
-        0.f :
-        ( ( align_h == text_horizontal_align::center ) ?
-          -( float( t_length ) / 2.f ) :
-          -float( t_length )
-        )
-      );
-
-      //
-      for ( uint i = 0 ; i < t_length ; ++i )
-      {
-        const float column( ( float( i ) + position_decal ) * qt.font.coef_extra_spacement );
-
-        const QVector2D vertex_up_left( column * size, half_size );
-        const QVector2D vertex_up_right( column * size + size, half_size );
-        const QVector2D vertex_down_right( column * size + size, -half_size );
-        const QVector2D vertex_down_left( column * size, -half_size );
-
-        const uint character_base( static_cast<uint>( text[i] ) );
-        if ( ( character_base < qt.font.start_char ) || ( character_base > qt.font.end_char ) )
-          continue;
-
-        //
-        const uint character( character_base - qt.font.start_char );
-
-        //
-        const float character_mod( character % nb_carac_per_line );
-        const float character_div( character / nb_carac_per_line );
-
-        //
-        const float uv_x( character_mod / nb_carac_per_line_f );
-        const float uv_y( character_div / nb_carac_per_column_f );
-
-        //
-        const QVector2D uv_up_left( uv_x, uv_y );
-        const QVector2D uv_up_right( uv_x + cell_width_normal, uv_y );
-        const QVector2D uv_down_right( uv_x + cell_width_normal, uv_y + cell_height_normal );
-        const QVector2D uv_down_left( uv_x, uv_y + cell_height_normal );
-
-        triangles.push( vertex_up_left, uv_up_left );
-        triangles.push( vertex_down_left, uv_down_left );
-        triangles.push( vertex_up_right, uv_up_right );
-
-        triangles.push( vertex_down_right, uv_down_right );
-        triangles.push( vertex_up_right, uv_up_right );
-        triangles.push( vertex_down_left, uv_down_left );
-      }
-    }
 
   }
 }

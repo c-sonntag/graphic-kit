@@ -2,7 +2,7 @@
 
 CONFIG += c++14
 INCLUDEPATH += $$PWD/include
-DEPENDSPATH += $$PWD
+DEPENDPATH += $$PWD
 
 #
 ##
