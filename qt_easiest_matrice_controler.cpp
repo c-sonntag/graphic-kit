@@ -307,10 +307,13 @@ namespace graphic_toolkit {
 
     //
     if ( key_shift_down && mouse_once_direction.isNull() )
+    {
+      const bool upper_is_diff_x( std::abs( diff.x() ) > std::abs( diff.y() ) );
       mouse_once_direction = QVector2D(
-                               ( diff.x() > diff.y() ) ? 1.f : 0.f,
-                               ( diff.x() > diff.y() ) ? 0.f : 1.f
+                               upper_is_diff_x ? 1.f : 0.f,
+                               upper_is_diff_x ? 0.f : 1.f
                              );
+    }
 
     //
     if ( mouse_tracking && glwidget )
