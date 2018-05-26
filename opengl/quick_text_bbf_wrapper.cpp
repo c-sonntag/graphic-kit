@@ -1,5 +1,7 @@
 #include <graphic_toolkit/opengl/quick_text_bff_wrapper.h>
 
+#include <QOpenGLPixelTransferOptions>
+
 #include <stdexcept>
 #include <string.h>
 #include <memory>
@@ -90,6 +92,12 @@ namespace graphic_toolkit {
         row_factor = float( cell_height ) / float( height );
         y_offset = cell_height;
 
+        //
+        normal_scale = QVector2D(
+                         1.f / float( cell_width ),
+                         1.f / float( cell_height )
+                       );
+
         blend_flag img_type( blend_flag::none );
 
         // Determine blending options based on BPP
@@ -147,9 +155,26 @@ namespace graphic_toolkit {
               QOpenGLTexture::PixelFormat::RGBA )
           );
 
+          const QOpenGLTexture::TextureFormat tex_format(
+            ( img_type == blend_flag::alpha ) ?
+            QOpenGLTexture::TextureFormat::R8_UNorm :
+            ( ( img_type == blend_flag::rgb ) ?
+              QOpenGLTexture::TextureFormat::RGB8_UNorm :
+              QOpenGLTexture::TextureFormat::RGBA8_UNorm )
+          );
+
           //
+          texture.setFormat( tex_format );
           texture.setSize( int( width ), int( height ) );
-          texture.setData( format, QOpenGLTexture::PixelType::UInt8, img );
+          texture.setMipLevels( 2 );
+          texture.allocateStorage( format, QOpenGLTexture::UInt8 );
+
+          //
+          QOpenGLPixelTransferOptions uploadOptions;
+          uploadOptions.setAlignment( 1 );
+
+          //
+          texture.setData( format, QOpenGLTexture::PixelType::UInt8, img, &uploadOptions );
         }
         catch ( ... )
         {

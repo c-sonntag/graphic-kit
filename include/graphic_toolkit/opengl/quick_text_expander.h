@@ -22,12 +22,12 @@ namespace graphic_toolkit {
 
      public:
       std::string text;
-      float size = 15.f;
+      float normal_size = 0.1f;
       QVector3D pos = QVector3D( 0.f, 0.f, 0.f );
       QVector3D degree_angle_3d = QVector3D( 0.f, 0.f, 0.f );
       QVector3D color = normal_colors::white;
       horizontal_align align_h = left;
-      vertical_align align_v = top;
+      vertical_align align_v = middle;
       bool text_auto_width = true;
       float coef_extra_spacement = 1.f;
 
@@ -48,13 +48,20 @@ namespace graphic_toolkit {
       ~text_expander();
 
      public:
-      float get_width() const;
-      float get_height() const;
+      float get_base_width() const;
+      float get_base_height() const;
+
+     public:
+      float get_normal_width() const;
+      float get_normal_height() const;
+
+    public:
+     float get_normal_width_for_current_size() const;
+     float get_normal_height_for_current_size() const;
 
      protected:
       void push_text();
     };
-
   }
 }
 

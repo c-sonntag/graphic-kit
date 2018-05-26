@@ -10,17 +10,9 @@ out vec4 color;
 
 void main()
 {
-  //float brightness = texture( text_sampler, text_uv ).r;
+  //color = texture( text_sampler, text_uv );
 
-  //if ( color.r == 0.f )
-  //  color.a = 0.f;
-  //else if ( color.rgb != vec3( 1.f, 1.f, 1.f ) )
-  //  color.a = 1.f - ( color.r * 0.1f );
-  // else
-
-  color = texture( text_sampler, text_uv );
-
-  //color.a = brightness;
-  //color.rgb = brightness * text_color;
-
+  float brightness = texture( text_sampler, text_uv ).r;
+  color.a = brightness;
+  color.rgb = brightness * text_color;
 }

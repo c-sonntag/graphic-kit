@@ -157,6 +157,7 @@ namespace graphic_toolkit {
       //
       bff_font_p->texture.bind();
       text_program.program.setUniformValue( "text_sampler", bff_font_p->texture.textureId() - GL_TEXTURE0 );
+      text_program.program.setUniformValue( "text_normalisation_scale", bff_font_p->font.normal_scale );
 
       //
       gl.glEnable( GL_BLEND );

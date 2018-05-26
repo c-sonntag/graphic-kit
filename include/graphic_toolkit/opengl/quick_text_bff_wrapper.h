@@ -2,8 +2,8 @@
 
 #include <graphic_toolkit/types.h>
 
+#include <QVector2D>
 #include <QOpenGLTexture>
-
 #include <QFile>
 
 namespace graphic_toolkit {
@@ -23,6 +23,7 @@ namespace graphic_toolkit {
 
        public:
         float row_factor, col_factor;
+        QVector2D normal_scale;
 
        public:
         uchar characters_width[256];
