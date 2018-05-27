@@ -166,7 +166,7 @@ namespace graphic_toolkit {
           //
           texture.setFormat( tex_format );
           texture.setSize( int( width ), int( height ) );
-          texture.setMipLevels( 2 );
+          texture.setMipLevels( 1 );
           texture.allocateStorage( format, QOpenGLTexture::UInt8 );
 
           //

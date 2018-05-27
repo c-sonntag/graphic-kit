@@ -58,18 +58,6 @@ namespace graphic_toolkit {
 
     // ---- ---- ---- ----
 
-    //float text_expander::get_width() const
-    //{
-    //  return get_base_width() * ( size / text_size_normal_base );
-    //}
-    //
-    //float text_expander::get_height() const
-    //{
-    //  return get_base_height() * ( size / text_size_normal_base );
-    //}
-
-    // ---- ---- ---- ----
-
     float text_expander::get_normal_width() const
     {
       const quick_text_bbf_wrapper * const bbf_p( qt.get_font() );

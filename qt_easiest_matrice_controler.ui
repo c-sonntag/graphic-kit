@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>207</width>
-    <height>343</height>
+    <width>165</width>
+    <height>291</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -148,15 +148,6 @@
         <property name="orientation">
          <enum>Qt::Vertical</enum>
         </property>
-        <property name="sizeType">
-         <enum>QSizePolicy::Expanding</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>5</height>
-         </size>
-        </property>
        </spacer>
       </item>
       <item>
@@ -174,7 +165,7 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroup_view"/>
   <buttongroup name="buttonGroup"/>
+  <buttongroup name="buttonGroup_view"/>
  </buttongroups>
 </ui>

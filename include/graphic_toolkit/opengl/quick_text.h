@@ -35,6 +35,7 @@ namespace graphic_toolkit {
     {
      public:
       using font_name_t = quick_text_fonts;
+      using text_expander_t = text_expander;
 
      protected:
       //std::shared_ptr<const quick_text_bbf_wrapper> bff_font;
