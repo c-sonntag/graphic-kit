@@ -11,8 +11,9 @@
 
 #include <graphic_toolkit/opengl/vertex_buffer.h>
 #include <graphic_toolkit/opengl/index_buffer.h>
+#include <graphic_toolkit/opengl/uniform_container.h>
 
-#include <graphic_toolkit/opengl/abstract_expander.h>
+#include <graphic_toolkit/opengl/abstract_expander_property_support.h>
 
 #include <vector>
 #include <array>
@@ -26,6 +27,8 @@ namespace graphic_toolkit {
 
     template<typename  ... TListTypes>
     struct index_expander;
+
+    struct uniform_lap;
 
     // ---- ---- ---- ----
 
@@ -41,6 +44,7 @@ namespace graphic_toolkit {
      public:
       using vertices_t = opengl::vertex_buffer<TListTypes...>;
       using indices_t = opengl::index_buffer;
+      using uniforms_laps_up_t = std::vector<abstract_expander_property_support::uniform_container_up_t>;
 
      protected:
       vertices_t vertices;
@@ -61,6 +65,7 @@ namespace graphic_toolkit {
       void init_buffer();
       void reset_buffer();
       void reset_expanders();
+      void reset_uniforms_laps();
       void reset_all();
 
      protected:
@@ -80,6 +85,7 @@ namespace graphic_toolkit {
      protected:
       bool busy = false;
       std::list<abstract_expander_property_up_t> expanders_properties;
+      uniforms_laps_up_t uniforms_laps;
 
      protected:
       void check_not_busy() const;
@@ -88,18 +94,24 @@ namespace graphic_toolkit {
       bool empty() const;
 
      protected:
-      struct expander_property_support_inherited : public opengl::expander_property_support
+      struct expander_property_support_inherited : public opengl::abstract_expander_property_support
       {
        protected:
         primitives_heap_t & heap;
+
+       private:
+        inline void check_busy();
+
        public:
         expander_property_support_inherited( primitives_heap_t & _heap );
         void lock();
         void unlock( abstract_expander_property_up_t property_up );
+        void unlock( uniform_container_up_t uniform_container_up );
       } property_support;
 
      public:
       bool is_init() const;
+      bool have_uniforms_laps() const;
       bool is_busy() const;
 
      public:
@@ -108,10 +120,14 @@ namespace graphic_toolkit {
      public:
       using vertex_expander = opengl::vertex_expander<TListTypes...>;
       using index_expander = opengl::index_expander<TListTypes...>;
+      using uniform_lap = opengl::uniform_lap;
 
      public:
       vertex_expander complete_primitive( primitive_type primitive );
       index_expander complete_indexed_primitive( primitive_type primitive );
+
+     public:
+      uniform_lap complete_uniform_lap();
 
     };
 

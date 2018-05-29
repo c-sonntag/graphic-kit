@@ -38,7 +38,7 @@ namespace graphic_toolkit {
       bool indice_is_global = false;
 
      protected:
-      void gl_draw( const expander_property_support & bd, QOpenGLFunctions_3_3_Core & gl, QOpenGLShaderProgram & program ) const;
+      void gl_draw( const abstract_expander_property_support & bd, QOpenGLFunctions_3_3_Core & gl, QOpenGLShaderProgram & program ) const;
     };
 
     // ---- ----
@@ -60,7 +60,7 @@ namespace graphic_toolkit {
 
      protected:
       friend primitives_heap<TListTypes...>;
-      index_expander( expander_property_support & _expander_support, vertex_buffer_t & _vertices, index_buffer_t & _indices, primitive_type _primitive );
+      index_expander( abstract_expander_property_support & _expander_support, vertex_buffer_t & _vertices, index_buffer_t & _indices, primitive_type _primitive );
 
      public:
 

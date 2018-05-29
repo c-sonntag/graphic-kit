@@ -4,6 +4,7 @@
 
 #include <graphic_toolkit/opengl/vertex_expander.h>
 #include <graphic_toolkit/opengl/index_expander.h>
+#include <graphic_toolkit/opengl/uniform_lap.h>
 
 #include <iostream>
 
@@ -59,10 +60,21 @@ namespace graphic_toolkit {
     }
 
     template< typename  ... TListTypes >
+    inline void primitives_heap<TListTypes...>::reset_uniforms_laps()
+    {
+      //
+      check_not_busy();
+
+      //
+      uniforms_laps.clear();
+    }
+
+    template< typename  ... TListTypes >
     inline void primitives_heap<TListTypes...>::reset_all()
     {
       reset_buffer();
       reset_expanders();
+      reset_uniforms_laps();
     }
 
     // ---- ---- ---- ----
@@ -99,9 +111,19 @@ namespace graphic_toolkit {
       //
       gl_attrib_pointer( gl );
 
-      //
-      for ( const abstract_expander_property_up_t & aep_up : expanders_properties )
-        aep_up->draw( property_support, gl, program );
+      if ( have_uniforms_laps() )
+        for ( const abstract_expander_property_support::uniform_container_up_t & uniforms_up : uniforms_laps )
+        {
+          if ( uniforms_up )
+            uniforms_up->apply_uniform_sets( property_support, program );
+
+          //
+          for ( const abstract_expander_property_up_t & aep_up : expanders_properties )
+            aep_up->draw( property_support, gl, program );
+        }
+      else
+        for ( const abstract_expander_property_up_t & aep_up : expanders_properties )
+          aep_up->draw( property_support, gl, program );
     }
 
     // ---- ---- ---- ----
@@ -133,6 +155,16 @@ namespace graphic_toolkit {
     // ---- ---- ---- ----
 
     template< typename  ... TListTypes >
+    inline void primitives_heap<TListTypes...>::expander_property_support_inherited::check_busy()
+    {
+      if ( !heap.busy )
+        throw std::runtime_error( "primitives_heap is not locked, or you want to unlock it" );
+    }
+
+
+    // ---- ----
+
+    template< typename  ... TListTypes >
     inline primitives_heap<TListTypes...>::expander_property_support_inherited::expander_property_support_inherited( primitives_heap_t & _heap ) :
       heap( _heap )
     {}
@@ -140,6 +172,7 @@ namespace graphic_toolkit {
     template< typename  ... TListTypes >
     inline void primitives_heap<TListTypes...>::expander_property_support_inherited::lock()
     {
+
       if ( heap.busy )
         throw std::runtime_error( "primitives_heap is already locked" );
       heap.busy = true;
@@ -148,13 +181,27 @@ namespace graphic_toolkit {
     template< typename  ... TListTypes >
     inline void primitives_heap<TListTypes...>::expander_property_support_inherited::unlock( abstract_expander_property_up_t property_up )
     {
-      if ( !heap.busy )
-        throw std::runtime_error( "primitives_heap is not locked, or you want to unlock it" );
+      check_busy();
+
+      //
       if ( !property_up )
-        throw std::runtime_error( "primitives_heap unlocker, need a valid 'abstract_expander_property' unque_ptr" );
+        throw std::runtime_error( "primitives_heap unlocker, need a valid 'abstract_expander_property' unique_ptr" );
       //
       if ( property_up->primitive != primitive_type::none )
         heap.expanders_properties.emplace_back( std::move( property_up ) );
+
+      //
+      heap.busy = false;
+    }
+
+    template< typename  ... TListTypes >
+    inline void primitives_heap<TListTypes...>::expander_property_support_inherited::unlock( uniform_container_up_t uniform_container_up )
+    {
+      check_busy();
+
+      //
+      if ( uniform_container_up )
+        heap.uniforms_laps.emplace_back( std::move( uniform_container_up ) );
 
       //
       heap.busy = false;
@@ -184,6 +231,12 @@ namespace graphic_toolkit {
     }
 
     template< typename  ... TListTypes >
+    inline bool primitives_heap<TListTypes...>::have_uniforms_laps() const
+    {
+      return !uniforms_laps.empty();
+    }
+
+    template< typename  ... TListTypes >
     inline bool primitives_heap<TListTypes...>::is_busy() const
     {
       return busy;
@@ -201,6 +254,14 @@ namespace graphic_toolkit {
     inline typename primitives_heap<TListTypes...>::index_expander primitives_heap<TListTypes...>::complete_indexed_primitive( primitive_type primitive )
     {
       return index_expander( property_support, vertices, indices, std::move( primitive ) );
+    }
+
+    // ---- ----
+
+    template< typename  ... TListTypes >
+    inline typename primitives_heap<TListTypes...>::uniform_lap primitives_heap<TListTypes...>::complete_uniform_lap()
+    {
+      return uniform_lap( property_support );
     }
 
     // ---- ---- ---- ----

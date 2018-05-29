@@ -34,7 +34,7 @@ namespace graphic_toolkit {
       size_t count;
 
      protected:
-      void gl_draw( const expander_property_support & bd, QOpenGLFunctions_3_3_Core & gl, QOpenGLShaderProgram & program ) const;
+      void gl_draw( const abstract_expander_property_support & bd, QOpenGLFunctions_3_3_Core & gl, QOpenGLShaderProgram & program ) const;
     };
 
     // ---- ----
@@ -51,7 +51,7 @@ namespace graphic_toolkit {
 
      protected:
       friend primitives_heap<TListTypes...>;
-      vertex_expander( expander_property_support & _expander_support, vertex_buffer_t & _vertices, primitive_type _primitive );
+      vertex_expander( abstract_expander_property_support & _expander_support, vertex_buffer_t & _vertices, primitive_type _primitive );
 
      public:
       // Enable move.

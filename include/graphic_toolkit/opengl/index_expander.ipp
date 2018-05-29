@@ -13,7 +13,7 @@ namespace graphic_toolkit {
       vertex_count( 0 ), index_count( 0 )
     { }
 
-    inline void index_expander_property::gl_draw( const expander_property_support &, QOpenGLFunctions_3_3_Core & gl, QOpenGLShaderProgram & ) const
+    inline void index_expander_property::gl_draw( const abstract_expander_property_support &, QOpenGLFunctions_3_3_Core & gl, QOpenGLShaderProgram & ) const
     {
       if ( indice_is_global && ( index_count > 0 ) )
         gl.glDrawElements(
@@ -35,7 +35,7 @@ namespace graphic_toolkit {
     // ---- ---- ---- ----
 
     template<typename  ... TListTypes>
-    inline index_expander<TListTypes...>::index_expander( expander_property_support & _expander_support, vertex_buffer_t & _vertices, index_buffer_t & _indices, primitive_type _primitive ) :
+    inline index_expander<TListTypes...>::index_expander( abstract_expander_property_support & _expander_support, vertex_buffer_t & _vertices, index_buffer_t & _indices, primitive_type _primitive ) :
       abstract_expander(
         _expander_support,
         std::make_unique<index_expander_property>( std::move( _primitive ), _vertices.rows.size(), _indices.indices.size() )
