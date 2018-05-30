@@ -57,6 +57,10 @@ namespace graphic_toolkit {
 
       //
       expanders_properties.clear();
+
+      //
+      vertices.rows.clear();
+      indices.indices.clear();
     }
 
     template< typename  ... TListTypes >
