@@ -47,6 +47,7 @@ namespace graphic_toolkit {
     inline void primitives_heap<TListTypes...>::reset_buffer()
     {
       initialized = false;
+      VAO.destroy();
     }
 
     template< typename  ... TListTypes >
@@ -101,19 +102,58 @@ namespace graphic_toolkit {
     // ---- ----
 
     template< typename  ... TListTypes >
+    inline void primitives_heap<TListTypes...>::attrib_array_enable_all( QOpenGLFunctions_3_3_Core & gl )
+    {
+      for ( const attrib_pointer_by_offset & apo : attrib_pointers )
+        gl.glEnableVertexAttribArray( apo.gl_location );
+    }
+
+    template< typename  ... TListTypes >
+    inline void primitives_heap<TListTypes...>::attrib_array_disable_all( QOpenGLFunctions_3_3_Core & gl )
+    {
+      for ( const attrib_pointer_by_offset & apo : attrib_pointers )
+        gl.glDisableVertexAttribArray( apo.gl_location );
+    }
+
+
+    // ---- ---- ---- ----
+
+    template< typename  ... TListTypes >
     inline void primitives_heap<TListTypes...>::draw( QOpenGLFunctions_3_3_Core & gl, QOpenGLShaderProgram & program )
     {
       if ( !initialized )
         return;
 
       //
+      bool initVAO( false );
+
+      //
+      if ( !VAO.isCreated() )
+      {
+        VAO.create();
+        initVAO = true;
+      }
+
+      //
+      VAO.bind();
+
+      //
+      if ( initVAO )
+        attrib_array_enable_all( gl );
+
+      //
       if ( vertices.buffer.isCreated() )
         vertices.buffer.bind();
+
+      //
       if ( indices.buffer.isCreated() )
         indices.buffer.bind();
 
       //
-      gl_attrib_pointer( gl );
+      if ( initVAO )
+        gl_attrib_pointer( gl );
+
+
 
       if ( have_uniforms_laps() )
         for ( const abstract_expander_property_support::uniform_container_up_t & uniforms_up : uniforms_laps )
@@ -128,32 +168,10 @@ namespace graphic_toolkit {
       else
         for ( const abstract_expander_property_up_t & aep_up : expanders_properties )
           aep_up->draw( property_support, gl, program );
-    }
 
-    // ---- ---- ---- ----
+      //
+      VAO.release();
 
-    template< typename  ... TListTypes >
-    inline void primitives_heap<TListTypes...>::auto_draw( QOpenGLFunctions_3_3_Core & gl, QOpenGLShaderProgram & program )
-    {
-      attrib_array_enable_all( gl );
-      draw( gl, program );
-      attrib_array_disable_all( gl );
-    }
-
-    // ---- ----
-
-    template< typename  ... TListTypes >
-    inline void primitives_heap<TListTypes...>::attrib_array_enable_all( QOpenGLFunctions_3_3_Core & gl )
-    {
-      for ( const attrib_pointer_by_offset & apo : attrib_pointers )
-        gl.glEnableVertexAttribArray( apo.gl_location );
-    }
-
-    template< typename  ... TListTypes >
-    inline void primitives_heap<TListTypes...>::attrib_array_disable_all( QOpenGLFunctions_3_3_Core & gl )
-    {
-      for ( const attrib_pointer_by_offset & apo : attrib_pointers )
-        gl.glDisableVertexAttribArray( apo.gl_location );
     }
 
     // ---- ---- ---- ----
@@ -164,7 +182,6 @@ namespace graphic_toolkit {
       if ( !heap.busy )
         throw std::runtime_error( "primitives_heap is not locked, or you want to unlock it" );
     }
-
 
     // ---- ----
 

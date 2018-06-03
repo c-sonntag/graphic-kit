@@ -19,6 +19,8 @@
 #include <array>
 #include <list>
 
+#include <QOpenGLVertexArrayObject>
+
 namespace graphic_toolkit {
   namespace opengl {
 
@@ -69,15 +71,15 @@ namespace graphic_toolkit {
       void reset_all();
 
      protected:
+      QOpenGLVertexArrayObject VAO;
+
+     protected:
       void gl_attrib_pointer( QOpenGLFunctions_3_3_Core & gl );
+      void attrib_array_enable_all( QOpenGLFunctions_3_3_Core & gl );
+      void attrib_array_disable_all( QOpenGLFunctions_3_3_Core & gl );
 
      public:
       void draw( QOpenGLFunctions_3_3_Core & gl, QOpenGLShaderProgram & program );
-
-     public:
-      void auto_draw( QOpenGLFunctions_3_3_Core & gl, QOpenGLShaderProgram & program );
-      void attrib_array_enable_all( QOpenGLFunctions_3_3_Core & gl );
-      void attrib_array_disable_all( QOpenGLFunctions_3_3_Core & gl );
 
      public:
       using abstract_expander_property_up_t = std::unique_ptr<opengl::abstract_expander_property>;

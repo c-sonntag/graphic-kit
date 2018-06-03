@@ -164,7 +164,7 @@ namespace graphic_toolkit {
       gl.glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 
       //
-      text_heap.auto_draw( gl, text_program.program );
+      text_heap.draw( gl, text_program.program );
 
       //
       gl.glDisable( GL_BLEND );
