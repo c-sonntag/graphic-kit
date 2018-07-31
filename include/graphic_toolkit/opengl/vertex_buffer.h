@@ -2,9 +2,10 @@
 #ifndef graphic_toolkit_opengl_vertex_buffer_h
 #define graphic_toolkit_opengl_vertex_buffer_h
 
+#include <raiigl/buffer.hpp>
+
 #include <vector>
 #include <tuple>
-#include <QOpenGLBuffer>
 
 namespace graphic_toolkit {
   namespace opengl {
@@ -20,7 +21,7 @@ namespace graphic_toolkit {
       static constexpr size_t row_size = sizeof( row_t );
 
       public:
-      QOpenGLBuffer buffer;
+      raiigl::buffer buffer;
       rows_t rows;
 
      public:

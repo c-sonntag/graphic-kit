@@ -8,13 +8,13 @@ namespace graphic_toolkit {
   namespace opengl {
 
 
-    inline abstract_expander_property::abstract_expander_property( primitive_type _primitive ) :
+    inline abstract_expander_property::abstract_expander_property( raiigl::primitive_type _primitive ) :
       primitive( std::move( _primitive ) )
     { }
 
     // ---- ----
 
-    inline void abstract_expander_property::draw( const abstract_expander_property_support & bd, QOpenGLFunctions_3_3_Core & gl, QOpenGLShaderProgram & program ) const
+    inline void abstract_expander_property::draw( const abstract_expander_property_support & bd, raiigl::gl330 & gl, raiigl::program & program ) const
     {
       //
       uniforms.apply_uniform_sets( bd, program );

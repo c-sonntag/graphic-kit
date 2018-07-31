@@ -7,7 +7,7 @@ namespace graphic_toolkit {
 
     template<typename  ... TListTypes>
     inline vertex_buffer<TListTypes...>::vertex_buffer() :
-      buffer( QOpenGLBuffer::Type::VertexBuffer ),
+      buffer( raiigl::buffer_type::Array ),
       buffer_length( 0 ), buffer_bytesize( 0 )
     {}
 
@@ -19,12 +19,7 @@ namespace graphic_toolkit {
       buffer_bytesize = buffer_length * sizeof( row_t );
 
       //
-      if ( !buffer.isCreated() )
-        buffer.create();
-
-      //
-      buffer.bind();
-      buffer.allocate( rows.data(), static_cast<int>( buffer_bytesize ) );
+      buffer.bind_and_send( static_cast<GLsizeiptr>( buffer_bytesize ),  rows.data() );
     }
 
 

@@ -93,7 +93,7 @@ namespace graphic_toolkit {
         y_offset = cell_height;
 
         //
-        normal_scale = QVector2D(
+        normal_scale = glm::vec2(
                          1.f / float( cell_width ),
                          1.f / float( cell_height )
                        );

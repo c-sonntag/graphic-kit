@@ -2,26 +2,30 @@
 #ifndef graphic_toolkit_opengl_uniform_set_hpp
 #define graphic_toolkit_opengl_uniform_set_hpp
 
+#include <raiigl/program.hpp>
+
 #include <string>
 #include <unordered_map>
 
-#include <QOpenGLShaderProgram>
+#include <functional>
 
 namespace graphic_toolkit {
   namespace opengl {
 
+    template<typename TUniform>
     struct uniform_set
     {
      protected:
       const std::string name;
-      const std::function<void( QOpenGLShaderProgram & )> program_setter;
+      TUniform value; /**< @todo */
+      //const std::function<void( raiigl::program & )> program_setter;
 
      public:
       template< class... Args >
       uniform_set( std::string _name, Args && ...  args );
 
      public:
-      void set( QOpenGLShaderProgram & program ) const;
+      void set( raiigl::program & program ) const;
     };
 
     // ---- ----

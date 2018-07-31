@@ -8,10 +8,10 @@ namespace graphic_toolkit {
     template< class... Args >
     inline uniform_set::uniform_set( std::string _name, Args && ...  args ) :
       name( std::move( _name ) ),
-      program_setter( [ = ]( QOpenGLShaderProgram & program ) { program.setUniformValue( name.c_str(), args... ); } )
+      program_setter( [ = ]( raiigl::program & program ) { program.setUniformValue( name.c_str(), args... ); } )
     {}
 
-    inline void uniform_set::set( QOpenGLShaderProgram & program ) const
+    inline void uniform_set::set( raiigl::program & program ) const
     {
       program_setter( program );
     }

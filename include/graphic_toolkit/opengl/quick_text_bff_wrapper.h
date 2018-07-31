@@ -2,13 +2,15 @@
 
 #include <graphic_toolkit/types.h>
 
-#include <QVector2D>
+#include <glm/vec2.hpp>
+
+#include <erc/
+
 #include <QOpenGLTexture>
 #include <QFile>
 
 namespace graphic_toolkit {
   namespace opengl {
-
 
     struct quick_text_bbf_wrapper
     {
@@ -23,7 +25,7 @@ namespace graphic_toolkit {
 
        public:
         float row_factor, col_factor;
-        QVector2D normal_scale;
+        glm::vec2 normal_scale;
 
        public:
         uchar characters_width[256];

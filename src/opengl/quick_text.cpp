@@ -60,7 +60,7 @@ namespace graphic_toolkit {
         const font_ressource fr( font_ressource_list[i] );
 
         //
-        QString file_ressource_path( ":/graphic-toolkit/opengl/quick_text/" + QString::fromStdString( fr.base_name ) + ".bff" );
+        std::string file_ressource_path( ":/graphic-toolkit/opengl/quick_text/" + std::string::fromStdString( fr.base_name ) + ".bff" );
         QFileInfo file_info( file_ressource_path );
         const bool exist_file { file_info.exists() && file_info.isFile() };
 
@@ -137,7 +137,7 @@ namespace graphic_toolkit {
 
     // ---- ---- --- ----
 
-    void quick_text::draw( QOpenGLFunctions_3_3_Core & gl, const QMatrix4x4 & projection_view )
+    void quick_text::draw( raiigl::gl330 & gl, const QMatrix4x4 & projection_view )
     {
       //
       if ( !bff_font_p )

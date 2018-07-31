@@ -2,9 +2,9 @@
 #ifndef graphic_toolkit_opengl_uniform_container_h
 #define graphic_toolkit_opengl_uniform_container_h
 
-#include <graphic_toolkit/opengl/primitive_type.h>
-#include <graphic_toolkit/opengl/uniform_set.h>
+#include <raiigl/gl_types.hpp>
 
+#include <graphic_toolkit/opengl/uniform_set.h>
 #include <graphic_toolkit/opengl/abstract_expander_property_support.h>
 
 #include <list>
@@ -28,7 +28,7 @@ namespace graphic_toolkit {
       uniform_sets_conditional_up_t uniform_sets_conditional_up;
 
      public:
-      void apply_uniform_sets( const abstract_expander_property_support & bd, QOpenGLShaderProgram & program ) const;
+      void apply_uniform_sets( const abstract_expander_property_support & bd, raiigl::program & program ) const;
 
      public:
       template< class... Args >

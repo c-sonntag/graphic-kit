@@ -1,7 +1,8 @@
 #pragma once
 
-#include <QOpenGLContext>
-#include <QOpenGLFunctions_3_3_Core>
+#include <raiigl/gl_context.hpp>
+#include <raiigl/gl330.hpp>
+#include <raiigl/gl420.hpp>
 
 #include <stdexcept>
 
@@ -12,22 +13,22 @@ namespace graphic_toolkit {
     struct core_context
     {
      private:
-      static inline QOpenGLContext & get_context() {
-        QOpenGLContext * const context( QOpenGLContext::currentContext() );
+      static inline raiigl::gl_context & get_context() {
+        raiigl::gl_context * const context( raiigl::gl_context::get_current() );
         if ( !context )
           throw std::runtime_error( "[core_context] can't get context" );
         return *context;
       }
-      static inline QOpenGLFunctions_3_3_Core & get_core( QOpenGLContext & context ) {
-        QOpenGLFunctions_3_3_Core * const core( context.versionFunctions<QOpenGLFunctions_3_3_Core>() );
+      static inline raiigl::gl330 & get_core( raiigl::gl_context & context ) {
+        raiigl::gl330 * const core( context.get_version<raiigl::gl330>() );
         if ( !core )
-          throw std::runtime_error( "[core_context] can't get opengl 330 core" );
+          throw std::runtime_error( "[core_context] can't get opengl 330" );
         return *core;
       }
 
      public:
-      QOpenGLContext & context;
-      QOpenGLFunctions_3_3_Core & gl;
+      raiigl::gl_context & context;
+      raiigl::gl330 & gl;
 
      public:
       inline core_context() :

@@ -15,7 +15,8 @@ namespace graphic_toolkit {
     template< typename... Args >
     inline primitives_heap<TListTypes...>::primitives_heap( Args ... attributes ) :
       attrib_pointers( attributes... ),
-      initialized( false ),  busy( false ),
+      initialized( false ), vao_is_configured( false ),
+      busy( false ),
       property_support( *this ),
       conditionals_uniforms_sets( property_support.conditionals_uniforms_sets )
     { }
@@ -47,7 +48,7 @@ namespace graphic_toolkit {
     inline void primitives_heap<TListTypes...>::reset_buffer()
     {
       initialized = false;
-      VAO.destroy();
+      vao_is_configured = false;
     }
 
     template< typename  ... TListTypes >
@@ -85,11 +86,11 @@ namespace graphic_toolkit {
     // ---- ---- ---- ----
 
     template< typename  ... TListTypes >
-    inline void primitives_heap<TListTypes...>::gl_attrib_pointer( QOpenGLFunctions_3_3_Core & gl )
+    inline void primitives_heap<TListTypes...>::gl_attrib_pointer( raiigl::gl330 & gl )
     {
       /**< @see #way3 https://stackoverflow.com/a/39684775  */
       for ( const attrib_pointer_by_offset & apo : attrib_pointers )
-        gl.glVertexAttribPointer(
+        gl.vertex_attrib_pointer(
           apo.gl_location,
           apo.gl_tuple_size,
           apo.gl_type,
@@ -102,59 +103,55 @@ namespace graphic_toolkit {
     // ---- ----
 
     template< typename  ... TListTypes >
-    inline void primitives_heap<TListTypes...>::attrib_array_enable_all( QOpenGLFunctions_3_3_Core & gl )
+    inline void primitives_heap<TListTypes...>::attrib_array_enable_all( raiigl::gl330 & gl )
     {
       for ( const attrib_pointer_by_offset & apo : attrib_pointers )
-        gl.glEnableVertexAttribArray( apo.gl_location );
+        gl.enable_vertex_attrib_array( apo.gl_location );
     }
 
     template< typename  ... TListTypes >
-    inline void primitives_heap<TListTypes...>::attrib_array_disable_all( QOpenGLFunctions_3_3_Core & gl )
+    inline void primitives_heap<TListTypes...>::attrib_array_disable_all( raiigl::gl330 & gl )
     {
       for ( const attrib_pointer_by_offset & apo : attrib_pointers )
-        gl.glDisableVertexAttribArray( apo.gl_location );
+        gl.disable_vertex_attrib_array( apo.gl_location );
     }
-
 
     // ---- ---- ---- ----
 
     template< typename  ... TListTypes >
-    inline void primitives_heap<TListTypes...>::draw( QOpenGLFunctions_3_3_Core & gl, QOpenGLShaderProgram & program )
+    inline void primitives_heap<TListTypes...>::bind_buffer()
+    {
+      vertices.buffer.bind();
+      indices.buffer.bind();
+    }
+
+    // ---- ----
+
+    template< typename  ... TListTypes >
+    inline void primitives_heap<TListTypes...>::draw( raiigl::gl330 & gl, raiigl::program & program )
     {
       if ( !initialized )
         return;
 
       //
-      bool initVAO( false );
+      vao.bind();
 
       //
-      if ( !VAO.isCreated() )
-      {
-        VAO.create();
-        initVAO = true;
-      }
-
-      //
-      VAO.bind();
-
-      //
-      if ( initVAO )
+      if ( !vao_is_configured )
         attrib_array_enable_all( gl );
 
       //
-      if ( vertices.buffer.isCreated() )
-        vertices.buffer.bind();
+      bind_buffer();
 
       //
-      if ( indices.buffer.isCreated() )
-        indices.buffer.bind();
-
-      //
-      if ( initVAO )
+      if ( !vao_is_configured )
         gl_attrib_pointer( gl );
 
+      //
+      if ( !vao_is_configured )
+        vao_is_configured = true;
 
-
+      //
       if ( have_uniforms_laps() )
         for ( const abstract_expander_property_support::uniform_container_up_t & uniforms_up : uniforms_laps )
         {
@@ -170,7 +167,7 @@ namespace graphic_toolkit {
           aep_up->draw( property_support, gl, program );
 
       //
-      VAO.release();
+      vao.unbind();
 
     }
 
@@ -208,7 +205,7 @@ namespace graphic_toolkit {
       if ( !property_up )
         throw std::runtime_error( "primitives_heap unlocker, need a valid 'abstract_expander_property' unique_ptr" );
       //
-      if ( property_up->primitive != primitive_type::none )
+      if ( property_up->primitive != raiigl::primitive_type::None )
         heap.expanders_properties.emplace_back( std::move( property_up ) );
 
       //
@@ -266,13 +263,13 @@ namespace graphic_toolkit {
     // ---- ---- ---- ----
 
     template< typename  ... TListTypes >
-    inline typename primitives_heap<TListTypes...>::vertex_expander primitives_heap<TListTypes...>::complete_primitive( primitive_type primitive )
+    inline typename primitives_heap<TListTypes...>::vertex_expander primitives_heap<TListTypes...>::complete_primitive( raiigl::primitive_type primitive )
     {
       return vertex_expander( property_support, vertices, std::move( primitive ) );
     }
 
     template< typename  ... TListTypes >
-    inline typename primitives_heap<TListTypes...>::index_expander primitives_heap<TListTypes...>::complete_indexed_primitive( primitive_type primitive )
+    inline typename primitives_heap<TListTypes...>::index_expander primitives_heap<TListTypes...>::complete_indexed_primitive( raiigl::primitive_type primitive )
     {
       return index_expander( property_support, vertices, indices, std::move( primitive ) );
     }

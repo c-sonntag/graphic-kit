@@ -2,10 +2,9 @@
 #ifndef graphic_toolkit_opengl_vertex_expander_h
 #define graphic_toolkit_opengl_vertex_expander_h
 
-#include <graphic_toolkit/opengl/primitive_type.h>
+#include <raiigl/gl_types.hpp>
 
 #include <graphic_toolkit/opengl/vertex_buffer.h>
-
 #include <graphic_toolkit/opengl/abstract_expander.h>
 
 #include <list>
@@ -24,7 +23,7 @@ namespace graphic_toolkit {
     struct vertex_expander_property : public abstract_expander_property
     {
      public:
-      vertex_expander_property( primitive_type _primitive, size_t _start );
+      vertex_expander_property( raiigl::primitive_type _primitive, size_t _start );
       virtual ~vertex_expander_property() = default;
 
      public:
@@ -34,7 +33,7 @@ namespace graphic_toolkit {
       size_t count;
 
      protected:
-      void gl_draw( const abstract_expander_property_support & bd, QOpenGLFunctions_3_3_Core & gl, QOpenGLShaderProgram & program ) const;
+      void gl_draw( const abstract_expander_property_support & bd, raiigl::gl330 & gl, raiigl::program & program ) const;
     };
 
     // ---- ----
@@ -51,7 +50,7 @@ namespace graphic_toolkit {
 
      protected:
       friend primitives_heap<TListTypes...>;
-      vertex_expander( abstract_expander_property_support & _expander_support, vertex_buffer_t & _vertices, primitive_type _primitive );
+      vertex_expander( abstract_expander_property_support & _expander_support, vertex_buffer_t & _vertices, raiigl::primitive_type _primitive );
 
      public:
       // Enable move.

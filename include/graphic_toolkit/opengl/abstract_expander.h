@@ -2,9 +2,11 @@
 #ifndef graphic_toolkit_opengl_abstract_expander_h
 #define graphic_toolkit_opengl_abstract_expander_h
 
-#include <graphic_toolkit/opengl/abstract_expander_property_support.h>
+#include <raiigl/gl_types.hpp>
+#include <raiigl/gl330.hpp>
+#include <raiigl/program.hpp>
 
-#include <graphic_toolkit/opengl/primitive_type.h>
+#include <graphic_toolkit/opengl/abstract_expander_property_support.h>
 #include <graphic_toolkit/opengl/uniform_container.h>
 
 #include <list>
@@ -21,17 +23,17 @@ namespace graphic_toolkit {
       uniform_container uniforms;
 
      public:
-      const primitive_type primitive;
+      const raiigl::primitive_type primitive;
 
      public:
-      abstract_expander_property( primitive_type _primitive );
+      abstract_expander_property( raiigl::primitive_type _primitive );
       virtual ~abstract_expander_property() = default;
 
      public:
-      void draw( const abstract_expander_property_support & bd, QOpenGLFunctions_3_3_Core & gl, QOpenGLShaderProgram & program ) const;
+      void draw( const abstract_expander_property_support & bd, raiigl::gl330 & gl, raiigl::program & program ) const;
 
      protected:
-      virtual void gl_draw( const abstract_expander_property_support & bd, QOpenGLFunctions_3_3_Core & gl, QOpenGLShaderProgram & program ) const = 0;
+      virtual void gl_draw( const abstract_expander_property_support & bd, raiigl::gl330 & gl, raiigl::program & program ) const = 0;
     };
 
     // ---- ----

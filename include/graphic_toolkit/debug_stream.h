@@ -1,6 +1,6 @@
 #pragma once
 
-#include <QVector2D>
+#include <glm/vec2.hpp>
 #include <QVector3D>
 #include <QMatrix4x4>
 #include <QPoint>
@@ -11,7 +11,7 @@
 #define OUTPUT_VAR(var) " " #var "(" << var << ") "
 #define OV(var) OUTPUT_VAR(var)
 
-inline std::ostream & operator<<( std::ostream & os, const QVector2D & v2 )
+inline std::ostream & operator<<( std::ostream & os, const glm::vec2 & v2 )
 {
   os << std::setprecision( 2 );
   os << std::setw( 5 ) << v2.x() << "," << std::setw( 5 ) << v2.y();

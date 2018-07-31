@@ -6,8 +6,8 @@
 #include <graphic_toolkit/opengl/normal_colors.h>
 #include <graphic_toolkit/opengl/quick_text_bff_wrapper.h>
 
-#include <QOpenGLFunctions_3_3_Core>
-#include <QOpenGLShaderProgram>
+#include <raiigl/gl330.hpp>
+#include <raiigl/program.hpp>
 #include <QOpenGLTexture>
 #include <QVector3D>
 #include <QMatrix4x4>
@@ -48,7 +48,7 @@ namespace graphic_toolkit {
 
      protected:
       // Text position, UV Mapping
-      using text_heap_t =  primitives_heap<QVector2D, QVector2D>;
+      using text_heap_t =  primitives_heap<glm::vec2, glm::vec2>;
       text_heap_t text_heap;
 
      public:
@@ -65,7 +65,7 @@ namespace graphic_toolkit {
       void check_not_busy() const;
 
      public:
-      void draw( QOpenGLFunctions_3_3_Core & gl, const QMatrix4x4 & projection_view );
+      void draw( raiigl::gl330 & gl, const QMatrix4x4 & projection_view );
       bool empty() const;
 
      public:

@@ -99,7 +99,7 @@ namespace graphic_toolkit {
       const quick_text_bbf_wrapper & bbf( *bbf_p );
 
       //
-      quick_text::text_heap_t::vertex_expander triangles( qt.text_heap.complete_primitive( primitive_type::triangles ) );
+      quick_text::text_heap_t::vertex_expander triangles( qt.text_heap.complete_primitive( raiigl::primitive_type::triangles ) );
 
       /** @todo implement return line */
 
@@ -128,15 +128,15 @@ namespace graphic_toolkit {
         const float U1( U +  bbf.font.col_factor * char_width_factor_cell_width );
         const float V1( V +  bbf.font.row_factor );
 
-        const QVector2D vertex_up_left( pos_x, pos_y );
-        const QVector2D vertex_up_right( pos_x + char_width, pos_y );
-        const QVector2D vertex_down_right( pos_x + char_width, pos_y + bbf.font.cell_height );
-        const QVector2D vertex_down_left( pos_x, pos_y + bbf.font.cell_height );
+        const glm::vec2 vertex_up_left( pos_x, pos_y );
+        const glm::vec2 vertex_up_right( pos_x + char_width, pos_y );
+        const glm::vec2 vertex_down_right( pos_x + char_width, pos_y + bbf.font.cell_height );
+        const glm::vec2 vertex_down_left( pos_x, pos_y + bbf.font.cell_height );
 
-        const QVector2D uv_up_left( U, V1 );
-        const QVector2D uv_up_right( U1, V1 );
-        const QVector2D uv_down_right( U1, V );
-        const QVector2D uv_down_left( U, V );
+        const glm::vec2 uv_up_left( U, V1 );
+        const glm::vec2 uv_up_right( U1, V1 );
+        const glm::vec2 uv_down_right( U1, V );
+        const glm::vec2 uv_down_left( U, V );
 
         triangles.push( vertex_up_left, uv_up_left );
         triangles.push( vertex_down_left, uv_down_left );
@@ -149,7 +149,7 @@ namespace graphic_toolkit {
         pos_x += char_width;
       }
 
-      const QVector2D position_decal(
+      const glm::vec2 position_decal(
         ( align_h == text_expander::left ) ?
         0.f :
         ( ( align_h == text_expander::center ) ?

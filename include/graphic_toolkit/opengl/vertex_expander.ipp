@@ -8,25 +8,25 @@ namespace graphic_toolkit {
   namespace opengl {
 
 
-    inline vertex_expander_property::vertex_expander_property( primitive_type _primitive, size_t _start ) :
+    inline vertex_expander_property::vertex_expander_property( raiigl::primitive_type _primitive, size_t _start ) :
       abstract_expander_property( std::move( _primitive ) ),
       start( std::move( _start ) ),
       count( 0 )
     { }
 
-    inline void vertex_expander_property::gl_draw( const abstract_expander_property_support &, QOpenGLFunctions_3_3_Core & gl, QOpenGLShaderProgram & ) const
+    inline void vertex_expander_property::gl_draw( const abstract_expander_property_support &, raiigl::gl330 & gl, raiigl::program & ) const
     {
       if ( count > 0 )
-        gl.glDrawArrays( GLenum( primitive ), GLint( start ), GLint( count ) );
+        gl.draw_arrays( primitive, static_cast<GLint>( start ), static_cast<GLsizei>( count ) );
     }
 
     // ---- ---- ---- ----
 
     template<typename  ... TListTypes>
-    inline vertex_expander<TListTypes...>::vertex_expander( abstract_expander_property_support & _expander_support, vertex_buffer_t & _vertices, primitive_type _primitive ) :
+    inline vertex_expander<TListTypes...>::vertex_expander( abstract_expander_property_support & _expander_support, vertex_buffer_t & _vertices, raiigl::primitive_type _primitive ) :
       abstract_expander(
         _expander_support,
-        std::make_unique<vertex_expander_property>( std::move(_primitive), _vertices.rows.size() )
+        std::make_unique<vertex_expander_property>( std::move( _primitive ), _vertices.rows.size() )
       ),
       vertices( _vertices )
     { }

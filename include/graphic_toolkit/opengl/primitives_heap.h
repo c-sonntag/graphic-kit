@@ -2,9 +2,13 @@
 #ifndef graphic_toolkit_opengl_primitives_heap_h
 #define graphic_toolkit_opengl_primitives_heap_h
 
-#include <graphic_toolkit/types.h>
+#include <raiigl/gl_types.hpp>
+#include <raiigl/gl330.hpp>
+#include <raiigl/program.hpp>
+#include <raiigl/buffer.hpp>
+#include <raiigl/vertex_array.hpp>
 
-#include <graphic_toolkit/opengl/primitive_type.h>
+#include <graphic_toolkit/types.h>
 
 #include <graphic_toolkit/opengl/attrib_pointer.h>
 #include <graphic_toolkit/opengl/attrib_pointer_by_offset.h>
@@ -19,7 +23,6 @@
 #include <array>
 #include <list>
 
-#include <QOpenGLVertexArrayObject>
 
 namespace graphic_toolkit {
   namespace opengl {
@@ -71,22 +74,27 @@ namespace graphic_toolkit {
       void reset_all();
 
      protected:
-      QOpenGLVertexArrayObject VAO;
+      bool vao_is_configured;
+      raiigl::vertex_array vao;
 
      protected:
-      void gl_attrib_pointer( QOpenGLFunctions_3_3_Core & gl );
-      void attrib_array_enable_all( QOpenGLFunctions_3_3_Core & gl );
-      void attrib_array_disable_all( QOpenGLFunctions_3_3_Core & gl );
+      void gl_attrib_pointer( raiigl::gl330 & gl );
+      void attrib_array_enable_all( raiigl::gl330 & gl );
+      void attrib_array_disable_all( raiigl::gl330 & gl );
+
+    protected:
+      virtual void bind_buffer();
 
      public:
-      void draw( QOpenGLFunctions_3_3_Core & gl, QOpenGLShaderProgram & program );
+      void configure_vao( raiigl::gl330 & gl, raiigl::program & program );
+      void draw( raiigl::gl330 & gl, raiigl::program & program );
 
      public:
       using abstract_expander_property_up_t = std::unique_ptr<opengl::abstract_expander_property>;
 
      protected:
       bool busy = false;
-      std::list<abstract_expander_property_up_t> expanders_properties;
+      std::vector<abstract_expander_property_up_t> expanders_properties;
       uniforms_laps_up_t uniforms_laps;
 
      protected:
@@ -125,8 +133,8 @@ namespace graphic_toolkit {
       using uniform_lap = opengl::uniform_lap;
 
      public:
-      vertex_expander complete_primitive( primitive_type primitive );
-      index_expander complete_indexed_primitive( primitive_type primitive );
+      vertex_expander complete_primitive( raiigl::primitive_type primitive );
+      index_expander complete_indexed_primitive( raiigl::primitive_type primitive );
 
      public:
       uniform_lap complete_uniform_lap();

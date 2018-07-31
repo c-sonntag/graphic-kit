@@ -5,7 +5,7 @@
 namespace graphic_toolkit {
   namespace opengl {
 
-    inline void uniform_container::apply_uniform_sets( const abstract_expander_property_support & bd, QOpenGLShaderProgram & program ) const
+    inline void uniform_container::apply_uniform_sets( const abstract_expander_property_support & bd, raiigl::program & program ) const
     {
       if ( uniform_sets_up )
         for ( const uniform_set & us : *uniform_sets_up )

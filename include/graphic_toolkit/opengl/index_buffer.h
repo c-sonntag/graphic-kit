@@ -2,8 +2,10 @@
 #ifndef graphic_toolkit_opengl_index_buffer_h
 #define graphic_toolkit_opengl_index_buffer_h
 
+#include <raiigl/gl_types.hpp>
+#include <raiigl/buffer.hpp>
+
 #include <vector>
-#include <QOpenGLBuffer>
 
 namespace graphic_toolkit {
   namespace opengl {
@@ -14,12 +16,12 @@ namespace graphic_toolkit {
       using indice_t = GLuint;
       using indices_t = std::vector<indice_t>;
 
-    public:
-     static constexpr size_t indice_size = sizeof( indice_t );
-     static constexpr GLenum gl_indice_type = GL_UNSIGNED_INT;
+     public:
+      static constexpr size_t indice_size = sizeof( indice_t );
+      static constexpr raiigl::indice_type indice_type = raiigl::indice_type::Uint;
 
      public:
-      QOpenGLBuffer buffer;
+      raiigl::buffer buffer;
       indices_t indices;
 
      public:

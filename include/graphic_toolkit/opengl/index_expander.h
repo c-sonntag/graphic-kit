@@ -2,7 +2,9 @@
 #ifndef graphic_toolkit_opengl_index_expander_h
 #define graphic_toolkit_opengl_index_expander_h
 
-#include <graphic_toolkit/opengl/primitive_type.h>
+#include <raiigl/gl_types.hpp>
+#include <raiigl/gl330.hpp>
+#include <raiigl/program.hpp>
 
 #include <graphic_toolkit/opengl/vertex_buffer.h>
 #include <graphic_toolkit/opengl/index_buffer.h>
@@ -25,7 +27,7 @@ namespace graphic_toolkit {
     struct index_expander_property : public abstract_expander_property
     {
      public:
-      index_expander_property( primitive_type _primitive, size_t _vertex_start, size_t _index_start );
+      index_expander_property( raiigl::primitive_type _primitive, size_t _vertex_start, size_t _index_start );
       virtual ~index_expander_property() = default;
 
      public:
@@ -38,7 +40,7 @@ namespace graphic_toolkit {
       bool indice_is_global = false;
 
      protected:
-      void gl_draw( const abstract_expander_property_support & bd, QOpenGLFunctions_3_3_Core & gl, QOpenGLShaderProgram & program ) const;
+      void gl_draw( const abstract_expander_property_support & bd, raiigl::gl330 & gl, raiigl::program & program ) const;
     };
 
     // ---- ----
@@ -60,7 +62,7 @@ namespace graphic_toolkit {
 
      protected:
       friend primitives_heap<TListTypes...>;
-      index_expander( abstract_expander_property_support & _expander_support, vertex_buffer_t & _vertices, index_buffer_t & _indices, primitive_type _primitive );
+      index_expander( abstract_expander_property_support & _expander_support, vertex_buffer_t & _vertices, index_buffer_t & _indices, raiigl::primitive_type _primitive );
 
      public:
 
