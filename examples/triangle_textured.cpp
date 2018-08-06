@@ -43,7 +43,6 @@ struct EasyTriangleHeapPainter : public AbstractPainter
 
  private:
   const raiigl::uniform_variable uniform_vertex_mvp{ *program_up, "MVP" };
-  const raiigl::uniform_variable uniform_color{ *program_up, "uniform_color" };
 
  private:
   using heap_vertices_t = graphic_toolkit::opengl::primitives_heap<glm::vec2, glm::vec2> ;
@@ -76,6 +75,8 @@ struct EasyTriangleHeapPainter : public AbstractPainter
     //
     heap_vertices.init_buffer();
 
+
+
   }
 
   float red_curve_count = 0.f;
@@ -87,11 +88,6 @@ struct EasyTriangleHeapPainter : public AbstractPainter
 
     // Send our transformation
     uniform_vertex_mvp.set( mvp.mvpRefresh() );
-
-    //
-    red_curve_count += 0.01f;
-    const float red_curve( std::sin( red_curve_count ) * 0.333f + 0.666f );
-    uniform_color.set( glm::vec3( red_curve, 0.f, 0.f ) );
 
     //
     heap_vertices.draw( gl330, *program_up );
