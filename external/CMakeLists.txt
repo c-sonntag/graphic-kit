@@ -20,8 +20,7 @@ set(STB_SOURCE             "${EXTERNAL_SOURCE_DIR}/${EXTERNAL_STB_DIR}")
 set(STB_PREFIX              "external/stb")
 #
 macro(LINK_PRIVATE_LIB_STB_IMAGE PROJECT_TARGET)
-  add_dependencies(${PROJECT_TARGET} zlib)
-  target_include_directories(${PROJECT_TARGET} PRIVATE ${ZLIB_SOURCE})
+  target_include_directories(${PROJECT_TARGET} PRIVATE ${STB_SOURCE})
 endmacro()
 
 
