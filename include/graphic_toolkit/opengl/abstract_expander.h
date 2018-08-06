@@ -4,6 +4,7 @@
 
 #include <raiigl/gl_types.hpp>
 #include <raiigl/gl330.hpp>
+#include <raiigl/gl430.hpp>
 #include <raiigl/program.hpp>
 
 #include <graphic_toolkit/opengl/abstract_expander_property_support.h>
@@ -30,10 +31,11 @@ namespace graphic_toolkit {
       virtual ~abstract_expander_property() = default;
 
      public:
-      void draw( const abstract_expander_property_support & bd, raiigl::gl330 & gl, raiigl::program & program ) const;
+      void draw( const abstract_expander_property_support & bd, const raiigl::gl330 & gl, raiigl::program & program ) const;
 
      protected:
-      virtual void gl_draw( const abstract_expander_property_support & bd, raiigl::gl330 & gl, raiigl::program & program ) const = 0;
+      virtual void gl_draw( const abstract_expander_property_support & bd, const raiigl::gl330 & gl, raiigl::program & program ) const = 0;
+      virtual void gl_draw( const abstract_expander_property_support & bd, raiigl::gl430 & gl, raiigl::program & program ) const = 0;
     };
 
     // ---- ----
@@ -66,10 +68,10 @@ namespace graphic_toolkit {
      public:
 
       template< class... Args >
-      void set_uniform( const std::string & var_name, Args... values );
+      void set_uniform( const std::string & var_name, const Args & ... values );
 
       template< class... Args >
-      void set_uniform_on_condition( const std::string & condition_name, const std::string & var_name, Args... values );
+      void set_uniform_on_condition( const std::string & condition_name, const std::string & var_name, const Args & ... values );
 
     };
 

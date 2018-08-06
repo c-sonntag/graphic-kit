@@ -1,6 +1,10 @@
 #include <graphic_toolkit/opengl/quick_text_expander.h>
 
 #include <stdexcept>
+#include <bits/move.h>
+
+#include <glm/mat4x4.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 namespace graphic_toolkit {
   namespace opengl {
@@ -63,7 +67,7 @@ namespace graphic_toolkit {
       const quick_text_bbf_wrapper * const bbf_p( qt.get_font() );
       if ( !bbf_p ) return 0.f;
       //
-      return get_base_width() * bbf_p->font.normal_scale.x();
+      return get_base_width() * bbf_p->font.normal_scale.x;
     }
 
     float text_expander::get_normal_height() const
@@ -71,7 +75,7 @@ namespace graphic_toolkit {
       const quick_text_bbf_wrapper * const bbf_p( qt.get_font() );
       if ( !bbf_p ) return 0.f;
       //
-      return get_base_height() * bbf_p->font.normal_scale.y();
+      return get_base_height() * bbf_p->font.normal_scale.y;
     }
 
     // ---- ----
@@ -95,11 +99,13 @@ namespace graphic_toolkit {
     {
       //
       const quick_text_bbf_wrapper * const bbf_p( qt.get_font() );
-      if ( !bbf_p ) return;
+      if ( !bbf_p )
+        throw std::runtime_error( "[graphic_toolkit::opengl::text_expander::push_text] Can't get quick_text_bbf_wrapper" );
+      //if ( !bbf_p ) return;
       const quick_text_bbf_wrapper & bbf( *bbf_p );
 
       //
-      quick_text::text_heap_t::vertex_expander triangles( qt.text_heap.complete_primitive( raiigl::primitive_type::triangles ) );
+      quick_text::text_heap_t::vertex_expander triangles( qt.text_heap.complete_primitive( raiigl::primitive_type::Triangles ) );
 
       /** @todo implement return line */
 
@@ -165,14 +171,12 @@ namespace graphic_toolkit {
       );
 
       //
-      QMatrix4x4 text_model;
-      text_model.setToIdentity();
-      text_model.translate( pos );
-      text_model.rotate( degree_angle_3d.x(), 1.f, 0, 0 );
-      text_model.rotate( degree_angle_3d.y(), 0, 1.f, 0 );
-      text_model.rotate( degree_angle_3d.z(), 0, 0, 1.f );
-      text_model.scale( normal_size );
-      text_model.translate( position_decal * bbf.font.normal_scale );
+      glm::mat4x4 text_model( glm::translate( glm::mat4x4( 1.0f ), pos ) );
+      text_model = glm::rotate( text_model, degree_angle_3d.x, {1.f, 0, 0} );
+      text_model = glm::rotate( text_model, degree_angle_3d.y, {0, 1.f, 0} );
+      text_model = glm::rotate( text_model, degree_angle_3d.z, {0, 0, 1.f} );
+      text_model = glm::scale( text_model, {normal_size, normal_size, normal_size} );
+      text_model = glm::translate( text_model, {position_decal * bbf.font.normal_scale, 0} );
 
       //
       triangles.set_uniform( "text_model", text_model );

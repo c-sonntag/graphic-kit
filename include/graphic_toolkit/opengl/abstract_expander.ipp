@@ -14,7 +14,7 @@ namespace graphic_toolkit {
 
     // ---- ----
 
-    inline void abstract_expander_property::draw( const abstract_expander_property_support & bd, raiigl::gl330 & gl, raiigl::program & program ) const
+    inline void abstract_expander_property::draw( const abstract_expander_property_support & bd, const raiigl::gl330 & gl, raiigl::program & program ) const
     {
       //
       uniforms.apply_uniform_sets( bd, program );
@@ -43,14 +43,14 @@ namespace graphic_toolkit {
 
     template<class TExpanderProperty>
     template< class... Args >
-    inline void abstract_expander<TExpanderProperty>::set_uniform( const std::string & var_name, Args... values )
+    inline void abstract_expander<TExpanderProperty>::set_uniform( const std::string & var_name, const Args & ... values )
     {
       expander_property_up->uniforms.set_uniform( var_name, values... );
     }
 
     template<class TExpanderProperty>
     template< class... Args >
-    inline void abstract_expander<TExpanderProperty>::set_uniform_on_condition( const std::string & condition_name, const std::string & var_name, Args... values )
+    inline void abstract_expander<TExpanderProperty>::set_uniform_on_condition( const std::string & condition_name, const std::string & var_name, const Args & ... values )
     {
       expander_property_up->uniforms.set_uniform_on_condition( condition_name, var_name, values... );
     }

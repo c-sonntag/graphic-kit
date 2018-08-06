@@ -7,6 +7,8 @@ layout( location = 1 ) in vec2 uv_from_buffer;
 //
 uniform mat4 vp_matrix;
 uniform vec2 text_normalisation_scale;
+
+//
 uniform mat4 text_model;
 
 // Output data ; will be interpolated for each fragment.
@@ -14,6 +16,7 @@ out vec2 text_uv;
 
 void main()
 {
+
   //
   text_uv = uv_from_buffer;
 

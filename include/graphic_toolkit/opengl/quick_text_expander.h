@@ -1,10 +1,9 @@
 #pragma once
 
-
 #include <graphic_toolkit/types.h>
 #include <graphic_toolkit/opengl/quick_text.h>
 
-#include <QVector3D>
+#include <glm/vec3.hpp>
 
 #include <string>
 
@@ -14,7 +13,7 @@ namespace graphic_toolkit {
     struct text_expander
     {
      public:
-      enum  horizontal_align : uint
+      enum horizontal_align : uint
       { left, center, right };
 
       enum vertical_align : uint
@@ -23,9 +22,9 @@ namespace graphic_toolkit {
      public:
       std::string text;
       float normal_size = 0.1f;
-      QVector3D pos = QVector3D( 0.f, 0.f, 0.f );
-      QVector3D degree_angle_3d = QVector3D( 0.f, 0.f, 0.f );
-      QVector3D color = normal_colors::white;
+      glm::vec3 pos { 0.f, 0.f, 0.f };
+      glm::vec3 degree_angle_3d {0.f, 0.f, 0.f};
+      glm::vec3 color {normal_colors::white};
       horizontal_align align_h = left;
       vertical_align align_v = middle;
       bool text_auto_width = true;
@@ -55,13 +54,12 @@ namespace graphic_toolkit {
       float get_normal_width() const;
       float get_normal_height() const;
 
-    public:
-     float get_normal_width_for_current_size() const;
-     float get_normal_height_for_current_size() const;
+     public:
+      float get_normal_width_for_current_size() const;
+      float get_normal_height_for_current_size() const;
 
      protected:
       void push_text();
     };
   }
 }
-

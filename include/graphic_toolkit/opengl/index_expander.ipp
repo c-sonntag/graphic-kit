@@ -13,7 +13,7 @@ namespace graphic_toolkit {
       vertex_count( 0 ), index_count( 0 )
     { }
 
-    inline void index_expander_property::gl_draw( const abstract_expander_property_support &, raiigl::gl330 & gl, raiigl::program & ) const
+    inline void index_expander_property::gl_draw( const abstract_expander_property_support &, const raiigl::gl330 & gl, raiigl::program & ) const
     {
       if ( indice_is_global && ( index_count > 0 ) )
         gl.draw_elements(
@@ -27,7 +27,7 @@ namespace graphic_toolkit {
           primitive,
           static_cast<GLsizei>( index_count ),
           index_buffer::indice_type,
-          reinterpret_cast<const GLvoid *>( index_start * index_buffer::indice_size ),
+          reinterpret_cast<void *>( index_start * index_buffer::indice_size ),
           static_cast<GLint>( vertex_start )
         );
     }
@@ -56,38 +56,40 @@ namespace graphic_toolkit {
 
     template<typename  ... TListTypes>
     template< class... Args >
-    inline void index_expander<TListTypes...>::push_vertex( Args && ... args )
-    {
-      vertices.rows.emplace_back( args... );
-    }
+    __forceinline void index_expander<TListTypes...>::push_vertex( Args && ... args )
+    { vertices.rows.emplace_back( args... ); }
 
     template<typename  ... TListTypes>
-    inline void index_expander<TListTypes...>::push_index( index_buffer_t::indice_t i )
-    {
-      indices.indices.emplace_back( i );
-    }
+    template< class... Args >
+    __forceinline void index_expander<TListTypes...>::push_vertex( const Args && ... args )
+    { vertices.rows.emplace_back( args... ); }
+
+    template<typename  ... TListTypes>
+    template< class... Args >
+    __forceinline void index_expander<TListTypes...>::push_vertex( const Args & ... args )
+    { vertices.rows.emplace_back( args... ); }
+
+    // ---- ----
+
+    template<typename  ... TListTypes>
+    __forceinline void index_expander<TListTypes...>::push_index( index_buffer_t::indice_t i )
+    { indices.indices.emplace_back( i ); }
 
     // ---- ---- ---- ----
 
     template<typename  ... TListTypes>
-    inline void index_expander<TListTypes...>::set_global_indice( bool v )
-    {
-      expander_property_up->indice_is_global = v;
-    }
+    __forceinline void index_expander<TListTypes...>::set_global_indice( bool v )
+    { expander_property_up->indice_is_global = v; }
 
     // ---- ---- ---- ----
 
     template<typename  ... TListTypes>
-    inline void index_expander<TListTypes...>::reserve_vertices( size_t n )
-    {
-      vertices.rows.reserve( expander_property_up->vertex_start + n );
-    }
+    __forceinline void index_expander<TListTypes...>::reserve_vertices( size_t n )
+    { vertices.rows.reserve( expander_property_up->vertex_start + n ); }
 
     template<typename  ... TListTypes>
-    inline void index_expander<TListTypes...>::reserve_indices( size_t n )
-    {
-      indices.indices.reserve( expander_property_up->index_start + n );
-    }
+    __forceinline void index_expander<TListTypes...>::reserve_indices( size_t n )
+    { indices.indices.reserve( expander_property_up->index_start + n ); }
 
   }
 }

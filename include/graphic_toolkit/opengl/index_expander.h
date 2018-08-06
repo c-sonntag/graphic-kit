@@ -40,7 +40,7 @@ namespace graphic_toolkit {
       bool indice_is_global = false;
 
      protected:
-      void gl_draw( const abstract_expander_property_support & bd, raiigl::gl330 & gl, raiigl::program & program ) const;
+      void gl_draw( const abstract_expander_property_support & bd, const raiigl::gl330 & gl, raiigl::program & program ) const;
     };
 
     // ---- ----
@@ -79,6 +79,13 @@ namespace graphic_toolkit {
       template< class... Args >
       void push_vertex( Args && ... args );
 
+      template< class... Args >
+      void push_vertex( const Args && ... args );
+
+      template< class... Args >
+      void push_vertex( const Args & ... args );
+
+     public:
       void push_index( index_buffer_t::indice_t i );
 
      public:

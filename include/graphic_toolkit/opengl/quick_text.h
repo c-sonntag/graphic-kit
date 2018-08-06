@@ -8,10 +8,8 @@
 
 #include <raiigl/gl330.hpp>
 #include <raiigl/program.hpp>
-#include <QOpenGLTexture>
-#include <QVector3D>
-#include <QMatrix4x4>
-#include <QImage>
+
+#include <glm/mat4x4.hpp>
 
 namespace graphic_toolkit {
   namespace opengl {
@@ -52,7 +50,7 @@ namespace graphic_toolkit {
       text_heap_t text_heap;
 
      public:
-      quick_text( quick_text_fonts font_id );
+      quick_text( quick_text_fonts font_id, bool init_at_construct = true );
       ~quick_text();
 
      public:
@@ -65,7 +63,7 @@ namespace graphic_toolkit {
       void check_not_busy() const;
 
      public:
-      void draw( raiigl::gl330 & gl, const QMatrix4x4 & projection_view );
+      void draw( const raiigl::gl330 & gl, const glm::mat4x4 & projection_view );
       bool empty() const;
 
      public:
@@ -83,3 +81,4 @@ namespace graphic_toolkit {
 
   }
 }
+

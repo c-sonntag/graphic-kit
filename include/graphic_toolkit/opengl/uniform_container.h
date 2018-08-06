@@ -32,10 +32,10 @@ namespace graphic_toolkit {
 
      public:
       template< class... Args >
-      void set_uniform( const std::string & var_name, Args... values );
+      void set_uniform( const std::string & var_name, const Args & ... values );
 
       template< class... Args >
-      void set_uniform_on_condition( const std::string & condition_name, const std::string & var_name, Args... values );
+      void set_uniform_on_condition( const std::string & condition_name, const std::string & var_name, const Args & ... values );
     };
 
   }

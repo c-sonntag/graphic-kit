@@ -2,7 +2,7 @@
 
 #include <raiigl/gl_context.hpp>
 #include <raiigl/gl330.hpp>
-#include <raiigl/gl420.hpp>
+#include <raiigl/gl430.hpp>
 
 #include <stdexcept>
 
@@ -28,7 +28,7 @@ namespace graphic_toolkit {
 
      public:
       raiigl::gl_context & context;
-      raiigl::gl330 & gl;
+      const raiigl::gl330 & gl;
 
      public:
       inline core_context() :

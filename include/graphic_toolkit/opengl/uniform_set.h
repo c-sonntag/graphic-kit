@@ -12,20 +12,20 @@
 namespace graphic_toolkit {
   namespace opengl {
 
-    template<typename TUniform>
+    // template<typename TUniform> /**< @todo */
     struct uniform_set
     {
      protected:
       const std::string name;
-      TUniform value; /**< @todo */
-      //const std::function<void( raiigl::program & )> program_setter;
+      // TUniform value; /**< @todo */
+      const std::function<void( const raiigl::program & )> program_setter;
 
      public:
       template< class... Args >
-      uniform_set( std::string _name, Args && ...  args );
+      uniform_set( std::string _name, const Args & ...  args );
 
      public:
-      void set( raiigl::program & program ) const;
+      void set( const raiigl::program & program ) const;
     };
 
     // ---- ----

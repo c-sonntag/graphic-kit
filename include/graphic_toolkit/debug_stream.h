@@ -2,7 +2,7 @@
 
 #include <glm/vec2.hpp>
 #include <QVector3D>
-#include <QMatrix4x4>
+#include <glm::mat4x4>
 #include <QPoint>
 
 #include <iostream>

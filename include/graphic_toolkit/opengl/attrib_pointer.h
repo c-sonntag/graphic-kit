@@ -2,7 +2,8 @@
 #ifndef graphic_toolkit_opengl_attrib_pointer_hpp
 #define graphic_toolkit_opengl_attrib_pointer_hpp
 
-#include <GL/gl.h>
+#include <raiigl/gl_types.hpp>
+
 #include <memory>
 
 namespace graphic_toolkit {
@@ -13,21 +14,25 @@ namespace graphic_toolkit {
      public:
       GLuint gl_location;
       GLint gl_tuple_size;
-      GLenum gl_type;
-      GLboolean gl_normalized;
+      raiigl::data_type type;
+      bool gl_normalized;
 
      public:
-      attrib_pointer(
-        GLuint _location,
-        GLint _tuple_size,
-        GLenum _type,
-        GLboolean _normalized
-      );
+      inline attrib_pointer(
+        const GLuint _location,
+        const GLint _tuple_size,
+        const raiigl::data_type _type,
+        const bool _normalized
+      ) :
+        gl_location( std::move( _location ) ),
+        gl_tuple_size( std::move( _tuple_size ) ),
+        type( std::move( _type ) ),
+        gl_normalized( std::move( _normalized ) )
+      {}
 
     };
 
   }
 }
 
-#include <graphic_toolkit/opengl/attrib_pointer.ipp>
 #endif

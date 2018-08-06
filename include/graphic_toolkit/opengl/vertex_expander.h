@@ -33,7 +33,8 @@ namespace graphic_toolkit {
       size_t count;
 
      protected:
-      void gl_draw( const abstract_expander_property_support & bd, raiigl::gl330 & gl, raiigl::program & program ) const;
+      void gl_draw( const abstract_expander_property_support & bd, const raiigl::gl330 & gl, raiigl::program & program ) const;
+      void gl_draw( const abstract_expander_property_support & bd, raiigl::gl430 & gl, raiigl::program & program ) const;
     };
 
     // ---- ----
@@ -66,8 +67,18 @@ namespace graphic_toolkit {
       template< class... Args >
       void push( Args && ... args );
 
+      template< class... Args >
+      void push( const Args && ... args );
+
+      template< class... Args >
+      void push( const Args & ... args );
+
+      /**< @todo implement iterator push */
+      //template< class... Args >
+      //void push( const Args & ... args );
+
      public:
-      void reserve( size_t n );
+      void reserve( const size_t n );
 
     };
 

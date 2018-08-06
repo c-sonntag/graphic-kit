@@ -18,7 +18,7 @@ namespace graphic_toolkit {
     }
 
     template< class... Args >
-    inline void uniform_container::set_uniform( const std::string & var_name, Args... values )
+    inline void uniform_container::set_uniform( const std::string & var_name, const Args & ... values )
     {
       if ( !uniform_sets_up )
       {
@@ -29,7 +29,7 @@ namespace graphic_toolkit {
     }
 
     template< class... Args >
-    inline void uniform_container::set_uniform_on_condition( const std::string & condition_name, const std::string & var_name, Args... values )
+    inline void uniform_container::set_uniform_on_condition( const std::string & condition_name, const std::string & var_name, const Args & ... values )
     {
       if ( !uniform_sets_conditional_up )
       {

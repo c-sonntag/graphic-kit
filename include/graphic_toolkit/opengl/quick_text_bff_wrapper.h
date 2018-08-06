@@ -2,12 +2,11 @@
 
 #include <graphic_toolkit/types.h>
 
+#include <raiigl/texture.hpp>
+
 #include <glm/vec2.hpp>
 
-#include <erc/
-
-#include <QOpenGLTexture>
-#include <QFile>
+#include <string>
 
 namespace graphic_toolkit {
   namespace opengl {
@@ -17,31 +16,30 @@ namespace graphic_toolkit {
       struct bbf_font
       {
        public:
-        uint start_char, end_char;
-        uint width, height;
-        uint cell_width, cell_height;
-        uint y_offset;
-        uint row_pitch;
+        uint start_char = 0, end_char = 0;
+        uint width = 0, height = 0;
+        uint cell_width = 0, cell_height = 0;
+        uint y_offset = 0;
+        uint row_pitch = 0;
 
        public:
-        float row_factor, col_factor;
+        float row_factor = 0, col_factor = 0;
         glm::vec2 normal_scale;
 
        public:
-        uchar characters_width[256];
+        uchar characters_width[256] {0};
 
        public:
-        bbf_font( QFile & in, QOpenGLTexture & texture );
+        bbf_font( const std::string & bbf_data_font, raiigl::texture & texture );
       };
 
      public:
-      QOpenGLTexture texture;
+      raiigl::texture texture;
       const bbf_font font;
 
      public:
-      quick_text_bbf_wrapper( QFile & in );
+      quick_text_bbf_wrapper( const std::string & bbf_data_font );
     };
 
   }
 }
-

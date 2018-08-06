@@ -19,7 +19,7 @@ namespace graphic_toolkit {
       buffer_bytesize = buffer_length * sizeof( row_t );
 
       //
-      buffer.bind_and_send( static_cast<GLsizeiptr>( buffer_bytesize ),  rows.data() );
+      buffer.bind_and_send( static_cast<GLsizeiptr>( buffer_bytesize ), rows.data() );
     }
 
 

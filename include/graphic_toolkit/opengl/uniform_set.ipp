@@ -6,12 +6,12 @@ namespace graphic_toolkit {
   namespace opengl {
 
     template< class... Args >
-    inline uniform_set::uniform_set( std::string _name, Args && ...  args ) :
+    inline uniform_set::uniform_set( std::string _name, const Args & ...  args ) :
       name( std::move( _name ) ),
-      program_setter( [ = ]( raiigl::program & program ) { program.setUniformValue( name.c_str(), args... ); } )
+      program_setter( [ = ]( const raiigl::program & program ) { program.set_uniform_value( name, args... ); } )
     {}
 
-    inline void uniform_set::set( raiigl::program & program ) const
+    inline void uniform_set::set( const raiigl::program & program ) const
     {
       program_setter( program );
     }

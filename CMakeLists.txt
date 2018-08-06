@@ -21,8 +21,8 @@ if(CMAKE_COMPILER_IS_GNUCXX)                ## (GNU COMMAND)
   add_definitions("-Wno-unused-function" "-Wno-unknown-pragmas") #
   if(NOT CMAKE_BUILD_TYPE STREQUAL "Debug")   ## (not debug)
     add_compile_options("-fno-builtin")         ## Break __buildin function (so slowest)
-    add_compile_options("-O3")                  ### Optimize
-    set(CMAKE_EXE_LINKER_FLAGS "-s")            ### Strip binary (no work on debug)
+    #add_compile_options("-O3")                  ### Optimize
+    # set(CMAKE_EXE_LINKER_FLAGS "-s")            ### Strip binary (no work on debug)
   endif()
 endif()
 
@@ -36,13 +36,6 @@ set(CMAKE_CXX_STANDARD 14)
 ## set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/CMakeModules;${CMAKE_MODULE_PATH}")
 ## include("CMakeAutoSharedFilesCopier")
 
-## # --- LIB : UNIXFAKE ---
-## find_package(UNIXFAKE REQUIRED)
-## include_directories(${UNIXFAKE_INCLUDE_DIRS})
-## link_directories(${UNIXFAKE_DIRECTORIES})
-## link_libraries(${UNIXFAKE_LIBRARIES})
-## add_definitions(${UNIXFAKE_DEFINITIONS})
-## copy_shared_on_rootbasebin_from_archive(${UNIXFAKE_ROOT} ${UNIXFAKE_LIBRARIES})
 
 # --- LIB : EmbeddedResource ---
 find_package(EmbeddedResource REQUIRED)
@@ -50,6 +43,7 @@ include_directories(${ERC_INCLUDE_DIRS})
 link_directories(${ERC_DIRECTORIES})
 link_libraries(${ERC_LIBRARIES})
 add_definitions(${ERC_DEFINITIONS})
+message(STATUS "ERC_LIBRARIES : ${ERC_LIBRARIES}")
 
 # --- LIB : GLM ---
 find_package(GLM REQUIRED)
@@ -57,6 +51,13 @@ include_directories(${GLM_INCLUDE_DIRS})
 link_directories(${GLM_DIRECTORIES})
 link_libraries(${GLM_LIBRARIES})
 add_definitions(${GLM_DEFINITIONS})
+
+# --- LIB : OpenGL ---
+find_package(OPENGL REQUIRED)
+include_directories(${OPENGL_INCLUDE_DIR})
+link_directories(${OPENGL_DIRECTORIES})
+link_libraries(${OPENGL_LIBRARIES})
+add_definitions(${OPENGL_DEFINITIONS})
 
 # --- LIB : GLEW ---
 find_package(GLEW REQUIRED)
@@ -93,7 +94,7 @@ include_directories(${HEADER_PATH})
 #
 
 # --- BUILD OPTIONS : STATIC/SHARED ---
-SET(GraphicToolkit_SHARED ON CACHE BOOL "Build shared GraphicToolkit library")
+SET(GraphicToolkit_SHARED OFF CACHE BOOL "Build shared GraphicToolkit library")
 SET(GraphicToolkit_STATIC ON CACHE BOOL "Build static GraphicToolkit library")
 
 # --- CHECK BUILD OPTIONS ---
@@ -103,25 +104,44 @@ if( (NOT ${GraphicToolkit_SHARED}) AND (NOT ${GraphicToolkit_STATIC}) )
   return()
 endif()
 
+
+#
+##
+#
+
+# --- BUILD OPTIONS  ---
+## set(GraphicToolkit_BUILD_TOOLS    ON CACHE BOOL "Build tools for GraphicToolkit library")
+## set(GraphicToolkit_BUILD_TESTS    ON CACHE BOOL "Build tests for GraphicToolkit library")
+set(GraphicToolkit_BUILD_EXAMPLES ON CACHE BOOL "Build examples for GraphicToolkit library")
+
+# --- SUB BUILD LINKING ---
+set(PROJECT_SUBPROJECT_HEADER_PATH "${CMAKE_CURRENT_LIST_DIR}/${HEADER_PATH}")
+if(GraphicToolkit_SHARED)
+  set(PROJECT_SUBPROJECT_LINKING ${PROJECT_GraphicToolkit_SHARED})
+elseif(GraphicToolkit_STATIC)
+  set(PROJECT_SUBPROJECT_LINKING ${PROJECT_GraphicToolkit_STATIC})
+endif()
+
+#
+##
+#
+
+
 #
 ##
 #
 
 set(RESOURCES_FILES
-  "${CMAKE_SOURCE_DIR}/resources/opengl/opengl.erc"
+  "resources/opengl/opengl.erc"
 )
-
-#
-##
-#
 
 # --- BUILDS LIB TARGET STATIC ---
 if(${GraphicToolkit_STATIC})
 
-  add_library(${PROJECT_GraphicToolkit_STATIC} STATIC ${TARGET_SRC_FILES} ${TARGET_HEADER_FILES})
+  add_library(${PROJECT_GraphicToolkit_STATIC} STATIC ${TARGET_SRC_FILES} ${TARGET_HEADER_FILES} ${generated_files_path} ${embedded_resource_generation_FILES})
   set_target_properties(${PROJECT_GraphicToolkit_STATIC} PROPERTIES OUTPUT_NAME ${PROJECT_NAME})
 
-  erc_add_ressources(${PROJECT_GraphicToolkit_STATIC} ${RESOURCES_FILES})
+  erc_add_resources(${PROJECT_GraphicToolkit_STATIC} ADD_INTO_IDE ${RESOURCES_FILES})
 
   # --- INSTALL LIB ---
   install(TARGETS ${PROJECT_GraphicToolkit_STATIC}
@@ -136,7 +156,7 @@ if(${GraphicToolkit_SHARED})
   add_library(${PROJECT_GraphicToolkit_SHARED} SHARED ${TARGET_SRC_FILES} ${TARGET_HEADER_FILES})
   set_target_properties(${PROJECT_GraphicToolkit_SHARED} PROPERTIES OUTPUT_NAME ${PROJECT_NAME})
 
-  erc_add_ressources(${PROJECT_GraphicToolkit_SHARED} ${RESOURCES_FILES})
+  erc_add_resources(${PROJECT_GraphicToolkit_SHARED} ADD_INTO_IDE ${RESOURCES_FILES})
 
   # --- INSTALL LIB ---
   install(TARGETS ${PROJECT_GraphicToolkit_SHARED}
@@ -149,3 +169,28 @@ endif()
 # --- INSTALL INCLUDE ---
 install(DIRECTORY "${HEADER_PATH}/." DESTINATION "include")
 
+#
+## Subproject
+#
+
+set(PROJECT_GraphicToolkit_HEADER_PATH "${CMAKE_CURRENT_LIST_DIR}/${HEADER_PATH}")
+
+
+#
+##
+#
+
+# # --- BUILDS TOOLS  ---
+# if(${GraphicToolkit_BUILD_TOOLS})
+#   ##add_subdirectory("tools/")
+# endif()
+
+# --- BUILDS EXAMPLES ---
+if(${GraphicToolkit_BUILD_EXAMPLES})
+ add_subdirectory("examples/")
+endif()
+
+# # --- BUILDS TESTS ---
+# if(${GraphicToolkit_BUILD_TESTS} AND EXISTS ${ERC_BINARY_PACKAGER})
+#   add_subdirectory("tests/")
+# endif()
