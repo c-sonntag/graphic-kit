@@ -11,6 +11,9 @@ set(GraphicToolkit_VERSION_MINOR 0)
 set(PROJECT_GraphicToolkit_STATIC "${PROJECT_NAME}_static")
 set(PROJECT_GraphicToolkit_SHARED "${PROJECT_NAME}_shared")
 
+# --- EXTERNALS LIBS ---
+include("external/CMakeLists.txt")
+
 #
 ##
 #
@@ -138,9 +141,14 @@ set(RESOURCES_FILES
 # --- BUILDS LIB TARGET STATIC ---
 if(${GraphicToolkit_STATIC})
 
+  # --- ---
   add_library(${PROJECT_GraphicToolkit_STATIC} STATIC ${TARGET_SRC_FILES} ${TARGET_HEADER_FILES} ${generated_files_path} ${embedded_resource_generation_FILES})
   set_target_properties(${PROJECT_GraphicToolkit_STATIC} PROPERTIES OUTPUT_NAME ${PROJECT_NAME})
+  
+  # --- PRIVATE LIBS ---
+  LINK_PRIVATE_LIB_STB_IMAGE(${PROJECT_GraphicToolkit_STATIC})
 
+  # --- EMBEDDED RESOURCES ---
   erc_add_resources(${PROJECT_GraphicToolkit_STATIC} ADD_INTO_IDE ${RESOURCES_FILES})
 
   # --- INSTALL LIB ---
@@ -153,9 +161,14 @@ endif()
 # --- BUILDS LIB TARGET SHARED ---
 if(${GraphicToolkit_SHARED})
 
+  # --- ---
   add_library(${PROJECT_GraphicToolkit_SHARED} SHARED ${TARGET_SRC_FILES} ${TARGET_HEADER_FILES})
   set_target_properties(${PROJECT_GraphicToolkit_SHARED} PROPERTIES OUTPUT_NAME ${PROJECT_NAME})
 
+  # --- PRIVATE LIBS ---
+  LINK_PRIVATE_LIB_STB_IMAGE(${PROJECT_GraphicToolkit_SHARED})
+
+  # --- EMBEDDED RESOURCES ---
   erc_add_resources(${PROJECT_GraphicToolkit_SHARED} ADD_INTO_IDE ${RESOURCES_FILES})
 
   # --- INSTALL LIB ---
