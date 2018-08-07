@@ -6,7 +6,10 @@
 #include <raiigl/program.hpp>
 #include <raiigl/uniform_variable.hpp>
 #include <raiigl/gl330.hpp>
+#include <raiigl/texture.hpp>
 
+#include <graphic_toolkit/image.h>
+#include <graphic_toolkit/base_format.h>
 #include <graphic_toolkit/opengl/quick_program.h>
 #include <graphic_toolkit/opengl/primitives_heap.h>
 
@@ -49,6 +52,13 @@ struct EasyTriangleHeapPainter : public AbstractPainter
   heap_vertices_t heap_vertices;
 
  private:
+  std::unique_ptr<graphic_toolkit::image> tex_img_up
+  {
+    graphic_toolkit::image::load_from_local_erc( resource_erc_id.from( "texture.png" ) )
+  };
+  raiigl::texture tex{raiigl::texture_type::Texture2D};
+
+ private:
   ModelViewProjection mvp;
 
  private:
@@ -61,6 +71,22 @@ struct EasyTriangleHeapPainter : public AbstractPainter
       graphic_toolkit::opengl::attrib_pointer( 1, 2, raiigl::data_type::Float, true )
     ) {
 
+    //
+    const bool good_image_format(
+      graphic_toolkit::base_format::is_pow_of( 2u, tex_img_up->width ) &&
+      graphic_toolkit::base_format::is_pow_of( 2u, tex_img_up->height )
+    );
+    if ( !good_image_format )
+      std::cerr << "Warning, incompatible texture size format : " << tex_img_up->width << "x" << tex_img_up->height << std::endl;
+
+
+    std::cout << "Image info : " << std::endl
+              << "    dimension : " << tex_img_up->width << "x" << tex_img_up->height << " by " << tex_img_up->channels << "bits" << std::endl
+              << "    size      : " << tex_img_up->size << std::endl
+              << "    is_flip ? : " << std::boolalpha << tex_img_up->is_vertical_flip << std::endl
+              << std::endl ;
+
+    //
     start = std::chrono::system_clock::now();
 
     //
@@ -75,13 +101,27 @@ struct EasyTriangleHeapPainter : public AbstractPainter
     //
     heap_vertices.init_buffer();
 
+    //
+    tex.bind();
+    tex.send_image2d(
+      0,
+      raiigl::internal_format_type::RGBA,
+      tex_img_up->width, tex_img_up->height,
+      raiigl::pixel_format::RGBA,
+      raiigl::pixel_type::UnsignedByte,
+      tex_img_up->data()
+    );
+    tex.set_param_minifying_and_magnification_filter(
+      raiigl::minifying_filter_type::Nearest,
+      raiigl::magnification_filter_type::Nearest
+    );
 
 
   }
 
   float red_curve_count = 0.f;
 
-  void paint( GLFWwindow * window ) {
+  void paint( GLFWwindow * ) {
 
     // Utilise notre shader
     program_up->use();

@@ -1,6 +1,6 @@
 #version 330 core
 
-uniform sampler2D texture;
+uniform sampler2D sampler_texture;
 
 in vec2 uv;
 
@@ -8,5 +8,5 @@ out vec3 color;
 
 void main()
 {
-  color = texture( texture, uv ).rgb;
+  color = texture( sampler_texture, uv ).rgb;
 };

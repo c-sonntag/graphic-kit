@@ -150,7 +150,7 @@ namespace graphic_toolkit {
       texture.send_image2d(
         mipmap_level,
         internal_format,
-        static_cast<GLsizei>( width ), static_cast<GLsizei>( height ), 0,
+        width, height,
         format, raiigl::pixel_type::UnsignedByte,
         img
       );

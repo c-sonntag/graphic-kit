@@ -8,6 +8,8 @@
 #include <graphic_toolkit/classes/non_copyable_movable.hpp>
 
 #include <erc/file.h>
+#include <erc/file_id.h>
+#include <erc/inventory_package.h>
 
 #include <memory>
 #include <string>
@@ -25,22 +27,26 @@ namespace graphic_toolkit {
   //  GIF  /**< GIF (*comp always reports as 4-channel)                                              */
   //};
 
+  /** @todo import DDS file for compressed data */
+
   /**
    * @see For more detail of the implementation : https://github.com/nothings/stb/blob/master/stb_image.h
-   * @note Great thanks for the stb_image libraty header implementation.
+   * @note Great thanks for the stb_image library header implementation.
    * @note Information about capability :
-   *  JPEG baseline & progressive (12 bpc/arithmetic not supported, same as stock IJG lib)
-   *  PNG 1/2/4/8/16-bit-per-channel
-   *  TGA (not sure what subset, if a subset)
-   *  BMP non-1bpp, non-RLE
-   *  GIF (*comp always reports as 4-channel)
+   *    JPEG baseline & progressive (12 bpc/arithmetic not supported, same as stock IJG lib)
+   *    PNG 1/2/4/8/16-bit-per-channel
+   *    TGA (not sure what subset, if a subset)
+   *    BMP non-1bpp, non-RLE
+   *    GIF (*comp always reports as 4-channel)
    */
   struct image
   {
    public:
-    static std::unique_ptr<image> load_from_memory( const std::string & input_data, const bool vertical_flip_it = false );
     static std::unique_ptr<image> load_from_file( const std::string & file_path, const bool vertical_flip_it = false );
+    static std::unique_ptr<image> load_from_memory( const std::string & input_data, const bool vertical_flip_it = false );
     static std::unique_ptr<image> load_from_erc( const erc::embedded_file & erc, const bool vertical_flip_it = false );
+
+    static __forceinline std::unique_ptr<image> load_from_local_erc( const erc::file_id & erc_id, const bool vertical_flip_it = false );
 
    public:
     //const image_format format;
@@ -73,6 +79,16 @@ namespace graphic_toolkit {
    public:
     image vertical_flip();
   };
+
+  // ---- ----
+
+  __forceinline std::unique_ptr<image> image::load_from_local_erc( const erc::file_id & erc_id, const bool vertical_flip_it )
+  {
+    const erc::embedded_file & erc( erc::inventory_package::get_local_first_embedded_file( erc_id, "graphic_toolkit::image::load_from_local_erc" ) );
+    std::unique_ptr<image> image_up( load_from_erc( erc, vertical_flip_it ) );
+    erc.unallocate_proper_data();;
+    return image_up;
+  }
 
 
 }
