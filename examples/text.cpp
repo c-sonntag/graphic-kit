@@ -20,8 +20,6 @@
 #include <memory>
 #include <algorithm>
 #include <iostream>
-#include <chrono>
-
 
 #include <GLFW/glfw3.h>
 
@@ -46,24 +44,13 @@ struct TextPainter : public AbstractPainter
   const raiigl::uniform_variable uniform_vertex_mvp{ program, "MVP" };
 
  private:
-  GLuint vertex_buffer;
-  GLuint vertex_array_id;
-
- private:
   ModelViewProjection mvp;
-
- private:
-  std::chrono::system_clock::time_point start;
-
   const raiigl::gl330 gl;
 
  public:
   TextPainter() {
 
-    start = std::chrono::system_clock::now();
-
     {
-      //
       graphic_toolkit::opengl::text_expander yop( calibri.complete_text( "Yop ! Yap !" ) );
       yop.color = graphic_toolkit::opengl::normal_colors::intense_green;
       yop.align_h = graphic_toolkit::opengl::text_expander::center;

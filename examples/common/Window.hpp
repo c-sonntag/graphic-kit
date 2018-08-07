@@ -2,17 +2,20 @@
 
 #include <AbstractPainter.hpp>
 
+#include <graphic_toolkit/frame_limiter.h>
+
 #include <cstdint>
 
 #include <string>
 #include <memory>
 #include <vector>
+#include <iostream>
+#include <iomanip>
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
 #include <glm/glm.hpp>
-
 
 
 struct Window
@@ -26,6 +29,9 @@ struct Window
  public:
   std::vector<std::unique_ptr<AbstractPainter>> painters;
   std::vector<HandleTester_pf_t> handleClose;
+
+ private:
+  graphic_toolkit::frame_limiter fps_limiter{30};
 
  public:
   Window( uint32_t width, uint32_t height, const std::string & title );
@@ -109,6 +115,8 @@ inline void Window::run()
   //
   while ( run )
   {
+    fps_limiter.cadence();
+
     // Clear the screen
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 

@@ -17,8 +17,6 @@
 #include <memory>
 #include <algorithm>
 #include <iostream>
-#include <chrono>
-
 
 #include <GLFW/glfw3.h>
 
@@ -49,13 +47,8 @@ struct EasyTrianglePainter : public AbstractPainter
  private:
   ModelViewProjection mvp;
 
- private:
-  std::chrono::system_clock::time_point start;
-
  public:
   EasyTrianglePainter() {
-
-    start = std::chrono::system_clock::now();
 
     //
     glGenVertexArrays( 1, &vertex_array_id );
@@ -95,7 +88,7 @@ struct EasyTrianglePainter : public AbstractPainter
     uniform_vertex_mvp.set( mvp.mvpRefresh() );
 
     //
-    red_curve_count += 0.01f;
+    red_curve_count += 0.1f;
     const float red_curve( std::sin( red_curve_count ) * 0.333f + 0.666f );
     uniform_color.set( glm::vec3( red_curve, 0.f, 0.f ) );
 

@@ -50,7 +50,7 @@ add_library(common SHARED ${COMMON_FILES})
 
 
 #
-## TOOLS C++
+## EXEMPLES C++
 #
 
 file(GLOB files "*.c" "*.cpp")

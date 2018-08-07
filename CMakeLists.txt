@@ -97,7 +97,7 @@ include_directories(${HEADER_PATH})
 #
 
 # --- BUILD OPTIONS : STATIC/SHARED ---
-SET(GraphicToolkit_SHARED OFF CACHE BOOL "Build shared GraphicToolkit library")
+SET(GraphicToolkit_SHARED ON CACHE BOOL "Build shared GraphicToolkit library")
 SET(GraphicToolkit_STATIC ON CACHE BOOL "Build static GraphicToolkit library")
 
 # --- CHECK BUILD OPTIONS ---
@@ -129,11 +129,7 @@ endif()
 ##
 #
 
-
-#
-##
-#
-
+# --- EMBEDDED RESOURCES LIST ---
 set(RESOURCES_FILES
   "resources/opengl/opengl.erc"
 )

@@ -19,8 +19,6 @@
 #include <memory>
 #include <algorithm>
 #include <iostream>
-#include <chrono>
-
 
 #include <GLFW/glfw3.h>
 
@@ -52,16 +50,11 @@ struct EasyTriangleHeapPainter : public AbstractPainter
  private:
   ModelViewProjection mvp;
 
- private:
-  std::chrono::system_clock::time_point start;
-
  public:
   EasyTriangleHeapPainter() :
     heap_vertices( graphic_toolkit::opengl::attrib_pointer( 0, 2, raiigl::data_type::Float, true ) )
     //
   {
-
-    start = std::chrono::system_clock::now();
 
     //
     {

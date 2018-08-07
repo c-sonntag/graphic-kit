@@ -22,8 +22,6 @@
 #include <memory>
 #include <algorithm>
 #include <iostream>
-#include <chrono>
-
 
 #include <GLFW/glfw3.h>
 
@@ -86,9 +84,6 @@ struct EasyTriangleHeapPainter : public AbstractPainter
  private:
   ModelViewProjection mvp;
 
- private:
-  std::chrono::system_clock::time_point start;
-
  public:
   EasyTriangleHeapPainter() :
     heap_vertices(
@@ -116,9 +111,6 @@ struct EasyTriangleHeapPainter : public AbstractPainter
 
     //
     gl330.activate_texture( raiigl::textures_num::Texture0 );
-
-    //
-    start = std::chrono::system_clock::now();
 
     const auto expander_triangles_push( []( heap_vertices_t::vertex_expander & triangles ) {
       triangles.reserve( 3 );
