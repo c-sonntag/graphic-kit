@@ -30,7 +30,7 @@ static const erc::package_id shader_erc_id( "shaders" );
 struct EasyTrianglePainter : public AbstractPainter
 {
  private:
-  const std::unique_ptr<raiigl::program> program_up
+  const raiigl::program program
   {
     graphic_toolkit::opengl::quick_program::open_from_local_erc(
       shader_erc_id.from( "shader.vert" ),
@@ -39,8 +39,8 @@ struct EasyTrianglePainter : public AbstractPainter
   };
 
  private:
-  const raiigl::uniform_variable uniform_vertex_mvp{ *program_up, "MVP" };
-  const raiigl::uniform_variable uniform_color{ *program_up, "uniform_color" };
+  const raiigl::uniform_variable uniform_vertex_mvp{ program, "MVP" };
+  const raiigl::uniform_variable uniform_color{ program, "uniform_color" };
 
  private:
   GLuint vertex_buffer;
@@ -89,7 +89,7 @@ struct EasyTrianglePainter : public AbstractPainter
 
 
     // Utilise notre shader
-    program_up->use();
+    program.use();
 
     // Send our transformation
     uniform_vertex_mvp.set( mvp.mvpRefresh() );

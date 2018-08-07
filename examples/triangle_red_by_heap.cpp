@@ -33,7 +33,7 @@ struct EasyTriangleHeapPainter : public AbstractPainter
 {
  private:
   const raiigl::gl330 gl330;
-  const std::unique_ptr<raiigl::program> program_up
+  raiigl::program program
   {
     graphic_toolkit::opengl::quick_program::open_from_local_erc(
       shader_erc_id.from( "shader.vert" ),
@@ -42,8 +42,8 @@ struct EasyTriangleHeapPainter : public AbstractPainter
   };
 
  private:
-  const raiigl::uniform_variable uniform_vertex_mvp{ *program_up, "MVP" };
-  const raiigl::uniform_variable uniform_color{ *program_up, "uniform_color" };
+  const raiigl::uniform_variable uniform_vertex_mvp{ program, "MVP" };
+  const raiigl::uniform_variable uniform_color{ program, "uniform_color" };
 
  private:
   using heap_vertices_t = graphic_toolkit::opengl::primitives_heap<glm::vec2> ;
@@ -82,7 +82,7 @@ struct EasyTriangleHeapPainter : public AbstractPainter
   void paint( GLFWwindow * window ) {
 
     // Utilise notre shader
-    program_up->use();
+    program.use();
 
     // Send our transformation
     uniform_vertex_mvp.set( mvp.mvpRefresh() );
@@ -93,7 +93,7 @@ struct EasyTriangleHeapPainter : public AbstractPainter
     uniform_color.set( glm::vec3( red_curve, 0.f, 0.f ) );
 
     //
-    heap_vertices.draw( gl330, *program_up );
+    heap_vertices.draw( gl330, program );
 
   }
 

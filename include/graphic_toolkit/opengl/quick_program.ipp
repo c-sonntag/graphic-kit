@@ -11,15 +11,15 @@ namespace graphic_toolkit {
   namespace opengl {
 
 
-    inline std::unique_ptr<raiigl::program> quick_program::open_from_sources( const std::string & vertex_src, const std::string & fragment_src )
+    inline raiigl::program quick_program::open_from_sources( const std::string & vertex_src, const std::string & fragment_src )
     {
-      return std::make_unique<raiigl::program>(
+      return raiigl::program(
                raiigl::shader( vertex_src, raiigl::shader_type::Vertex ),
                raiigl::shader( fragment_src, raiigl::shader_type::Fragment )
              );
     }
 
-    inline std::unique_ptr<raiigl::program> quick_program::open_from_file_path( const std::string & vertex_path, const std::string & fragment_path )
+    inline raiigl::program quick_program::open_from_file_path( const std::string & vertex_path, const std::string & fragment_path )
     {
       //
       std::ifstream vertex_ifs( vertex_path, std::ifstream::in );
@@ -35,27 +35,25 @@ namespace graphic_toolkit {
       }
 
       //
-      return std::make_unique<raiigl::program>(
+      return raiigl::program(
                raiigl::shader( vertex_ifs, raiigl::shader_type::Vertex ),
                raiigl::shader( fragment_ifs, raiigl::shader_type::Fragment )
              );
     }
 
-    inline std::unique_ptr<raiigl::program> quick_program::open_from_erc( const erc::embedded_file & vertex_erc, const erc::embedded_file & fragment_erc )
+    inline raiigl::program quick_program::open_from_erc( const erc::embedded_file & vertex_erc, const erc::embedded_file & fragment_erc )
     {
       //
-      std::unique_ptr<raiigl::program> shaders_program(
-        std::make_unique<raiigl::program>(
-          raiigl::shader( vertex_erc.get_proper_data(), raiigl::shader_type::Vertex ),
-          raiigl::shader( fragment_erc.get_proper_data(), raiigl::shader_type::Fragment )
-        )
+      raiigl::program shaders_program(
+        raiigl::shader( vertex_erc.get_proper_data(), raiigl::shader_type::Vertex ),
+        raiigl::shader( fragment_erc.get_proper_data(), raiigl::shader_type::Fragment )
       );
 
       //
       return shaders_program;
     }
 
-    __forceinline std::unique_ptr<raiigl::program> quick_program::open_from_local_erc( const erc::file_id & vertex_erc_id, const erc::file_id & fragment_erc_id )
+    __forceinline raiigl::program quick_program::open_from_local_erc( const erc::file_id & vertex_erc_id, const erc::file_id & fragment_erc_id )
     {
       //
       const erc::embedded_file * const vertex_erc_p( erc::inventory_package::get().get_first_embedded_file( vertex_erc_id ) );
@@ -71,14 +69,14 @@ namespace graphic_toolkit {
       }
 
       //
-      std::unique_ptr<raiigl::program> program_up( open_from_erc( *vertex_erc_p, *fragment_erc_p ) );
+      raiigl::program shaders_program( open_from_erc( *vertex_erc_p, *fragment_erc_p ) );
 
       //
       vertex_erc_p->unallocate_proper_data();
       fragment_erc_p->unallocate_proper_data();
 
       //
-      return program_up;
+      return shaders_program;
     }
 
 

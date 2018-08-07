@@ -32,7 +32,7 @@ static const erc::package_id shader_erc_id( "shaders" );
 struct TextPainter : public AbstractPainter
 {
  private:
-  const std::unique_ptr<raiigl::program> program_up
+  const raiigl::program program
   {
     graphic_toolkit::opengl::quick_program::open_from_local_erc(
       shader_erc_id.from( "shader.vert" ),
@@ -43,7 +43,7 @@ struct TextPainter : public AbstractPainter
   graphic_toolkit::opengl::quick_text calibri{graphic_toolkit::opengl::quick_text_fonts::CalibriLight_1024};
 
  private:
-  const raiigl::uniform_variable uniform_vertex_mvp{ *program_up, "MVP" };
+  const raiigl::uniform_variable uniform_vertex_mvp{ program, "MVP" };
 
  private:
   GLuint vertex_buffer;
@@ -64,7 +64,7 @@ struct TextPainter : public AbstractPainter
 
     {
       //
-      graphic_toolkit::opengl::text_expander yop( calibri.complete_text( "Yop !" ) );
+      graphic_toolkit::opengl::text_expander yop( calibri.complete_text( "Yop ! Yap !" ) );
       yop.color = graphic_toolkit::opengl::normal_colors::intense_green;
       yop.align_h = graphic_toolkit::opengl::text_expander::center;
       yop.normal_size = 1.f;
@@ -76,7 +76,7 @@ struct TextPainter : public AbstractPainter
   void paint( GLFWwindow * window ) {
 
     // Utilise notre shader
-    program_up->use();
+    program.use();
 
     // Send our transformation
     uniform_vertex_mvp.set( mvp.mvpRefresh() );

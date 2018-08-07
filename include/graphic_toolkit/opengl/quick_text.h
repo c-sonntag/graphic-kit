@@ -17,7 +17,6 @@ namespace graphic_toolkit {
     enum class quick_text_fonts : uint
     {
       CalibriLight_512,
-      Calibri_512_rgb,
       CalibriLight_1024,
     };
 

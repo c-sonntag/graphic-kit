@@ -56,15 +56,9 @@ namespace graphic_toolkit {
     const static font_ressource font_ressource_list[]
     {
       {quick_text_fonts::CalibriLight_512,  "CalibriLight-32x32-512-lum" },
-      {quick_text_fonts::Calibri_512_rgb,   "CalibriLight-32x32-512-rgb" },
       {quick_text_fonts::CalibriLight_1024, "CalibriLight-64x64-1024-lum" },
     };
     const static uint font_ressource_list_count( sizeof( font_ressource_list ) / sizeof( font_ressource ) );
-
-    // ---- ---- ---- ----
-
-    static const erc::file_id quick_text_shader_vert_erc_id( package_id.from( "quick_text/text_triangles.vert" ) );
-    static const erc::file_id quick_text_shader_frag_erc_id( package_id.from( "quick_text/text_triangles.frag" ) );
 
     // ---- ---- ---- ----
 
@@ -130,15 +124,19 @@ namespace graphic_toolkit {
       loaded_fonts.remove_if( remove_lesser_count );
     }
 
+
     // ---- ---- ---- ----
 
-    struct internal_quick_text_drawer
+    static const erc::file_id quick_text_shader_vert_erc_id( package_id.from( "quick_text/text_triangles.vert" ) );
+    static const erc::file_id quick_text_shader_frag_erc_id( package_id.from( "quick_text/text_triangles.frag" ) );
+
+    struct internal_quick_text_program
     {
      private:
-      static std::unique_ptr<internal_quick_text_drawer> semaphore_up;
+      static std::unique_ptr<internal_quick_text_program> semaphore_up;
      public:
-      static inline internal_quick_text_drawer & get()
-      { if ( !semaphore_up ) semaphore_up = std::make_unique<internal_quick_text_drawer>(); return *semaphore_up; }
+      static inline void init() { if ( !semaphore_up ) semaphore_up = std::unique_ptr<internal_quick_text_program>( new internal_quick_text_program() ); }
+      static inline internal_quick_text_program & get() { init(); return *semaphore_up; }
 
      public:
       raiigl::program text_program;
@@ -148,13 +146,15 @@ namespace graphic_toolkit {
       raiigl::uniform_variable uniform_text_normalisation_scale;
 
      private:
-      internal_quick_text_drawer();
+      internal_quick_text_program();
 
      public:
       void draw( const raiigl::gl330 & gl, const glm::mat4x4 & projection_view );
     };
 
-    internal_quick_text_drawer::internal_quick_text_drawer() :
+    std::unique_ptr<internal_quick_text_program> internal_quick_text_program::semaphore_up;
+
+    internal_quick_text_program::internal_quick_text_program() :
       text_program(
         quick_program::open_from_local_erc(
           quick_text_shader_vert_erc_id,
@@ -194,17 +194,7 @@ namespace graphic_toolkit {
 
     void quick_text::init_gl()
     {
-      //
-      if ( !text_program_up )
-      {
-        text_program_up = quick_program::open_from_local_erc(
-                            quick_text_shader_vert_erc_id,
-                            quick_text_shader_frag_erc_id
-                          );
-        uniform_vp_matrix = std::make_unique<raiigl::uniform_variable>( *text_program_up, "vp_matrix" );
-        uniform_text_sampler = std::make_unique<raiigl::uniform_variable>( *text_program_up, "text_sampler" );
-        uniform_text_normalisation_scale = std::make_unique<raiigl::uniform_variable>( *text_program_up, "text_normalisation_scale" );
-      }
+      internal_quick_text_program::init();
       if ( !faa_p )
       {
         faa_p = &create_font( font_id );
@@ -228,23 +218,26 @@ namespace graphic_toolkit {
       //
       if ( !bff_font_p )
         throw std::runtime_error( "[quick_text::draw] need a valid bbf_wrapper" );
-      if ( !text_program_up )
-        throw std::runtime_error( "[quick_text::draw] need a valid text_program_up" );
+      //if ( !text_program_up )
+      //  throw std::runtime_error( "[quick_text::draw] need a valid text_program_up" );
+
+      //
+      internal_quick_text_program & iqtp( internal_quick_text_program::get() );
 
       //
       if ( !text_heap.is_init() )
         text_heap.init_buffer();
 
       //
-      text_program_up->use();
-      uniform_vp_matrix->set( projection_view );
+      iqtp.text_program.use();
+      iqtp.uniform_vp_matrix.set( projection_view );
 
       //
       gl.activate_texture( raiigl::textures_num::Texture0 );
       bff_font_p->texture.bind();
       //uniform_text_sampler->set<int>( bff_font_p->texture.id - GL_TEXTURE0 );
-      uniform_text_sampler->set( raiigl::textures_num::Texture0 );
-      uniform_text_normalisation_scale->set( bff_font_p->font.normal_scale );
+      iqtp.uniform_text_sampler.set( raiigl::textures_num::Texture0 );
+      iqtp.uniform_text_normalisation_scale.set( bff_font_p->font.normal_scale );
 
       //
       gl.enable( raiigl::gl_capabilities::Blend );
@@ -252,14 +245,14 @@ namespace graphic_toolkit {
       //gl.blend_func( raiigl::blend_func_type::SrcAlpha, raiigl::blend_func_type::OneMinusSrcAlpha );
 
       //
-      text_heap.draw( gl, *text_program_up );
+      text_heap.draw( gl, iqtp.text_program );
 
       //
       gl.disable( raiigl::gl_capabilities::Blend );
 
       //
       bff_font_p->texture.unbind();
-      text_program_up->unuse();
+      iqtp.text_program.unuse();
     }
 
     // ---- ----

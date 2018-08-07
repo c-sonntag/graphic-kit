@@ -1,5 +1,7 @@
 #include <graphic_toolkit/opengl/quick_text_bff_wrapper.h>
 
+#include <graphic_toolkit/opengl/texture.h>
+
 #include <stdexcept>
 #include <string.h>
 #include <memory>
@@ -143,12 +145,10 @@ namespace graphic_toolkit {
           raiigl::internal_format_type::RGBA8 )
       );
 
-      //
-      GLint mipmap_level( 1 );
 
       //
       texture.send_image2d(
-        mipmap_level,
+        0,
         internal_format,
         width, height,
         format, raiigl::pixel_type::UnsignedByte,
