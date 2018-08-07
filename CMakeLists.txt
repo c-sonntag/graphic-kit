@@ -24,8 +24,8 @@ if(CMAKE_COMPILER_IS_GNUCXX)                ## (GNU COMMAND)
   add_definitions("-Wno-unused-function" "-Wno-unknown-pragmas") #
   if(NOT CMAKE_BUILD_TYPE STREQUAL "Debug")   ## (not debug)
     add_compile_options("-fno-builtin")         ## Break __buildin function (so slowest)
-    #add_compile_options("-O3")                  ### Optimize
-    # set(CMAKE_EXE_LINKER_FLAGS "-s")            ### Strip binary (no work on debug)
+    add_compile_options("-O3")                  ### Optimize
+    set(CMAKE_EXE_LINKER_FLAGS "-s")            ### Strip binary (no work on debug)
   endif()
 endif()
 

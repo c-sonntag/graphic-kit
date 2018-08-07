@@ -1,7 +1,7 @@
 #pragma once
 
-#include <graphic_toolkit/opengl/attrib_pointer_by_offset.h>
-#include <graphic_toolkit/opengl/vertex_buffer.h>
+#include <graphic_toolkit/opengl/primitives_heap/attrib_pointer_by_offset.h>
+#include <graphic_toolkit/opengl/primitives_heap/vertex_buffer.h>
 
 #include <stdexcept>
 

@@ -1,8 +1,6 @@
 #pragma once
-#ifndef graphic_toolkit_opengl_attrib_pointer_by_offset_hpp
-#define graphic_toolkit_opengl_attrib_pointer_by_offset_hpp
 
-#include <graphic_toolkit/opengl/attrib_pointer.h>
+#include <graphic_toolkit/opengl/primitives_heap/attrib_pointer.h>
 
 #include <typeinfo>
 #include <vector>
@@ -42,5 +40,4 @@ namespace graphic_toolkit {
   }
 }
 
-#include <graphic_toolkit/opengl/attrib_pointer_by_offset.ipp>
-#endif
+#include <graphic_toolkit/opengl/primitives_heap/attrib_pointer_by_offset.ipp>

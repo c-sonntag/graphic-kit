@@ -1,6 +1,4 @@
 #pragma once
-#ifndef graphic_toolkit_opengl_vertex_buffer_h
-#define graphic_toolkit_opengl_vertex_buffer_h
 
 #include <raiigl/buffer.hpp>
 
@@ -38,5 +36,4 @@ namespace graphic_toolkit {
 }
 
 
-#include <graphic_toolkit/opengl/vertex_buffer.ipp>
-#endif
+#include <graphic_toolkit/opengl/primitives_heap/vertex_buffer.ipp>

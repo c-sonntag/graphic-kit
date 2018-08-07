@@ -13,7 +13,7 @@
 
 namespace graphic_toolkit {
 
-  static std::unique_ptr<image> internal_make_image( const int width, const int height, const int channels, const bool vertical_flip_it, uchar * const data )
+  static image internal_make_image( const int width, const int height, const int channels, const bool vertical_flip_it, uchar * const data )
   {
     if ( data == nullptr )
       throw std::runtime_error( "Error : " + std::string( stbi_failure_reason() ) );
@@ -28,7 +28,7 @@ namespace graphic_toolkit {
     }
 
     //
-    return std::make_unique<image>(
+    return image(
              static_cast<uint>( width ), static_cast<uint>( height ),
              static_cast<ushort>( channels ),
              vertical_flip_it,
@@ -38,7 +38,7 @@ namespace graphic_toolkit {
 
   // ---- ----
 
-  std::unique_ptr<image> image::load_from_file( const std::string & file_path, const bool vertical_flip_it )
+  image image::load_from_file( const std::string & file_path, const bool vertical_flip_it )
   {
     stbi_set_flip_vertically_on_load( vertical_flip_it );
 
@@ -54,7 +54,7 @@ namespace graphic_toolkit {
 
   // ---- ----
 
-  static std::unique_ptr<image> internal_make_image_from_memory( const std::string & input_data, const bool vertical_flip_it )
+  static image internal_make_image_from_memory( const std::string & input_data, const bool vertical_flip_it )
   {
     stbi_set_flip_vertically_on_load( vertical_flip_it );
 
@@ -66,14 +66,14 @@ namespace graphic_toolkit {
     return internal_make_image( width, height, channels, vertical_flip_it, data );
   }
 
-  std::unique_ptr<image> image::load_from_memory( const std::string & input_data, const bool vertical_flip_it )
+  image image::load_from_memory( const std::string & input_data, const bool vertical_flip_it )
   {
     try { return internal_make_image_from_memory( input_data, vertical_flip_it ); }
     catch ( const std::exception & e )
     { throw std::runtime_error( "[graphic_toolkit::image::load_from_memory] " + std::string( e.what() ) ); }
   }
 
-  std::unique_ptr<image> image::load_from_erc( const erc::embedded_file & erc, const bool vertical_flip_it )
+  image image::load_from_erc( const erc::embedded_file & erc, const bool vertical_flip_it )
   {
     const std::string input_data( erc.get_proper_data() );
     try { return internal_make_image_from_memory( input_data, vertical_flip_it ); }

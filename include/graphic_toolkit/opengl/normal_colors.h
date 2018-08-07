@@ -1,6 +1,4 @@
 #pragma once
-#ifndef graphic_toolkit_opengl_normal_colors_h
-#define graphic_toolkit_opengl_normal_colors_h
 
 #include <graphic_toolkit/types.h>
 
@@ -32,6 +30,4 @@ namespace graphic_toolkit {
     }
   }
 }
-
-#endif
 

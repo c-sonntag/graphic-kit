@@ -2,9 +2,9 @@
 
 #include <graphic_toolkit/opengl/primitives_heap.h>
 
-#include <graphic_toolkit/opengl/vertex_expander.h>
-#include <graphic_toolkit/opengl/index_expander.h>
-#include <graphic_toolkit/opengl/uniform_lap.h>
+#include <graphic_toolkit/opengl/primitives_heap/vertex_expander.h>
+#include <graphic_toolkit/opengl/primitives_heap/index_expander.h>
+#include <graphic_toolkit/opengl/primitives_heap/uniform_lap.h>
 
 #include <iostream>
 
@@ -281,11 +281,6 @@ namespace graphic_toolkit {
     {
       return uniform_lap( property_support );
     }
-
-    // ---- ---- ---- ----
-
-
-
 
   }
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <graphic_toolkit/opengl/index_buffer.h>
+#include <graphic_toolkit/opengl/primitives_heap/index_buffer.h>
 
 namespace graphic_toolkit {
   namespace opengl {

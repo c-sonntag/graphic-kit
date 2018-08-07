@@ -6,7 +6,6 @@
 
 #include <stdexcept>
 
-
 namespace graphic_toolkit {
   namespace opengl {
 

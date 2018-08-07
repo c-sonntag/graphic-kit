@@ -91,13 +91,13 @@ inline Window::Window( uint32_t width, uint32_t height, const std::string & titl
   // Hide the mouse and enable unlimited mouvement
   glfwSetInputMode( window, GLFW_CURSOR, GLFW_CURSOR_NORMAL );
 
-  // Dark blue background
-  glClearColor( 0.0f, 0.0f, 0.4f, 0.0f );
-
   // Enable depth test
   glEnable( GL_DEPTH_TEST );
   // Accept fragment if it closer to the camera than the former one
   glDepthFunc( GL_LESS );
+
+  // Dark blue background
+  glClearColor( 0.0f, 0.0f, 0.5f, 0.0f );
 
 }
 

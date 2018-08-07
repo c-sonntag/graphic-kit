@@ -1,8 +1,6 @@
 #pragma once
-#ifndef graphic_toolkit_opengl_abstract_expander_property_support_h
-#define graphic_toolkit_opengl_abstract_expander_property_support_h
 
-#include <graphic_toolkit/opengl/uniform_set.h>
+#include <graphic_toolkit/opengl/primitives_heap/uniform_set.h>
 
 #include <list>
 #include <memory>
@@ -36,4 +34,3 @@ namespace graphic_toolkit {
   }
 }
 
-#endif

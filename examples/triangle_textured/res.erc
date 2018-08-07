@@ -1,5 +1,6 @@
 <erc default-compress="true">
   <file>shader.vert</file>
   <file>shader.frag</file>
-  <file>texture.png</file>
+  <file>texture_opaque.png</file>
+  <file>texture_transparent.png</file>
 </erc>

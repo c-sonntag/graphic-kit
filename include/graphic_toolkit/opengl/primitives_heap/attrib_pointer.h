@@ -1,6 +1,4 @@
 #pragma once
-#ifndef graphic_toolkit_opengl_attrib_pointer_hpp
-#define graphic_toolkit_opengl_attrib_pointer_hpp
 
 #include <raiigl/gl_types.hpp>
 
@@ -34,5 +32,3 @@ namespace graphic_toolkit {
 
   }
 }
-
-#endif

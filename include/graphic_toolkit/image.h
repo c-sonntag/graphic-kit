@@ -42,11 +42,11 @@ namespace graphic_toolkit {
   struct image
   {
    public:
-    static std::unique_ptr<image> load_from_file( const std::string & file_path, const bool vertical_flip_it = false );
-    static std::unique_ptr<image> load_from_memory( const std::string & input_data, const bool vertical_flip_it = false );
-    static std::unique_ptr<image> load_from_erc( const erc::embedded_file & erc, const bool vertical_flip_it = false );
+    static image load_from_file( const std::string & file_path, const bool vertical_flip_it = false );
+    static image load_from_memory( const std::string & input_data, const bool vertical_flip_it = false );
+    static image load_from_erc( const erc::embedded_file & erc, const bool vertical_flip_it = false );
 
-    static __forceinline std::unique_ptr<image> load_from_local_erc( const erc::file_id & erc_id, const bool vertical_flip_it = false );
+    static __forceinline image load_from_local_erc( const erc::file_id & erc_id, const bool vertical_flip_it = false );
 
    public:
     //const image_format format;
@@ -82,12 +82,12 @@ namespace graphic_toolkit {
 
   // ---- ----
 
-  __forceinline std::unique_ptr<image> image::load_from_local_erc( const erc::file_id & erc_id, const bool vertical_flip_it )
+  __forceinline image image::load_from_local_erc( const erc::file_id & erc_id, const bool vertical_flip_it )
   {
     const erc::embedded_file & erc( erc::inventory_package::get_local_first_embedded_file( erc_id, "graphic_toolkit::image::load_from_local_erc" ) );
-    std::unique_ptr<image> image_up( load_from_erc( erc, vertical_flip_it ) );
+    image img( load_from_erc( erc, vertical_flip_it ) );
     erc.unallocate_proper_data();;
-    return image_up;
+    return img;
   }
 
 

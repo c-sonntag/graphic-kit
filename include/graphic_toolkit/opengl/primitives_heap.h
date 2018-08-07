@@ -1,6 +1,4 @@
 #pragma once
-#ifndef graphic_toolkit_opengl_primitives_heap_h
-#define graphic_toolkit_opengl_primitives_heap_h
 
 #include <raiigl/gl_types.hpp>
 #include <raiigl/gl330.hpp>
@@ -10,14 +8,14 @@
 
 #include <graphic_toolkit/types.h>
 
-#include <graphic_toolkit/opengl/attrib_pointer.h>
-#include <graphic_toolkit/opengl/attrib_pointer_by_offset.h>
+#include <graphic_toolkit/opengl/primitives_heap/attrib_pointer.h>
+#include <graphic_toolkit/opengl/primitives_heap/attrib_pointer_by_offset.h>
 
-#include <graphic_toolkit/opengl/vertex_buffer.h>
-#include <graphic_toolkit/opengl/index_buffer.h>
-#include <graphic_toolkit/opengl/uniform_container.h>
+#include <graphic_toolkit/opengl/primitives_heap/vertex_buffer.h>
+#include <graphic_toolkit/opengl/primitives_heap/index_buffer.h>
+#include <graphic_toolkit/opengl/primitives_heap/uniform_container.h>
 
-#include <graphic_toolkit/opengl/abstract_expander_property_support.h>
+#include <graphic_toolkit/opengl/primitives_heap/abstract_expander_property_support.h>
 
 #include <vector>
 #include <array>
@@ -82,7 +80,7 @@ namespace graphic_toolkit {
       void attrib_array_enable_all( const raiigl::gl330 & gl );
       void attrib_array_disable_all( const raiigl::gl330 & gl );
 
-    protected:
+     protected:
       virtual void bind_buffer();
 
      public:
@@ -146,4 +144,3 @@ namespace graphic_toolkit {
 
 
 #include <graphic_toolkit/opengl/primitives_heap.ipp>
-#endif

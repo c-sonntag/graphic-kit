@@ -1,8 +1,6 @@
 #pragma once
-#ifndef graphic_toolkit_opengl_uniform_lap_h
-#define graphic_toolkit_opengl_uniform_lap_h
 
-#include <graphic_toolkit/opengl/abstract_expander_property_support.h>
+#include <graphic_toolkit/opengl/primitives_heap/abstract_expander_property_support.h>
 
 #include <memory>
 #include <string>
@@ -57,5 +55,4 @@ namespace graphic_toolkit {
 }
 
 
-#include <graphic_toolkit/opengl/uniform_lap.ipp>
-#endif
+#include <graphic_toolkit/opengl/primitives_heap/uniform_lap.ipp>

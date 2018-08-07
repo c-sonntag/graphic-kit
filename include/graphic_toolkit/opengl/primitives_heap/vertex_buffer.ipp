@@ -1,6 +1,6 @@
 #pragma once
 
-#include <graphic_toolkit/opengl/vertex_buffer.h>
+#include <graphic_toolkit/opengl/primitives_heap/vertex_buffer.h>
 
 namespace graphic_toolkit {
   namespace opengl {

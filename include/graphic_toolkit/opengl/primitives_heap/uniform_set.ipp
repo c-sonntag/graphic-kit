@@ -1,6 +1,6 @@
 #pragma once
 
-#include <graphic_toolkit/opengl/uniform_set.h>
+#include <graphic_toolkit/opengl/primitives_heap/uniform_set.h>
 
 namespace graphic_toolkit {
   namespace opengl {

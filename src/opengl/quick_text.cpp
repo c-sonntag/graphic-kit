@@ -66,9 +66,6 @@ namespace graphic_toolkit {
     static const erc::file_id quick_text_shader_vert_erc_id( package_id.from( "quick_text/text_triangles.vert" ) );
     static const erc::file_id quick_text_shader_frag_erc_id( package_id.from( "quick_text/text_triangles.frag" ) );
 
-    static std::unique_ptr<raiigl::program> text_program_up;
-    static std::unique_ptr<raiigl::uniform_variable> uniform_vp_matrix, uniform_text_sampler, uniform_text_normalisation_scale;
-
     // ---- ---- ---- ----
 
     struct font_allocated_assoc
@@ -135,6 +132,41 @@ namespace graphic_toolkit {
 
     // ---- ---- ---- ----
 
+    struct internal_quick_text_drawer
+    {
+     private:
+      static std::unique_ptr<internal_quick_text_drawer> semaphore_up;
+     public:
+      static inline internal_quick_text_drawer & get()
+      { if ( !semaphore_up ) semaphore_up = std::make_unique<internal_quick_text_drawer>(); return *semaphore_up; }
+
+     public:
+      raiigl::program text_program;
+
+      raiigl::uniform_variable uniform_vp_matrix;
+      raiigl::uniform_variable uniform_text_sampler;
+      raiigl::uniform_variable uniform_text_normalisation_scale;
+
+     private:
+      internal_quick_text_drawer();
+
+     public:
+      void draw( const raiigl::gl330 & gl, const glm::mat4x4 & projection_view );
+    };
+
+    internal_quick_text_drawer::internal_quick_text_drawer() :
+      text_program(
+        quick_program::open_from_local_erc(
+          quick_text_shader_vert_erc_id,
+          quick_text_shader_frag_erc_id
+        ) ),
+      uniform_vp_matrix( text_program, "vp_matrix" ),
+      uniform_text_sampler( text_program, "text_sampler" ),
+      uniform_text_normalisation_scale( text_program, "text_normalisation_scale" )
+    { }
+
+    // ---- ---- ---- ----
+
     quick_text::quick_text( quick_text_fonts _font_id, bool init_at_construct ) :
       font_id( _font_id ),
       text_heap(
@@ -158,7 +190,7 @@ namespace graphic_toolkit {
 
     }
 
-    // ---- ----
+    // ---- ---- ---- ----
 
     void quick_text::init_gl()
     {
@@ -208,13 +240,16 @@ namespace graphic_toolkit {
       uniform_vp_matrix->set( projection_view );
 
       //
+      gl.activate_texture( raiigl::textures_num::Texture0 );
       bff_font_p->texture.bind();
-      uniform_text_sampler->set<int>( bff_font_p->texture.id - GL_TEXTURE0 );
+      //uniform_text_sampler->set<int>( bff_font_p->texture.id - GL_TEXTURE0 );
+      uniform_text_sampler->set( raiigl::textures_num::Texture0 );
       uniform_text_normalisation_scale->set( bff_font_p->font.normal_scale );
 
       //
       gl.enable( raiigl::gl_capabilities::Blend );
       gl.blend_func( raiigl::blend_func_type::SrcAlpha, raiigl::blend_func_type::OneMinusSrcColor );
+      //gl.blend_func( raiigl::blend_func_type::SrcAlpha, raiigl::blend_func_type::OneMinusSrcAlpha );
 
       //
       text_heap.draw( gl, *text_program_up );
@@ -223,6 +258,7 @@ namespace graphic_toolkit {
       gl.disable( raiigl::gl_capabilities::Blend );
 
       //
+      bff_font_p->texture.unbind();
       text_program_up->unuse();
     }
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <graphic_toolkit/opengl/vertex_expander.h>
+#include <graphic_toolkit/opengl/primitives_heap/vertex_expander.h>
 
 #include <stdexcept>
 

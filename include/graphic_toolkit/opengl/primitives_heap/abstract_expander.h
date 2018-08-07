@@ -1,14 +1,13 @@
 #pragma once
-#ifndef graphic_toolkit_opengl_abstract_expander_h
-#define graphic_toolkit_opengl_abstract_expander_h
 
 #include <raiigl/gl_types.hpp>
 #include <raiigl/gl330.hpp>
 #include <raiigl/gl430.hpp>
 #include <raiigl/program.hpp>
+#include <raiigl/uniform_variable.hpp>
 
-#include <graphic_toolkit/opengl/abstract_expander_property_support.h>
-#include <graphic_toolkit/opengl/uniform_container.h>
+#include <graphic_toolkit/opengl/primitives_heap/abstract_expander_property_support.h>
+#include <graphic_toolkit/opengl/primitives_heap/uniform_container.h>
 
 #include <list>
 #include <memory>
@@ -66,12 +65,24 @@ namespace graphic_toolkit {
       abstract_expander & operator=( const abstract_expander & ) = delete;
 
      public:
-
       template< class... Args >
       void set_uniform( const std::string & var_name, const Args & ... values );
 
+      // template< class... Args >
+      // void set_uniform( const GLint id, const Args & ... values );
+      //
+      // template< class... Args >
+      // void set_uniform( const raiigl::uniform_variable & uv, const Args & ... values );
+
+     public:
       template< class... Args >
       void set_uniform_on_condition( const std::string & condition_name, const std::string & var_name, const Args & ... values );
+
+      // template< class... Args >
+      // void set_uniform_on_condition( const std::string & condition_name, const GLint id, const Args & ... values );
+      //
+      // template< class... Args >
+      // void set_uniform_on_condition( const std::string & condition_name, const raiigl::uniform_variable & uv, const Args & ... values );
 
     };
 
@@ -80,5 +91,4 @@ namespace graphic_toolkit {
 }
 
 
-#include <graphic_toolkit/opengl/abstract_expander.ipp>
-#endif
+#include <graphic_toolkit/opengl/primitives_heap/abstract_expander.ipp>

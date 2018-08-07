@@ -1,6 +1,4 @@
 #pragma once
-#ifndef graphic_toolkit_opengl_quick_program_h
-#define graphic_toolkit_opengl_quick_program_h
 
 #include <graphic_toolkit/classes/non_copyable_movable.hpp>
 
@@ -29,5 +27,4 @@ namespace graphic_toolkit {
 }
 
 #include <graphic_toolkit/opengl/quick_program.ipp>
-#endif
 

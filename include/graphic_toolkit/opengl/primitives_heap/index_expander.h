@@ -1,15 +1,13 @@
 #pragma once
-#ifndef graphic_toolkit_opengl_index_expander_h
-#define graphic_toolkit_opengl_index_expander_h
 
 #include <raiigl/gl_types.hpp>
 #include <raiigl/gl330.hpp>
 #include <raiigl/program.hpp>
 
-#include <graphic_toolkit/opengl/vertex_buffer.h>
-#include <graphic_toolkit/opengl/index_buffer.h>
+#include <graphic_toolkit/opengl/primitives_heap/vertex_buffer.h>
+#include <graphic_toolkit/opengl/primitives_heap/index_buffer.h>
 
-#include <graphic_toolkit/opengl/abstract_expander.h>
+#include <graphic_toolkit/opengl/primitives_heap/abstract_expander.h>
 
 #include <list>
 #include <memory>
@@ -101,5 +99,4 @@ namespace graphic_toolkit {
 }
 
 
-#include <graphic_toolkit/opengl/index_expander.ipp>
-#endif
+#include <graphic_toolkit/opengl/primitives_heap/index_expander.ipp>

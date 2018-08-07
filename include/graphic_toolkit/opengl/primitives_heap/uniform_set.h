@@ -1,6 +1,4 @@
 #pragma once
-#ifndef graphic_toolkit_opengl_uniform_set_hpp
-#define graphic_toolkit_opengl_uniform_set_hpp
 
 #include <raiigl/program.hpp>
 
@@ -44,5 +42,4 @@ namespace graphic_toolkit {
   }
 }
 
-#include <graphic_toolkit/opengl/uniform_set.ipp>
-#endif
+#include <graphic_toolkit/opengl/primitives_heap/uniform_set.ipp>

@@ -9,7 +9,7 @@
 #include <raiigl/texture.hpp>
 
 #include <graphic_toolkit/image.h>
-#include <graphic_toolkit/base_format.h>
+#include <graphic_toolkit/opengl/texture.h>
 #include <graphic_toolkit/opengl/quick_program.h>
 #include <graphic_toolkit/opengl/primitives_heap.h>
 
@@ -27,10 +27,36 @@
 
 #include <GLFW/glfw3.h>
 
-#include <glm/glm.hpp>
 #include <glm/vec2.hpp>
+#include <glm/mat4x4.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 static const erc::package_id resource_erc_id( "res" );
+
+struct image_with_texture
+{
+  const erc::file_id erc_id;
+  const graphic_toolkit::image img;
+  const raiigl::texture tex;
+
+  inline image_with_texture( const erc::file_id _erc_id ) :
+    erc_id( std::move( _erc_id ) ),
+    img( graphic_toolkit::image::load_from_local_erc( erc_id ) ),
+    tex( graphic_toolkit::opengl::texture_from_image( img ) )
+  {}
+
+  inline void print_info() {
+    std::cout << "Image '" << erc_id.file_path << "' info : " << std::endl
+              << "    dimension : " << img.width << "x" << img.height << " by " << img.channels << "bits" << std::endl
+              << "    size      : " << img.size << std::endl
+              << "    is_flip ? : " << std::boolalpha << img.is_vertical_flip << std::endl
+              << std::endl ;
+  }
+};
+
+
+
+
 
 struct EasyTriangleHeapPainter : public AbstractPainter
 {
@@ -45,18 +71,17 @@ struct EasyTriangleHeapPainter : public AbstractPainter
   };
 
  private:
-  const raiigl::uniform_variable uniform_vertex_mvp{ *program_up, "MVP" };
+  const raiigl::uniform_variable uniform_mvp{ *program_up, "uniform_mvp" };
+  const raiigl::uniform_variable uniform_model_decal{ *program_up, "uniform_model_decal" };
+  const raiigl::uniform_variable sampler_texture{ *program_up, "sampler_texture" };
 
  private:
   using heap_vertices_t = graphic_toolkit::opengl::primitives_heap<glm::vec2, glm::vec2> ;
   heap_vertices_t heap_vertices;
 
  private:
-  std::unique_ptr<graphic_toolkit::image> tex_img_up
-  {
-    graphic_toolkit::image::load_from_local_erc( resource_erc_id.from( "texture.png" ) )
-  };
-  raiigl::texture tex{raiigl::texture_type::Texture2D};
+  image_with_texture iwt_transparent{resource_erc_id.from( "texture_transparent.png" )};
+  image_with_texture iwt_opaque{resource_erc_id.from( "texture_opaque.png" )};
 
  private:
   ModelViewProjection mvp;
@@ -71,51 +96,55 @@ struct EasyTriangleHeapPainter : public AbstractPainter
       graphic_toolkit::opengl::attrib_pointer( 1, 2, raiigl::data_type::Float, true )
     ) {
 
+    uniform_model_decal.set( glm::vec2( 0.f, 0.f ) );
+
     //
-    const bool good_image_format(
-      graphic_toolkit::base_format::is_pow_of( 2u, tex_img_up->width ) &&
-      graphic_toolkit::base_format::is_pow_of( 2u, tex_img_up->height )
-    );
-    if ( !good_image_format )
-      std::cerr << "Warning, incompatible texture size format : " << tex_img_up->width << "x" << tex_img_up->height << std::endl;
+    gl330.enable( raiigl::gl_capabilities::Blend );
+    gl330.blend_func( raiigl::blend_func_type::SrcAlpha, raiigl::blend_func_type::OneMinusSrcAlpha );
 
+    //
+    iwt_transparent.print_info();
+    iwt_opaque.print_info();
 
-    std::cout << "Image info : " << std::endl
-              << "    dimension : " << tex_img_up->width << "x" << tex_img_up->height << " by " << tex_img_up->channels << "bits" << std::endl
-              << "    size      : " << tex_img_up->size << std::endl
-              << "    is_flip ? : " << std::boolalpha << tex_img_up->is_vertical_flip << std::endl
-              << std::endl ;
+    //
+    const raiigl::textures_num iwt_transparent_sampler_id( raiigl::textures_num::Texture1 );
+    gl330.activate_texture( iwt_transparent_sampler_id );
+    iwt_transparent.tex.bind();
+    const raiigl::textures_num iwt_opaque_sampler_id( raiigl::textures_num::Texture2 );
+    gl330.activate_texture( iwt_opaque_sampler_id );
+    iwt_opaque.tex.bind();
+
+    //
+    gl330.activate_texture( raiigl::textures_num::Texture0 );
 
     //
     start = std::chrono::system_clock::now();
 
-    //
-    {
-      heap_vertices_t::vertex_expander triangles( heap_vertices.complete_primitive( raiigl::primitive_type::Triangles ) );
+    const auto expander_triangles_push( []( heap_vertices_t::vertex_expander & triangles ) {
       triangles.reserve( 3 );
       triangles.push( glm::vec2( -1.0f, -1.0f ), glm::vec2( 0.f, 1.f ) );
       triangles.push( glm::vec2( 1.0f, -1.0f ), glm::vec2( 1.f, 1.f ) );
       triangles.push( glm::vec2( 0.0f,  1.0f ), glm::vec2( 0.5f, 0.f ) );
+    } );
+
+    //
+    {
+      heap_vertices_t::vertex_expander triangles( heap_vertices.complete_primitive( raiigl::primitive_type::Triangles ) );
+      expander_triangles_push( triangles );
+      triangles.set_uniform( "uniform_model_decal", glm::vec2( -1.f, 0.f ) );
+      triangles.set_uniform( "sampler_texture", iwt_transparent_sampler_id );
+    }
+
+    //
+    {
+      heap_vertices_t::vertex_expander triangles( heap_vertices.complete_primitive( raiigl::primitive_type::Triangles ) );
+      expander_triangles_push( triangles );
+      triangles.set_uniform( "uniform_model_decal", glm::vec2( 1.f, 0.f ) );
+      triangles.set_uniform( "sampler_texture",  iwt_opaque_sampler_id );
     }
 
     //
     heap_vertices.init_buffer();
-
-    //
-    tex.bind();
-    tex.send_image2d(
-      0,
-      raiigl::internal_format_type::RGBA,
-      tex_img_up->width, tex_img_up->height,
-      raiigl::pixel_format::RGBA,
-      raiigl::pixel_type::UnsignedByte,
-      tex_img_up->data()
-    );
-    tex.set_param_minifying_and_magnification_filter(
-      raiigl::minifying_filter_type::Nearest,
-      raiigl::magnification_filter_type::Nearest
-    );
-
 
   }
 
@@ -127,7 +156,7 @@ struct EasyTriangleHeapPainter : public AbstractPainter
     program_up->use();
 
     // Send our transformation
-    uniform_vertex_mvp.set( mvp.mvpRefresh() );
+    uniform_mvp.set( mvp.mvpRefresh() );
 
     //
     heap_vertices.draw( gl330, *program_up );

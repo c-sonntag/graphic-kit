@@ -1,6 +1,6 @@
 #pragma once
 
-#include <graphic_toolkit/opengl/index_expander.h>
+#include <graphic_toolkit/opengl/primitives_heap/index_expander.h>
 
 #include <stdexcept>
 

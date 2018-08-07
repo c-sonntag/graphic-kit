@@ -1,11 +1,9 @@
 #pragma once
-#ifndef graphic_toolkit_opengl_uniform_container_h
-#define graphic_toolkit_opengl_uniform_container_h
 
 #include <raiigl/gl_types.hpp>
 
-#include <graphic_toolkit/opengl/uniform_set.h>
-#include <graphic_toolkit/opengl/abstract_expander_property_support.h>
+#include <graphic_toolkit/opengl/primitives_heap/uniform_set.h>
+#include <graphic_toolkit/opengl/primitives_heap/abstract_expander_property_support.h>
 
 #include <list>
 #include <memory>
@@ -34,13 +32,19 @@ namespace graphic_toolkit {
       template< class... Args >
       void set_uniform( const std::string & var_name, const Args & ... values );
 
+      //template< class... Args >
+      //void set_uniform( const GLint id, const Args & ... values );
+
       template< class... Args >
       void set_uniform_on_condition( const std::string & condition_name, const std::string & var_name, const Args & ... values );
+
+     // template< class... Args >
+     // void set_uniform_on_condition( const std::string & condition_name, const GLint id, const Args & ... values );
+
     };
 
   }
 }
 
 
-#include <graphic_toolkit/opengl/uniform_container.ipp>
-#endif
+#include <graphic_toolkit/opengl/primitives_heap/uniform_container.ipp>
