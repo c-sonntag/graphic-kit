@@ -81,7 +81,7 @@ struct EasyTriangleHeapPainter : public AbstractPainter
     uniform_vertex_mvp.set( mvp.mvpRefresh() );
 
     //
-    red_curve_count += 0.01f;
+    red_curve_count += 0.1f;
     const float red_curve( std::sin( red_curve_count ) * 0.333f + 0.666f );
     uniform_color.set( glm::vec3( red_curve, 0.f, 0.f ) );
 

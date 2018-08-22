@@ -6,10 +6,10 @@
 #include <raiigl/program.hpp>
 #include <raiigl/uniform_variable.hpp>
 
+#include <graphic_toolkit/normal_colors.h>
 #include <graphic_toolkit/opengl/quick_program.h>
 #include <graphic_toolkit/opengl/quick_text.h>
 #include <graphic_toolkit/opengl/quick_text_expander.h>
-#include <graphic_toolkit/opengl/normal_colors.h>
 
 #include <erc/package_id.h>
 
@@ -52,7 +52,7 @@ struct TextPainter : public AbstractPainter
 
     {
       graphic_toolkit::opengl::text_expander yop( calibri.complete_text( "Yop ! Yap !" ) );
-      yop.color = graphic_toolkit::opengl::normal_colors::intense_green;
+      yop.color = graphic_toolkit::normal_colors::intense_green;
       yop.align_h = graphic_toolkit::opengl::text_expander::center;
       yop.normal_size = 1.f;
     }

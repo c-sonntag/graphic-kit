@@ -1,6 +1,7 @@
 #pragma once
 
 #include <graphic_toolkit/types.h>
+#include <graphic_toolkit/normal_colors.h>
 #include <graphic_toolkit/opengl/quick_text.h>
 
 #include <glm/vec3.hpp>

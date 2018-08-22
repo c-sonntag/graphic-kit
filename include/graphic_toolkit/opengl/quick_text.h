@@ -3,7 +3,6 @@
 #include <graphic_toolkit/types.h>
 #include <graphic_toolkit/opengl/primitives_heap.h>
 #include <graphic_toolkit/opengl/quick_program.h>
-#include <graphic_toolkit/opengl/normal_colors.h>
 #include <graphic_toolkit/opengl/quick_text_bff_wrapper.h>
 
 #include <raiigl/gl330.hpp>

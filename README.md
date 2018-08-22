@@ -1,4 +1,4 @@
-# OpenGL graphic-toolkit
+# graphic-toolkit
 
 For C++14
 
