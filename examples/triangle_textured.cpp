@@ -59,7 +59,7 @@ struct image_with_texture
 struct EasyTriangleHeapPainter : public AbstractPainter
 {
  private:
-  const raiigl::gl330 gl330;
+  raiigl::gl330 gl330;
   raiigl::program program
   {
     graphic_toolkit::opengl::quick_program::open_from_local_erc(

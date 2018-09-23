@@ -32,6 +32,11 @@ namespace graphic_toolkit {
         );
     }
 
+    inline void index_expander_property::gl_draw( const abstract_expander_property_support & aeps, raiigl::gl430 & gl, raiigl::program & proc ) const
+    {
+      gl_draw( aeps, gl, proc );
+    }
+
     // ---- ---- ---- ----
 
     template<typename  ... TListTypes>

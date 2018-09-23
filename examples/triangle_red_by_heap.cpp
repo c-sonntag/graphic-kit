@@ -30,7 +30,7 @@ static const erc::package_id shader_erc_id( "shaders" );
 struct EasyTriangleHeapPainter : public AbstractPainter
 {
  private:
-  const raiigl::gl330 gl330;
+  raiigl::gl330 gl330;
   raiigl::program program
   {
     graphic_toolkit::opengl::quick_program::open_from_local_erc(
@@ -108,7 +108,7 @@ int main()
     win.handleClose.push_back( []( GLFWwindow * window )
     {
       return glfwWindowShouldClose( window )
-             || ( glfwGetKey( window, GLFW_KEY_ESCAPE ) == GLFW_PRESS );
+        || ( glfwGetKey( window, GLFW_KEY_ESCAPE ) == GLFW_PRESS );
     } );
 
     //

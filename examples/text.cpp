@@ -45,7 +45,7 @@ struct TextPainter : public AbstractPainter
 
  private:
   ModelViewProjection mvp;
-  const raiigl::gl330 gl;
+  raiigl::gl330 gl;
 
  public:
   TextPainter() {
