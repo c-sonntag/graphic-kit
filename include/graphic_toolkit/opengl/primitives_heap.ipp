@@ -86,7 +86,7 @@ namespace graphic_toolkit {
     // ---- ---- ---- ----
 
     template< typename  ... TListTypes >
-    inline void primitives_heap<TListTypes...>::gl_attrib_pointer( const raiigl::gl330 & gl )
+    inline void primitives_heap<TListTypes...>::gl_attrib_pointer( raiigl::gl330 & gl )
     {
       /**< @see #way3 https://stackoverflow.com/a/39684775  */
       for ( const attrib_pointer_by_offset & apo : attrib_pointers )
@@ -103,14 +103,14 @@ namespace graphic_toolkit {
     // ---- ----
 
     template< typename  ... TListTypes >
-    inline void primitives_heap<TListTypes...>::attrib_array_enable_all( const raiigl::gl330 & gl )
+    inline void primitives_heap<TListTypes...>::attrib_array_enable_all( raiigl::gl330 & gl )
     {
       for ( const attrib_pointer_by_offset & apo : attrib_pointers )
         gl.enable_vertex_attrib_array( apo.gl_location );
     }
 
     template< typename  ... TListTypes >
-    inline void primitives_heap<TListTypes...>::attrib_array_disable_all( const raiigl::gl330 & gl )
+    inline void primitives_heap<TListTypes...>::attrib_array_disable_all( raiigl::gl330 & gl )
     {
       for ( const attrib_pointer_by_offset & apo : attrib_pointers )
         gl.disable_vertex_attrib_array( apo.gl_location );
@@ -128,7 +128,7 @@ namespace graphic_toolkit {
     // ---- ----
 
     template< typename  ... TListTypes >
-    inline void primitives_heap<TListTypes...>::draw( const raiigl::gl330 & gl, raiigl::program & program )
+    inline void primitives_heap<TListTypes...>::draw( raiigl::gl330 & gl, raiigl::program & program )
     {
       if ( !initialized )
         return;

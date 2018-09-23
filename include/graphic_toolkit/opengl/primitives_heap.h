@@ -76,16 +76,16 @@ namespace graphic_toolkit {
       raiigl::vertex_array vao;
 
      protected:
-      void gl_attrib_pointer( const raiigl::gl330 & gl );
-      void attrib_array_enable_all( const raiigl::gl330 & gl );
-      void attrib_array_disable_all( const raiigl::gl330 & gl );
+      void gl_attrib_pointer( raiigl::gl330 & gl );
+      void attrib_array_enable_all( raiigl::gl330 & gl );
+      void attrib_array_disable_all( raiigl::gl330 & gl );
 
      protected:
       virtual void bind_buffer();
 
      public:
-      void configure_vao( const raiigl::gl330 & gl, raiigl::program & program );
-      void draw( const raiigl::gl330 & gl, raiigl::program & program );
+      void configure_vao( raiigl::gl330 & gl, raiigl::program & program );
+      void draw( raiigl::gl330 & gl, raiigl::program & program );
 
      public:
       using abstract_expander_property_up_t = std::unique_ptr<opengl::abstract_expander_property>;

@@ -24,7 +24,7 @@ set(CMAKE_CXX_STANDARD 14)
 
 ## # --- SET CMAKE MODULES ---
 ## set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/CMakeModules;${CMAKE_MODULE_PATH}")
-## include("CMakeAutoSharedFilesCopier")
+include("CMakeAutoSharedFilesCopier")
 
 # --- LIB : GLFW ---
 set(GLFW_USE_STATIC_LIBS ON)
@@ -33,7 +33,6 @@ include_directories(${GLFW_INCLUDE_DIRS})
 link_directories(${GLFW_DIRECTORIES})
 link_libraries(${GLFW_LIBRARIES})
 add_definitions(${GLFW_DEFINITIONS})
-#copy_shared_on_rootbasebin_from_archive(${GLFW_ROOT} ${GLFW_LIBRARIES})
 
 
 # --- PARENT LIB ---

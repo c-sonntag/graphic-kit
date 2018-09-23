@@ -149,7 +149,7 @@ namespace graphic_toolkit {
       internal_quick_text_program();
 
      public:
-      void draw( const raiigl::gl330 & gl, const glm::mat4x4 & projection_view );
+      void draw( raiigl::gl330 & gl, const glm::mat4x4 & projection_view );
     };
 
     std::unique_ptr<internal_quick_text_program> internal_quick_text_program::semaphore_up;
@@ -213,7 +213,7 @@ namespace graphic_toolkit {
 
     // ---- ---- --- ----
 
-    void quick_text::draw( const raiigl::gl330 & gl, const glm::mat4x4 & projection_view )
+    void quick_text::draw( raiigl::gl330 & gl, const glm::mat4x4 & projection_view )
     {
       //
       if ( !bff_font_p )
@@ -233,10 +233,10 @@ namespace graphic_toolkit {
       iqtp.uniform_vp_matrix.set( projection_view );
 
       //
-      gl.activate_texture( raiigl::textures_num::Texture0 );
+      gl.activate_texture( raiigl::textures_num::Texture00 );
       bff_font_p->texture.bind();
       //uniform_text_sampler->set<int>( bff_font_p->texture.id - GL_TEXTURE0 );
-      iqtp.uniform_text_sampler.set( raiigl::textures_num::Texture0 );
+      iqtp.uniform_text_sampler.set( raiigl::textures_num::Texture00 );
       iqtp.uniform_text_normalisation_scale.set( bff_font_p->font.normal_scale );
 
       //

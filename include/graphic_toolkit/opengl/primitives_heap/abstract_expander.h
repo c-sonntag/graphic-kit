@@ -30,10 +30,10 @@ namespace graphic_toolkit {
       virtual ~abstract_expander_property() = default;
 
      public:
-      void draw( const abstract_expander_property_support & bd, const raiigl::gl330 & gl, raiigl::program & program ) const;
+      void draw( const abstract_expander_property_support & bd, raiigl::gl330 & gl, raiigl::program & program ) const;
 
      protected:
-      virtual void gl_draw( const abstract_expander_property_support & bd, const raiigl::gl330 & gl, raiigl::program & program ) const = 0;
+      virtual void gl_draw( const abstract_expander_property_support & bd, raiigl::gl330 & gl, raiigl::program & program ) const = 0;
       virtual void gl_draw( const abstract_expander_property_support & bd, raiigl::gl430 & gl, raiigl::program & program ) const = 0;
     };
 

@@ -102,15 +102,18 @@ struct EasyTriangleHeapPainter : public AbstractPainter
     iwt_opaque.print_info();
 
     //
-    const raiigl::textures_num iwt_transparent_sampler_id( raiigl::textures_num::Texture1 );
-    gl330.activate_texture( iwt_transparent_sampler_id );
-    iwt_transparent.tex.bind();
-    const raiigl::textures_num iwt_opaque_sampler_id( raiigl::textures_num::Texture2 );
-    gl330.activate_texture( iwt_opaque_sampler_id );
-    iwt_opaque.tex.bind();
+    const raiigl::textures_num iwt_transparent_sampler_id( raiigl::textures_num::Texture01 );
+    const raiigl::textures_num iwt_opaque_sampler_id( raiigl::textures_num::Texture02 );
+    iwt_transparent.tex.bind_on_texture( iwt_transparent_sampler_id );
+    iwt_opaque.tex.bind_on_texture( iwt_opaque_sampler_id );
+
+    //gl330.activate_texture( iwt_transparent_sampler_id );
+    //iwt_transparent.tex.bind();
+    //gl330.activate_texture( iwt_opaque_sampler_id );
+    //iwt_opaque.tex.bind();
 
     //
-    gl330.activate_texture( raiigl::textures_num::Texture0 );
+    //gl330.activate_texture( raiigl::textures_num::Texture0 );
 
     const auto expander_triangles_push( []( heap_vertices_t::vertex_expander & triangles ) {
       triangles.reserve( 3 );
@@ -124,7 +127,7 @@ struct EasyTriangleHeapPainter : public AbstractPainter
       heap_vertices_t::vertex_expander triangles( heap_vertices.complete_primitive( raiigl::primitive_type::Triangles ) );
       expander_triangles_push( triangles );
       triangles.set_uniform( "uniform_model_decal", glm::vec2( -1.f, 0.f ) );
-      triangles.set_uniform( "sampler_texture", iwt_transparent_sampler_id );
+      triangles.set_uniform( "sampler_texture",  iwt_opaque_sampler_id );
     }
 
     //
@@ -132,7 +135,7 @@ struct EasyTriangleHeapPainter : public AbstractPainter
       heap_vertices_t::vertex_expander triangles( heap_vertices.complete_primitive( raiigl::primitive_type::Triangles ) );
       expander_triangles_push( triangles );
       triangles.set_uniform( "uniform_model_decal", glm::vec2( 1.f, 0.f ) );
-      triangles.set_uniform( "sampler_texture",  iwt_opaque_sampler_id );
+      triangles.set_uniform( "sampler_texture", iwt_transparent_sampler_id );
     }
 
     //

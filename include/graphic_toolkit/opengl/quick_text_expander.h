@@ -1,7 +1,7 @@
 #pragma once
 
 #include <graphic_toolkit/types.h>
-#include <graphic_toolkit/normal_colors.h>
+#include <graphic_toolkit/basic_colors.h>
 #include <graphic_toolkit/opengl/quick_text.h>
 
 #include <glm/vec3.hpp>
@@ -25,7 +25,7 @@ namespace graphic_toolkit {
       float normal_size = 0.1f;
       glm::vec3 pos { 0.f, 0.f, 0.f };
       glm::vec3 degree_angle_3d {0.f, 0.f, 0.f};
-      glm::vec3 color {normal_colors::white};
+      glm::vec3 color {basic_colors::white};
       horizontal_align align_h = left;
       vertical_align align_v = middle;
       bool text_auto_width = true;

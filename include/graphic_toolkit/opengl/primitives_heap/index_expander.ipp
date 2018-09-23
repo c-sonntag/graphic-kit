@@ -13,7 +13,7 @@ namespace graphic_toolkit {
       vertex_count( 0 ), index_count( 0 )
     { }
 
-    inline void index_expander_property::gl_draw( const abstract_expander_property_support &, const raiigl::gl330 & gl, raiigl::program & ) const
+    inline void index_expander_property::gl_draw( const abstract_expander_property_support &, raiigl::gl330 & gl, raiigl::program & ) const
     {
       if ( indice_is_global && ( index_count > 0 ) )
         gl.draw_elements(

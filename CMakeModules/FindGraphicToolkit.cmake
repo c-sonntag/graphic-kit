@@ -23,8 +23,9 @@ endif()
 #
 ##
 set(GraphicToolkit_POSSIBLE_PATH
-  "${GraphicToolkit_ROOT}"
-  "${GraphicToolkit_SUFFIX}"
+  ${GraphicToolkit_DIR}
+  ${GraphicToolkit_SUFFIX}
+  ${GraphicToolkit_ROOT}
   "${CMAKE_SOURCE_DIR}/external/graphic-toolkit"
   "${CMAKE_SOURCE_DIR}/thirdparty/graphic-toolkit"
   "${CMAKE_SOURCE_DIR}/third-party/graphic-toolkit"
@@ -64,11 +65,6 @@ elseif(${GraphicToolkit_SHARED})
     PATH_SUFFIXES "lib/"
   )
 endif()
-
-
-message(STATUS "GraphicToolkit_INCLUDE_DIRS : ${GraphicToolkit_INCLUDE_DIRS}")
-message(STATUS "GraphicToolkit_LIBRARIES : ${GraphicToolkit_LIBRARIES}")
-
 
 #
 ##

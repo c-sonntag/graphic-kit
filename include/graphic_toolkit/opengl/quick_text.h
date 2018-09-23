@@ -61,7 +61,7 @@ namespace graphic_toolkit {
       void check_not_busy() const;
 
      public:
-      void draw( const raiigl::gl330 & gl, const glm::mat4x4 & projection_view );
+      void draw( raiigl::gl330 & gl, const glm::mat4x4 & projection_view );
       bool empty() const;
 
      public:

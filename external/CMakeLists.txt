@@ -5,7 +5,7 @@
 
 # ---  ---
 include (ExternalProject)
-set(EXTERNAL_SOURCE_DIR "${CMAKE_SOURCE_DIR}/external")
+set(EXTERNAL_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/external")
 
 
 # --- EXTERNAL SETS ---
@@ -17,10 +17,10 @@ set(EXTERNAL_STB_DIR       "stb-master")
 
 # --- EXTERNAL : STB ---
 set(STB_SOURCE             "${EXTERNAL_SOURCE_DIR}/${EXTERNAL_STB_DIR}")
-set(STB_PREFIX              "external/stb")
+set(STB_PREFIX             "${EXTERNAL_SOURCE_DIR}/stb")
 #
 macro(LINK_PRIVATE_LIB_STB_IMAGE PROJECT_TARGET)
-  target_include_directories(${PROJECT_TARGET} PRIVATE ${STB_SOURCE})
+  target_include_directories(${PROJECT_TARGET} PUBLIC ${STB_SOURCE})
 endmacro()
 
 

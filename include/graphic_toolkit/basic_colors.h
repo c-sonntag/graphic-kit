@@ -3,7 +3,7 @@
 #include <graphic_toolkit/color.h>
 
 namespace graphic_toolkit {
-  namespace basic_color {
+  namespace basic_colors {
 
     constexpr color::rgb black( 0.f, 0.f, 0.f );
     constexpr color::rgb white( 1.f, 1.f, 1.f );
@@ -11,7 +11,6 @@ namespace graphic_toolkit {
     constexpr color::rgb intense_red( 1.f, 0.f, 0.f );
     constexpr color::rgb intense_green( 0.f, 1.f, 0.f );
     constexpr color::rgb intense_blue( 0.f, 0.f, 1.f );
-
 
     /** @see Hue on https://www.w3schools.com/color/color_picker.asp */
 

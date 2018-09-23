@@ -27,7 +27,7 @@ namespace graphic_toolkit {
 
      public:
       raiigl::gl_context & context;
-      const raiigl::gl330 & gl;
+      raiigl::gl330 & gl;
 
      public:
       inline core_context() :

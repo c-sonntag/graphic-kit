@@ -37,7 +37,7 @@ set(CMAKE_CXX_STANDARD 14)
 
 ## # --- SET CMAKE MODULES ---
 ## set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/CMakeModules;${CMAKE_MODULE_PATH}")
-## include("CMakeAutoSharedFilesCopier")
+include("CMakeAutoSharedFilesCopier")
 
 
 # --- LIB : EmbeddedResource ---
@@ -68,6 +68,7 @@ include_directories(${GLEW_INCLUDE_DIRS})
 link_directories(${GLEW_DIRECTORIES})
 link_libraries(${GLEW_LIBRARIES})
 add_definitions(${GLEW_DEFINITIONS})
+copy_shared_near_archives(${GLEW_LIBRARIES})
 
 # --- LIB : RAIIGL ---
 find_package(RAIIGL REQUIRED)
@@ -119,10 +120,10 @@ set(GraphicToolkit_BUILD_EXAMPLES ON CACHE BOOL "Build examples for GraphicToolk
 
 # --- SUB BUILD LINKING ---
 set(PROJECT_SUBPROJECT_HEADER_PATH "${CMAKE_CURRENT_LIST_DIR}/${HEADER_PATH}")
-if(GraphicToolkit_SHARED)
-  set(PROJECT_SUBPROJECT_LINKING ${PROJECT_GraphicToolkit_SHARED})
-elseif(GraphicToolkit_STATIC)
+if(GraphicToolkit_STATIC)
   set(PROJECT_SUBPROJECT_LINKING ${PROJECT_GraphicToolkit_STATIC})
+elseif(GraphicToolkit_SHARED)
+  set(PROJECT_SUBPROJECT_LINKING ${PROJECT_GraphicToolkit_SHARED})
 endif()
 
 #

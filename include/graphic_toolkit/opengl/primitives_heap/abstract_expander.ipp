@@ -14,7 +14,7 @@ namespace graphic_toolkit {
 
     // ---- ----
 
-    inline void abstract_expander_property::draw( const abstract_expander_property_support & bd, const raiigl::gl330 & gl, raiigl::program & program ) const
+    inline void abstract_expander_property::draw( const abstract_expander_property_support & bd, raiigl::gl330 & gl, raiigl::program & program ) const
     {
       //
       uniforms.apply_uniform_sets( bd, program );
