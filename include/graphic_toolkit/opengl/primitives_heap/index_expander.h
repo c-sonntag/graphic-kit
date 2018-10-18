@@ -40,6 +40,9 @@ namespace graphic_toolkit {
      protected:
       void gl_draw( const abstract_expander_property_support & bd, raiigl::gl330 & gl, raiigl::program & program ) const;
       void gl_draw( const abstract_expander_property_support & bd, raiigl::gl430 & gl, raiigl::program & program ) const;
+
+    protected:
+      virtual void gl_multiple_instance_draw( const abstract_expander_property_support & bd, raiigl::gl430 & gl, raiigl::program & program, const uint nb_instance ) const;
     };
 
     // ---- ----

@@ -23,6 +23,15 @@ namespace graphic_toolkit {
       gl_draw( bd, gl, program );
     }
 
+    inline void abstract_expander_property::multiple_instance_draw( const abstract_expander_property_support & bd, raiigl::gl430 & gl, raiigl::program & program, const uint nb_instance ) const
+    {
+      //
+      uniforms.apply_uniform_sets( bd, program );
+
+      //
+      gl_multiple_instance_draw( bd, gl, program, nb_instance );
+    }
+
     // ---- ---- ---- ----
 
     template<class TExpanderProperty>

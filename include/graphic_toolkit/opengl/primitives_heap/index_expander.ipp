@@ -18,23 +18,38 @@ namespace graphic_toolkit {
       if ( indice_is_global && ( index_count > 0 ) )
         gl.draw_elements(
           primitive,
-          static_cast<GLsizei>( index_count ),
-          index_buffer::indice_type,
-          reinterpret_cast<const GLvoid *>( index_start * index_buffer::indice_size )
+          index_count,
+          reinterpret_cast<const void *>( index_start * index_buffer::indice_size ),
+          index_buffer::indice_type
         );
       else if ( ( vertex_count > 0 ) && ( index_count > 0 ) )
         gl.draw_elements_base_vertex(
           primitive,
-          static_cast<GLsizei>( index_count ),
-          index_buffer::indice_type,
+          index_count,
+          vertex_start,
           reinterpret_cast<void *>( index_start * index_buffer::indice_size ),
-          static_cast<GLint>( vertex_start )
+          index_buffer::indice_type
         );
     }
 
     inline void index_expander_property::gl_draw( const abstract_expander_property_support & aeps, raiigl::gl430 & gl, raiigl::program & proc ) const
     {
       gl_draw( aeps, gl, proc );
+    }
+
+    // ---- ---- ---- ----
+
+    inline void index_expander_property::gl_multiple_instance_draw( const abstract_expander_property_support & aeps, raiigl::gl430 & gl, raiigl::program & proc, const uint nb_instance ) const
+    {
+      gl.draw_elements_instanced_base_vertex_base_instance(
+        primitive,
+        index_count,
+        nb_instance,
+        0,
+        vertex_start,
+        reinterpret_cast<const void *>( index_start * index_buffer::indice_size ),
+        index_buffer::indice_type
+      );
     }
 
     // ---- ---- ---- ----

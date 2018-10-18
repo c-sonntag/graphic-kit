@@ -54,6 +54,7 @@ namespace graphic_toolkit {
    public:
     inline int64_t current_elapsed_milliseconds() const { return elapsed_milliseconds; }
     inline int64_t current_elapsed_microseconds() const { return elapsed_microseconds; }
+    inline float current_elapsed_seconds() const { return float( elapsed_milliseconds ) / 1000.f; }
 
     inline uint current_fps() const { return static_cast<uint>( 1. / ( static_cast<double>( elapsed_microseconds ) * 0.000'001 ) ); }
 

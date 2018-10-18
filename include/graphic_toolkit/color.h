@@ -10,6 +10,9 @@
 namespace graphic_toolkit {
   namespace color {
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
+
     struct rgb
     {
       union
@@ -46,8 +49,8 @@ namespace graphic_toolkit {
       inline rgba() : red( 0 ), green( 0 ), blue( 0 ), alpha( 255 ) {}
 
       explicit constexpr inline rgba( const uint8_t _red, const uint8_t _green, const uint8_t _blue, const uint8_t _alpha = 255 ) : red( std::move( _red ) ), green( std::move( _green ) ), blue( std::move( _blue ) ), alpha( std::move( _alpha ) ) {}
-      explicit constexpr inline rgba( const int _red, const int _green, const int _blue, const int _alpha = 255 ) : red( std::move( _red ) ), green( std::move( _green ) ), blue( std::move( _blue ) ), alpha( std::move( _alpha ) ) {}
       explicit constexpr inline rgba( const rgb rgb, const uint8_t _alpha = 255 ): red( std::move( rgb.red ) ), green( std::move( rgb.green ) ), blue( std::move( rgb.blue ) ), alpha( std::move( _alpha ) ) {}
+      constexpr inline rgba( const int _red, const int _green, const int _blue, const int _alpha = 255 ) : red( std::move( _red ) ), green( std::move( _green ) ), blue( std::move( _blue ) ), alpha( std::move( _alpha ) ) {}
 
       constexpr inline rgba( const uint32_t hex, uint8_t _alpha = 255 ) : red( ( hex >> 16 ) & 255 ), green( ( hex >> 8 ) & 255 ), blue( hex & 255 ), alpha( std::move( _alpha ) ) {}
 
@@ -69,6 +72,8 @@ namespace graphic_toolkit {
     inline glm::vec4 normalize( const uint8_t r, const uint8_t g, const uint8_t b, const uint8_t a )
     { return glm::vec4( float( r ) / 255.f, float( g ) / 255.f, float( b ) / 255.f, float( a ) / 255.f ); }
 
+
+#pragma GCC diagnostic pop
 
   }
 }

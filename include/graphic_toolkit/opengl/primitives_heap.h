@@ -2,6 +2,7 @@
 
 #include <raiigl/gl_types.hpp>
 #include <raiigl/gl330.hpp>
+#include <raiigl/gl430.hpp>
 #include <raiigl/program.hpp>
 #include <raiigl/buffer.hpp>
 #include <raiigl/vertex_array.hpp>
@@ -80,12 +81,14 @@ namespace graphic_toolkit {
       void attrib_array_enable_all( raiigl::gl330 & gl );
       void attrib_array_disable_all( raiigl::gl330 & gl );
 
-     protected:
+     public: /**< @todo */ // protected
       virtual void bind_buffer();
 
      public:
-      void configure_vao( raiigl::gl330 & gl, raiigl::program & program );
+      //void configure_vao( raiigl::gl330 & gl, raiigl::program & program );
+
       void draw( raiigl::gl330 & gl, raiigl::program & program );
+      void multiple_instance_draw( raiigl::gl430 & gl, raiigl::program & program, const uint nb_instance );
 
      public:
       using abstract_expander_property_up_t = std::unique_ptr<opengl::abstract_expander_property>;

@@ -31,6 +31,9 @@ endif()
 
 set(CMAKE_CXX_STANDARD 14)
 
+# --- LINK CONFIG ---
+set(INTERNAL_DEV_BUILD_MODE ON)
+
 #
 ##
 #
@@ -71,16 +74,29 @@ add_definitions(${GLEW_DEFINITIONS})
 copy_shared_near_archives(${GLEW_LIBRARIES})
 
 # --- LIB : RAIIGL ---
-find_package(RAIIGL REQUIRED)
-include_directories(${RAIIGL_INCLUDE_DIRS})
-link_directories(${RAIIGL_DIRECTORIES})
-link_libraries(${RAIIGL_LIBRARIES})
-add_definitions(${RAIIGL_DEFINITIONS})
-
+if(RAIIGL_BASE_DIR AND INTERNAL_DEV_BUILD_MODE)
+  if(NOT TARGET raiigl_shared)
+    set(RAIIGL_SHARED ON)
+    set(RAIIGL_STATIC OFF)
+    add_subdirectory(${RAIIGL_BASE_DIR} "${CMAKE_BINARY_DIR}/raiigl_shared")
+  endif()
+  include_directories("${RAIIGL_BASE_DIR}/include")
+  link_libraries(raiigl_shared)
+  set_target_properties(raiigl_shared PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}" LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
+else()
+  find_package(RAIIGL REQUIRED)
+  include_directories(${RAIIGL_INCLUDE_DIRS})
+  link_directories(${RAIIGL_DIRECTORIES})
+  link_libraries(${RAIIGL_LIBRARIES})
+  add_definitions(${RAIIGL_DEFINITIONS})
+endif()
 
 #
 ##
 #
+
+# --- LINK CONFIG ---
+set(INTERNAL_DEV_BUILD_MODE ON)
 
 # --- TARGETS PATH ---
 set(SRC_PATH "src")

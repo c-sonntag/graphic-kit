@@ -171,6 +171,50 @@ namespace graphic_toolkit {
 
     }
 
+    template< typename  ... TListTypes >
+    inline void primitives_heap<TListTypes...>::multiple_instance_draw( raiigl::gl430 & gl, raiigl::program & program, const uint nb_instance )
+    {
+      if ( !initialized )
+        return;
+
+      //
+      vao.bind();
+
+      //
+      if ( !vao_is_configured )
+        attrib_array_enable_all( gl );
+
+      //
+      bind_buffer();
+
+      //
+      if ( !vao_is_configured )
+        gl_attrib_pointer( gl );
+
+      //
+      if ( !vao_is_configured )
+        vao_is_configured = true;
+
+      //
+      if ( have_uniforms_laps() )
+        for ( const abstract_expander_property_support::uniform_container_up_t & uniforms_up : uniforms_laps )
+        {
+          if ( uniforms_up )
+            uniforms_up->apply_uniform_sets( property_support, program );
+
+          //
+          for ( const abstract_expander_property_up_t & aep_up : expanders_properties )
+            aep_up->multiple_instance_draw( property_support, gl, program, nb_instance );
+        }
+      else
+        for ( const abstract_expander_property_up_t & aep_up : expanders_properties )
+          aep_up->multiple_instance_draw( property_support, gl, program, nb_instance );
+
+      //
+      vao.unbind();
+
+    }
+
     // ---- ---- ---- ----
 
     template< typename  ... TListTypes >

@@ -6,6 +6,7 @@
 #include <raiigl/program.hpp>
 #include <raiigl/uniform_variable.hpp>
 
+#include <graphic_toolkit/types.h>
 #include <graphic_toolkit/opengl/primitives_heap/abstract_expander_property_support.h>
 #include <graphic_toolkit/opengl/primitives_heap/uniform_container.h>
 
@@ -31,10 +32,14 @@ namespace graphic_toolkit {
 
      public:
       void draw( const abstract_expander_property_support & bd, raiigl::gl330 & gl, raiigl::program & program ) const;
+      void multiple_instance_draw( const abstract_expander_property_support & bd, raiigl::gl430 & gl, raiigl::program & program, const uint nb_instance ) const;
 
      protected:
       virtual void gl_draw( const abstract_expander_property_support & bd, raiigl::gl330 & gl, raiigl::program & program ) const = 0;
       virtual void gl_draw( const abstract_expander_property_support & bd, raiigl::gl430 & gl, raiigl::program & program ) const = 0;
+
+     protected:
+      virtual void gl_multiple_instance_draw( const abstract_expander_property_support & bd, raiigl::gl430 & gl, raiigl::program & program, const uint nb_instance ) const = 0;
     };
 
     // ---- ----

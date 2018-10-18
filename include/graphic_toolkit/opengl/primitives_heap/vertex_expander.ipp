@@ -17,13 +17,24 @@ namespace graphic_toolkit {
     inline void vertex_expander_property::gl_draw( const abstract_expander_property_support &, raiigl::gl330 & gl, raiigl::program & ) const
     {
       if ( count > 0 )
-        gl.draw_arrays( primitive, static_cast<GLint>( start ), static_cast<GLsizei>( count ) );
+        gl.draw_arrays( primitive, start, count );
     }
 
     inline void vertex_expander_property::gl_draw( const abstract_expander_property_support &, raiigl::gl430 & gl, raiigl::program & ) const
     {
       if ( count > 0 )
-        gl.draw_arrays( primitive, static_cast<GLint>( start ), static_cast<GLsizei>( count ) );
+        gl.draw_arrays( primitive, start, count );
+    }
+
+
+    // ---- ---- ---- ----
+
+    inline void vertex_expander_property::gl_multiple_instance_draw( const abstract_expander_property_support & aeps, raiigl::gl430 & gl, raiigl::program & proc, const uint nb_instance ) const
+    {
+      gl.draw_arrays_instanced_base_instance(
+        primitive, start, count,
+        nb_instance, 0
+      );
     }
 
     // ---- ---- ---- ----
