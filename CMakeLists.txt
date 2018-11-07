@@ -95,9 +95,6 @@ endif()
 ##
 #
 
-# --- LINK CONFIG ---
-set(INTERNAL_DEV_BUILD_MODE ON)
-
 # --- TARGETS PATH ---
 set(SRC_PATH "src")
 set(HEADER_PATH "include")

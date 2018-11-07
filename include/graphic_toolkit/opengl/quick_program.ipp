@@ -6,6 +6,7 @@
 
 #include <stdexcept>
 #include <fstream>
+#include <sstream>
 
 namespace graphic_toolkit {
   namespace opengl {
@@ -36,6 +37,7 @@ namespace graphic_toolkit {
 
       //
       return raiigl::program(
+               vertex_path + "|" + fragment_path,
                raiigl::shader( vertex_ifs, raiigl::shader_type::Vertex ),
                raiigl::shader( fragment_ifs, raiigl::shader_type::Fragment )
              );
@@ -44,13 +46,27 @@ namespace graphic_toolkit {
     inline raiigl::program quick_program::open_from_erc( const erc::embedded_file & vertex_erc, const erc::embedded_file & fragment_erc )
     {
       //
-      raiigl::program shaders_program(
-        raiigl::shader( vertex_erc.get_proper_data(), raiigl::shader_type::Vertex ),
-        raiigl::shader( fragment_erc.get_proper_data(), raiigl::shader_type::Fragment )
-      );
+      try
+      {
+        //
+        raiigl::program shaders_program(
+          vertex_erc.path + " | " + fragment_erc.path,
+          raiigl::shader( vertex_erc.get_proper_data(), raiigl::shader_type::Vertex ),
+          raiigl::shader( fragment_erc.get_proper_data(), raiigl::shader_type::Fragment )
+        );
 
-      //
-      return shaders_program;
+        //
+        return shaders_program;
+      }
+      catch ( const std::exception & e )
+      {
+        std::stringstream ss;
+        ss << "For program :" << std::endl
+           << " - vertex(" << vertex_erc.path << ")" << std::endl
+           << " - fragment(" << fragment_erc.path << ")" << std::endl
+           << e.what();
+        throw std::runtime_error( ss.str( ) );
+      }
     }
 
     __forceinline raiigl::program quick_program::open_from_local_erc( const erc::file_id & vertex_erc_id, const erc::file_id & fragment_erc_id )
@@ -69,14 +85,30 @@ namespace graphic_toolkit {
       }
 
       //
-      raiigl::program shaders_program( open_from_erc( *vertex_erc_p, *fragment_erc_p ) );
+      try
+      {
+        raiigl::program shaders_program(
+          vertex_erc_id.to_string() + " | " + fragment_erc_id.to_string(),
+          raiigl::shader( vertex_erc_p->get_proper_data(), raiigl::shader_type::Vertex ),
+          raiigl::shader( fragment_erc_p->get_proper_data(), raiigl::shader_type::Fragment )
+        );
 
-      //
-      vertex_erc_p->unallocate_proper_data();
-      fragment_erc_p->unallocate_proper_data();
+        //
+        vertex_erc_p->unallocate_proper_data();
+        fragment_erc_p->unallocate_proper_data();
 
-      //
-      return shaders_program;
+        //
+        return shaders_program;
+      }
+      catch ( const std::exception & e )
+      {
+        std::stringstream ss;
+        ss << "For program :" << std::endl
+           << " - vertex(" << vertex_erc_id.to_string() << ")" << std::endl
+           << " - fragment(" << fragment_erc_id.to_string() << ")" << std::endl
+           << e.what();
+        throw std::runtime_error( ss.str( ) );
+      }
     }
 
 

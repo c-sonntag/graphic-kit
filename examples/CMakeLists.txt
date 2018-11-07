@@ -24,10 +24,10 @@ set(CMAKE_CXX_STANDARD 14)
 
 ## # --- SET CMAKE MODULES ---
 ## set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/CMakeModules;${CMAKE_MODULE_PATH}")
-include("CMakeAutoSharedFilesCopier")
+## include("CMakeAutoSharedFilesCopier")
 
 # --- LIB : GLFW ---
-set(GLFW_USE_STATIC_LIBS ON)
+set(GLFW_USE_STATIC_LIBS OFF)
 find_package(GLFW REQUIRED)
 include_directories(${GLFW_INCLUDE_DIRS})
 link_directories(${GLFW_DIRECTORIES})
