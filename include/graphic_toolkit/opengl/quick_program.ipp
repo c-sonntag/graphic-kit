@@ -7,6 +7,7 @@
 #include <stdexcept>
 #include <fstream>
 #include <sstream>
+#include <string>
 
 namespace graphic_toolkit {
   namespace opengl {
