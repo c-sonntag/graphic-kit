@@ -1,15 +1,16 @@
 #
-# GraphicToolkit project
+# GraphicTools project
 # Under the Copyright (C) Christophe-Alexandre Sonntag (http://u4a.at)
 
 # --- PROJECT ---
-project(GraphicToolkit)
+project(GraphicTools)
 cmake_minimum_required(VERSION 3.2)
 #
-set(GraphicToolkit_VERSION_MAJOR 1)
-set(GraphicToolkit_VERSION_MINOR 0)
-set(PROJECT_GraphicToolkit_STATIC "${PROJECT_NAME}_static")
-set(PROJECT_GraphicToolkit_SHARED "${PROJECT_NAME}_shared")
+set(GraphicTools_VERSION_MAJOR 1)
+set(GraphicTools_VERSION_MINOR 0)
+set(PROJECT_GraphicTools_STATIC "${PROJECT_NAME}_static")
+set(PROJECT_GraphicTools_SHARED "${PROJECT_NAME}_shared")
+set(PROJECT_GraphicTools_LIB_NAME "gtools")
 
 # --- EXTERNALS LIBS ---
 include("external/CMakeLists.txt")
@@ -19,11 +20,12 @@ include("external/CMakeLists.txt")
 #
 
 # --- PROFILE ENVIRONNEMENT ---
-if(CMAKE_COMPILER_IS_GNUCXX)                ## (GNU COMMAND)
-  add_definitions("-Wall" "-pedantic")        # Toutes erreurs sauf :
-  add_definitions("-Wno-unused-function" "-Wno-unknown-pragmas") #
-  if(NOT CMAKE_BUILD_TYPE STREQUAL "Debug")   ## (not debug)
-    add_compile_options("-fno-builtin")         ## Break __buildin function (so slowest)
+if(CMAKE_COMPILER_IS_GNUCXX)
+  add_definitions("-Wall" "-pedantic")
+  add_definitions("-Wno-unused-function" "-Wno-unknown-pragmas")
+  if(NOT CMAKE_BUILD_TYPE STREQUAL "Debug")     ## (not debug)
+    add_definitions("-DNDEBUG=1")               ### https://en.cppreference.com/w/c/error/assert
+    add_compile_options("-fno-builtin")         ### Break __buildin function (so slowest)
     add_compile_options("-O3")                  ### Optimize
     set(CMAKE_EXE_LINKER_FLAGS "-s")            ### Strip binary (no work on debug)
   endif()
@@ -71,7 +73,7 @@ include_directories(${GLEW_INCLUDE_DIRS})
 link_directories(${GLEW_DIRECTORIES})
 link_libraries(${GLEW_LIBRARIES})
 add_definitions(${GLEW_DEFINITIONS})
-copy_shared_near_archives(${GLEW_LIBRARIES})
+#copy_shared_near_archives(${GLEW_LIBRARIES})
 
 # --- LIB : RAIIGL ---
 if(RAIIGL_BASE_DIR AND INTERNAL_DEV_BUILD_MODE)
@@ -111,13 +113,13 @@ include_directories(${HEADER_PATH})
 #
 
 # --- BUILD OPTIONS : STATIC/SHARED ---
-SET(GraphicToolkit_SHARED ON CACHE BOOL "Build shared GraphicToolkit library")
-SET(GraphicToolkit_STATIC ON CACHE BOOL "Build static GraphicToolkit library")
+SET(GraphicTools_SHARED ON CACHE BOOL "Build shared GraphicTools library")
+SET(GraphicTools_STATIC ON CACHE BOOL "Build static GraphicTools library")
 
 # --- CHECK BUILD OPTIONS ---
-if( (NOT ${GraphicToolkit_SHARED}) AND (NOT ${GraphicToolkit_STATIC}) )
-  message(FATAL_ERROR, "\n\n   !! Require one of SHARED or STATIC for GraphicToolkit !! \n\n")
-  set(GraphicToolkit_FOUND OFF)
+if( (NOT ${GraphicTools_SHARED}) AND (NOT ${GraphicTools_STATIC}) )
+  message(FATAL_ERROR, "\n\n   !! Require one of SHARED or STATIC for GraphicTools !! \n\n")
+  set(GraphicTools_FOUND OFF)
   return()
 endif()
 
@@ -127,16 +129,16 @@ endif()
 #
 
 # --- BUILD OPTIONS  ---
-## set(GraphicToolkit_BUILD_TOOLS    ON CACHE BOOL "Build tools for GraphicToolkit library")
-## set(GraphicToolkit_BUILD_TESTS    ON CACHE BOOL "Build tests for GraphicToolkit library")
-set(GraphicToolkit_BUILD_EXAMPLES ON CACHE BOOL "Build examples for GraphicToolkit library")
+## set(GraphicTools_BUILD_TOOLS    ON CACHE BOOL "Build tools for GraphicTools library")
+## set(GraphicTools_BUILD_TESTS    ON CACHE BOOL "Build tests for GraphicTools library")
+set(GraphicTools_BUILD_EXAMPLES ON CACHE BOOL "Build examples for GraphicTools library")
 
 # --- SUB BUILD LINKING ---
 set(PROJECT_SUBPROJECT_HEADER_PATH "${CMAKE_CURRENT_LIST_DIR}/${HEADER_PATH}")
-if(GraphicToolkit_STATIC)
-  set(PROJECT_SUBPROJECT_LINKING ${PROJECT_GraphicToolkit_STATIC})
-elseif(GraphicToolkit_SHARED)
-  set(PROJECT_SUBPROJECT_LINKING ${PROJECT_GraphicToolkit_SHARED})
+if(GraphicTools_SHARED)
+  set(PROJECT_SUBPROJECT_LINKING ${PROJECT_GraphicTools_SHARED})
+elseif(GraphicTools_STATIC)
+  set(PROJECT_SUBPROJECT_LINKING ${PROJECT_GraphicTools_STATIC})
 endif()
 
 #
@@ -149,40 +151,40 @@ set(RESOURCES_FILES
 )
 
 # --- BUILDS LIB TARGET STATIC ---
-if(${GraphicToolkit_STATIC})
+if(${GraphicTools_STATIC})
 
   # --- ---
-  add_library(${PROJECT_GraphicToolkit_STATIC} STATIC ${TARGET_SRC_FILES} ${TARGET_HEADER_FILES} ${generated_files_path} ${embedded_resource_generation_FILES})
-  set_target_properties(${PROJECT_GraphicToolkit_STATIC} PROPERTIES OUTPUT_NAME ${PROJECT_NAME})
+  add_library(${PROJECT_GraphicTools_STATIC} STATIC ${TARGET_SRC_FILES} ${TARGET_HEADER_FILES} ${generated_files_path} ${embedded_resource_generation_FILES})
+  set_target_properties(${PROJECT_GraphicTools_STATIC} PROPERTIES OUTPUT_NAME ${PROJECT_GraphicTools_LIB_NAME})
   
   # --- PRIVATE LIBS ---
-  LINK_PRIVATE_LIB_STB_IMAGE(${PROJECT_GraphicToolkit_STATIC})
+  LINK_PRIVATE_LIB_STB_IMAGE(${PROJECT_GraphicTools_STATIC})
 
   # --- EMBEDDED RESOURCES ---
-  erc_add_resources(${PROJECT_GraphicToolkit_STATIC} ADD_INTO_IDE ${RESOURCES_FILES})
+  erc_add_resources(${PROJECT_GraphicTools_STATIC} ADD_INTO_IDE ${RESOURCES_FILES})
 
   # --- INSTALL LIB ---
-  install(TARGETS ${PROJECT_GraphicToolkit_STATIC}
+  install(TARGETS ${PROJECT_GraphicTools_STATIC}
           LIBRARY DESTINATION "lib"
           ARCHIVE DESTINATION "lib")
 
 endif()
 
 # --- BUILDS LIB TARGET SHARED ---
-if(${GraphicToolkit_SHARED})
+if(${GraphicTools_SHARED})
 
   # --- ---
-  add_library(${PROJECT_GraphicToolkit_SHARED} SHARED ${TARGET_SRC_FILES} ${TARGET_HEADER_FILES})
-  set_target_properties(${PROJECT_GraphicToolkit_SHARED} PROPERTIES OUTPUT_NAME ${PROJECT_NAME})
+  add_library(${PROJECT_GraphicTools_SHARED} SHARED ${TARGET_SRC_FILES} ${TARGET_HEADER_FILES})
+  set_target_properties(${PROJECT_GraphicTools_SHARED} PROPERTIES OUTPUT_NAME ${PROJECT_GraphicTools_LIB_NAME})
 
   # --- PRIVATE LIBS ---
-  LINK_PRIVATE_LIB_STB_IMAGE(${PROJECT_GraphicToolkit_SHARED})
+  LINK_PRIVATE_LIB_STB_IMAGE(${PROJECT_GraphicTools_SHARED})
 
   # --- EMBEDDED RESOURCES ---
-  erc_add_resources(${PROJECT_GraphicToolkit_SHARED} ADD_INTO_IDE ${RESOURCES_FILES})
+  erc_add_resources(${PROJECT_GraphicTools_SHARED} ADD_INTO_IDE ${RESOURCES_FILES})
 
   # --- INSTALL LIB ---
-  install(TARGETS ${PROJECT_GraphicToolkit_SHARED}
+  install(TARGETS ${PROJECT_GraphicTools_SHARED}
           RUNTIME DESTINATION "bin"
           LIBRARY DESTINATION "lib"
           ARCHIVE DESTINATION "lib")
@@ -196,7 +198,7 @@ install(DIRECTORY "${HEADER_PATH}/." DESTINATION "include")
 ## Subproject
 #
 
-set(PROJECT_GraphicToolkit_HEADER_PATH "${CMAKE_CURRENT_LIST_DIR}/${HEADER_PATH}")
+set(PROJECT_GraphicTools_HEADER_PATH "${CMAKE_CURRENT_LIST_DIR}/${HEADER_PATH}")
 
 
 #
@@ -204,16 +206,16 @@ set(PROJECT_GraphicToolkit_HEADER_PATH "${CMAKE_CURRENT_LIST_DIR}/${HEADER_PATH}
 #
 
 # # --- BUILDS TOOLS  ---
-# if(${GraphicToolkit_BUILD_TOOLS})
+# if(${GraphicTools_BUILD_TOOLS})
 #   ##add_subdirectory("tools/")
 # endif()
 
 # --- BUILDS EXAMPLES ---
-if(${GraphicToolkit_BUILD_EXAMPLES})
+if(${GraphicTools_BUILD_EXAMPLES})
  add_subdirectory("examples/")
 endif()
 
 # # --- BUILDS TESTS ---
-# if(${GraphicToolkit_BUILD_TESTS} AND EXISTS ${ERC_BINARY_PACKAGER})
+# if(${GraphicTools_BUILD_TESTS} AND EXISTS ${ERC_BINARY_PACKAGER})
 #   add_subdirectory("tests/")
 # endif()

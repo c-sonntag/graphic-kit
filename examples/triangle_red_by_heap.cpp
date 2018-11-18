@@ -1,14 +1,13 @@
-#include <AbstractPainter.hpp>
-#include <ModelViewProjection.hpp>
-#include <Window.hpp>
+#include <gtools/render/painter_context.hpp>
+#include <gtools/window/glfw.hpp>
 
 #include <raiigl/shader.hpp>
 #include <raiigl/program.hpp>
 #include <raiigl/uniform_variable.hpp>
 #include <raiigl/gl330.hpp>
 
-#include <graphic_toolkit/opengl/quick_program.h>
-#include <graphic_toolkit/opengl/primitives_heap.h>
+#include <gtools/opengl/quick_program.hpp>
+#include <gtools/opengl/primitives_heap.hpp>
 
 #include <erc/package_id.h>
 
@@ -27,13 +26,13 @@
 
 static const erc::package_id shader_erc_id( "shaders" );
 
-struct EasyTriangleHeapPainter : public AbstractPainter
+struct easy_triangle_heap_painter : public gtools::render::painter::abstract
 {
  private:
   raiigl::gl330 gl330;
   raiigl::program program
   {
-    graphic_toolkit::opengl::quick_program::open_from_local_erc(
+    gtools::opengl::quick_program::open_from_local_erc(
       shader_erc_id.from( "shader.vert" ),
       shader_erc_id.from( "shader.frag" )
     )
@@ -44,18 +43,14 @@ struct EasyTriangleHeapPainter : public AbstractPainter
   const raiigl::uniform_variable uniform_color{ program, "uniform_color" };
 
  private:
-  using heap_vertices_t = graphic_toolkit::opengl::primitives_heap<glm::vec2> ;
+  using heap_vertices_t = gtools::opengl::primitives_heap<glm::vec2>;
   heap_vertices_t heap_vertices;
 
- private:
-  ModelViewProjection mvp;
-
  public:
-  EasyTriangleHeapPainter() :
-    heap_vertices( graphic_toolkit::opengl::attrib_pointer( 0, 2, raiigl::data_type::Float, true ) )
-    //
+  easy_triangle_heap_painter( gtools::matrices::projection& _projection ) :
+    abstract( _projection ),
+    heap_vertices( gtools::opengl::attrib_pointer( 0, 2, raiigl::data_type::Float, true ) )
   {
-
     //
     {
       heap_vertices_t::vertex_expander triangles( heap_vertices.complete_primitive( raiigl::primitive_type::Triangles ) );
@@ -67,18 +62,18 @@ struct EasyTriangleHeapPainter : public AbstractPainter
 
     //
     heap_vertices.init_buffer();
-
   }
 
   float red_curve_count = 0.f;
 
-  void paint( GLFWwindow * window ) {
+  void paint() override
+  {
 
     // Utilise notre shader
     program.use();
 
     // Send our transformation
-    uniform_vertex_mvp.set( mvp.mvpRefresh() );
+    uniform_vertex_mvp.set( camera );
 
     //
     red_curve_count += 0.1f;
@@ -95,27 +90,29 @@ struct EasyTriangleHeapPainter : public AbstractPainter
 
 int main()
 {
+  gtools::window::glfw_render_opengl_property windows_property{};
+  windows_property.orginal_resolution = { 800, 600 };
+  windows_property.title = "Draw Triangle GLFW Windows";
+  windows_property.antialiasing = 4;
+  windows_property.major = 3;
+  windows_property.minor = 3;
+  windows_property.core_profile = true;
 
-  try
-  {
-    //
-    Window win( 800, 600, "Draw Triangle GLFW Windows" );
 
-    //
-    win.painters.push_back( std::make_unique<EasyTriangleHeapPainter>() );
-
-    //
-    win.handleClose.push_back( []( GLFWwindow * window )
-    {
-      return glfwWindowShouldClose( window )
-        || ( glfwGetKey( window, GLFW_KEY_ESCAPE ) == GLFW_PRESS );
-    } );
+  try {
 
     //
-    win.run();
+    gtools::render::painter_context context;
+    gtools::window::glfw glfw_window( context, windows_property );
+
+    //
+    context.push_painter( std::make_unique<easy_triangle_heap_painter>( context.projection ) );
+
+    //
+    glfw_window.run();
 
   }
-  catch ( std::exception & e )
+  catch( const std::exception& e )
   {
     std::cerr << "Error : " <<  e.what() << std::endl;
     return -1;

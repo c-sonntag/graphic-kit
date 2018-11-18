@@ -1,12 +1,11 @@
-#include <AbstractPainter.hpp>
-#include <ModelViewProjection.hpp>
-#include <Window.hpp>
+#include <gtools/render/painter_context.hpp>
+#include <gtools/window/glfw.hpp>
 
 #include <raiigl/shader.hpp>
 #include <raiigl/program.hpp>
 #include <raiigl/uniform_variable.hpp>
 
-#include <graphic_toolkit/opengl/quick_program.h>
+#include <gtools/opengl/quick_program.hpp>
 
 #include <erc/package_id.h>
 
@@ -18,19 +17,17 @@
 #include <algorithm>
 #include <iostream>
 
-#include <GLFW/glfw3.h>
-
 #include <glm/glm.hpp>
 
 
 static const erc::package_id shader_erc_id( "shaders" );
 
-struct EasyTrianglePainter : public AbstractPainter
+struct easy_triangle_painter : public gtools::render::painter::abstract
 {
  private:
   const raiigl::program program
   {
-    graphic_toolkit::opengl::quick_program::open_from_local_erc(
+    gtools::opengl::quick_program::open_from_local_erc(
       shader_erc_id.from( "shader.vert" ),
       shader_erc_id.from( "shader.frag" )
     )
@@ -44,11 +41,10 @@ struct EasyTrianglePainter : public AbstractPainter
   GLuint vertex_buffer;
   GLuint vertex_array_id;
 
- private:
-  ModelViewProjection mvp;
-
  public:
-  EasyTrianglePainter() {
+  easy_triangle_painter( gtools::matrices::projection& _projection ) :
+    abstract( _projection )
+  {
 
     //
     glGenVertexArrays( 1, &vertex_array_id );
@@ -58,12 +54,9 @@ struct EasyTrianglePainter : public AbstractPainter
     static const GLfloat g_vertex_buffer_data[]
     {
       -1.0f, -1.0f, 0.0f,
-        1.0f, -1.0f, 0.0f,
-        0.0f,  1.0f, 0.0f
-      };
-
-    // Ceci identifiera notre tampon de sommets
-
+      1.0f, -1.0f, 0.0f,
+      0.0f,  1.0f, 0.0f
+    };
 
     // Génère un tampon et place l'identifiant dans 'vertex_buffer'
     glGenBuffers( 1, &vertex_buffer );
@@ -78,14 +71,13 @@ struct EasyTrianglePainter : public AbstractPainter
 
   float red_curve_count = 0.f;
 
-  void paint( GLFWwindow * window ) {
-
-
+  void paint() override
+  {
     // Utilise notre shader
     program.use();
 
     // Send our transformation
-    uniform_vertex_mvp.set( mvp.mvpRefresh() );
+    uniform_vertex_mvp.set( camera );
 
     //
     red_curve_count += 0.1f;
@@ -102,7 +94,7 @@ struct EasyTrianglePainter : public AbstractPainter
       GL_FLOAT,           // type
       GL_FALSE,           // normalisé ?
       0,                  // nombre d'octets séparant deux sommets dans le tampon
-      ( void * )0         // décalage du tableau de tampon
+      (void*)0            // décalage du tableau de tampon
     );
 
 
@@ -120,27 +112,29 @@ struct EasyTrianglePainter : public AbstractPainter
 
 int main()
 {
+  gtools::window::glfw_render_opengl_property windows_property{};
+  windows_property.orginal_resolution = { 800, 600 };
+  windows_property.title = "Draw Triangle GLFW Windows";
+  windows_property.antialiasing = 4;
+  windows_property.major = 3;
+  windows_property.minor = 3;
+  windows_property.core_profile = true;
 
-  try
-  {
-    //
-    Window win( 800, 600, "Draw Triangle GLFW Windows" );
 
-    //
-    win.painters.push_back( std::make_unique<EasyTrianglePainter>() );
-
-    //
-    win.handleClose.push_back( []( GLFWwindow * window )
-    {
-      return glfwWindowShouldClose( window )
-             || ( glfwGetKey( window, GLFW_KEY_ESCAPE ) == GLFW_PRESS );
-    } );
+  try {
 
     //
-    win.run();
+    gtools::render::painter_context context;
+    gtools::window::glfw glfw_window( context, windows_property );
+
+    //
+    context.push_painter( std::make_unique<easy_triangle_painter>( context.projection ) );
+
+    //
+    glfw_window.run();
 
   }
-  catch ( std::exception & e )
+  catch( const std::exception& e )
   {
     std::cerr << "Error : " <<  e.what() << std::endl;
     return -1;

@@ -1,12 +1,12 @@
-#include <graphic_toolkit/opengl/quick_text_bff_wrapper.h>
+#include <gtools/opengl/quick_text_bff_wrapper.hpp>
 
-#include <graphic_toolkit/opengl/texture.h>
+#include <gtools/opengl/texture.hpp>
 
 #include <stdexcept>
 #include <string.h>
 #include <memory>
 
-namespace graphic_toolkit {
+namespace gtools {
   namespace opengl {
 
 
@@ -42,13 +42,13 @@ namespace graphic_toolkit {
       const size_t size( bbf_data_font.size() );
       if ( size > max_size )
         throw std::runtime_error(
-          "[graphic_toolkit::opengl::quick_text_bbf_wrapper] size("
+          "[gtools::opengl::quick_text_bbf_wrapper] size("
           + std::to_string( size ) + ") is greater than max authorized size "
           + std::to_string( max_size_mega ) + "MB"
         );
       else if ( size < min_size )
         throw std::runtime_error(
-          "[graphic_toolkit::opengl::quick_text_bbf_wrapper] size("
+          "[gtools::opengl::quick_text_bbf_wrapper] size("
           + std::to_string( size ) + ") is smaller than min authorized size "
           + std::to_string( min_size ) + " bytes"
         );
@@ -59,7 +59,7 @@ namespace graphic_toolkit {
 
       // Check ID is 'BFF2'
       if ( ( dat[0] != 0xBF ) || ( dat[1] != 0xF2 ) )
-        throw std::runtime_error( "[graphic_toolkit::opengl::quick_text_bbf_wrapper] Need BFF v2" );
+        throw std::runtime_error( "[gtools::opengl::quick_text_bbf_wrapper] Need BFF v2" );
 
 
       // Grab the rest of the header
@@ -74,7 +74,7 @@ namespace graphic_toolkit {
 
       // Check filesize
       if ( size != ( map_data_offset  + ( ( width * height ) * ( bpp / 8 ) ) ) )
-        throw std::runtime_error( "[graphic_toolkit::opengl::quick_text_bbf_wrapper] Filesize is incorrect : (map_data_offset+width*height*bpp/8)" );
+        throw std::runtime_error( "[gtools::opengl::quick_text_bbf_wrapper] Filesize is incorrect : (map_data_offset+width*height*bpp/8)" );
 
       // Calculate font params
       row_pitch = width / cell_width;
@@ -106,7 +106,7 @@ namespace graphic_toolkit {
         break;
 
       default: // Unsupported BPP
-        throw std::runtime_error( "[graphic_toolkit::opengl::quick_text_bbf_wrapper] unsupported BPP format" );
+        throw std::runtime_error( "[gtools::opengl::quick_text_bbf_wrapper] unsupported BPP format" );
       }
 
       // Grab char widths8

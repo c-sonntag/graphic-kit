@@ -1,6 +1,5 @@
-#include <AbstractPainter.hpp>
-#include <ModelViewProjection.hpp>
-#include <Window.hpp>
+#include <gtools/render/painter_context.hpp>
+#include <gtools/window/glfw.hpp>
 
 #include <raiigl/shader.hpp>
 #include <raiigl/program.hpp>
@@ -9,7 +8,7 @@
 #include <raiigl/buffer.hpp>
 #include <raiigl/gl330.hpp>
 
-#include <graphic_toolkit/opengl/quick_program.h>
+#include <gtools/opengl/quick_program.hpp>
 
 #include <erc/package_id.h>
 
@@ -26,14 +25,14 @@
 #include <glm/glm.hpp>
 
 
-raiigl::gl330 gl;
+static raiigl::gl330 gl;
 
-struct EasyTrianglePainter : public AbstractPainter
+struct triangle_red_min_painter : public gtools::render::painter::abstract
 {
  private:
   const raiigl::program program
   {
-    graphic_toolkit::opengl::quick_program::open_from_sources(
+    gtools::opengl::quick_program::open_from_sources(
       "#version 330 core\n" \
       "layout( location = 0 ) in vec3 vertex_from_buffer;\n" \
       "uniform mat4 MVP;\n" \
@@ -50,17 +49,16 @@ struct EasyTrianglePainter : public AbstractPainter
 
  private:
   raiigl::vertex_array vao;
-  raiigl::buffer triangle_buffer{raiigl::buffer_type::Array, raiigl::buffer_usage::StaticDraw};
+  raiigl::buffer triangle_buffer{ raiigl::buffer_type::Array, raiigl::buffer_usage::StaticDraw };
 
  private:
   const raiigl::uniform_variable uniform_vertex_mvp{ program, "MVP" };
   const raiigl::uniform_variable uniform_color{ program, "uniform_color" };
 
- private:
-  ModelViewProjection mvp;
-
  public:
-  EasyTrianglePainter() {
+  triangle_red_min_painter( gtools::matrices::projection& _projection ) :
+    abstract( _projection )
+  {
     static const GLfloat g_vertex_buffer_data[]
     { -1.0f, -1.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f };
     program.use();
@@ -74,9 +72,10 @@ struct EasyTrianglePainter : public AbstractPainter
   float color_curve_count = 0.f;
   glm::vec3 color { 1.0f, 0.0f, 0.2f };
 
-  void paint( GLFWwindow * ) {
+  void paint() override
+  {
     program.use();
-    uniform_vertex_mvp.set( mvp.mvpRefresh() );
+    uniform_vertex_mvp.set( camera );
 
     color_curve_count += 0.1f;
     const float curve( std::sin( color_curve_count ) * 0.333f + 0.666f );
@@ -94,27 +93,29 @@ struct EasyTrianglePainter : public AbstractPainter
 
 int main()
 {
+  gtools::window::glfw_render_opengl_property windows_property{};
+  windows_property.orginal_resolution = { 800, 600 };
+  windows_property.title = "Draw Triangle red min";
+  windows_property.antialiasing = 4;
+  windows_property.major = 3;
+  windows_property.minor = 3;
+  windows_property.core_profile = true;
 
-  try
-  {
-    //
-    Window win( 800, 600, "Draw Triangle GLFW Windows" );
 
-    //
-    win.painters.push_back( std::make_unique<EasyTrianglePainter>() );
-
-    //
-    win.handleClose.push_back( []( GLFWwindow * window )
-    {
-      return glfwWindowShouldClose( window )
-             || ( glfwGetKey( window, GLFW_KEY_ESCAPE ) == GLFW_PRESS );
-    } );
+  try {
 
     //
-    win.run();
+    gtools::render::painter_context context;
+    gtools::window::glfw glfw_window( context, windows_property );
+
+    //
+    context.push_painter( std::make_unique<triangle_red_min_painter>( context.projection ) );
+
+    //
+    glfw_window.run();
 
   }
-  catch ( std::exception & e )
+  catch( const std::exception& e )
   {
     std::cerr << "Error : " <<  e.what() << std::endl;
     return -1;

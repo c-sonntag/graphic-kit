@@ -1,4 +1,4 @@
-#include <graphic_toolkit/opengl/quick_text_expander.h>
+#include <gtools/opengl/quick_text_expander.hpp>
 
 #include <stdexcept>
 #include <bits/move.h>
@@ -6,7 +6,7 @@
 #include <glm/mat4x4.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-namespace graphic_toolkit {
+namespace gtools {
   namespace opengl {
 
 
@@ -100,7 +100,7 @@ namespace graphic_toolkit {
       //
       const quick_text_bbf_wrapper * const bbf_p( qt.get_font() );
       if ( !bbf_p )
-        throw std::runtime_error( "[graphic_toolkit::opengl::text_expander::push_text] Can't get quick_text_bbf_wrapper" );
+        throw std::runtime_error( "[gtools::opengl::text_expander::push_text] Can't get quick_text_bbf_wrapper" );
       //if ( !bbf_p ) return;
       const quick_text_bbf_wrapper & bbf( *bbf_p );
 

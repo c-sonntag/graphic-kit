@@ -1,8 +1,8 @@
-#include <graphic_toolkit/opengl/quick_text.h>
+#include <gtools/opengl/quick_text.hpp>
 
-#include <graphic_toolkit/opengl/quick_text_expander.h>
-#include <graphic_toolkit/opengl/quick_program.h>
-#include <graphic_toolkit/opengl/quick_text_bff_wrapper.h>
+#include <gtools/opengl/quick_text_expander.hpp>
+#include <gtools/opengl/quick_program.hpp>
+#include <gtools/opengl/quick_text_bff_wrapper.hpp>
 
 #include <raiigl/uniform_variable.hpp>
 
@@ -40,7 +40,7 @@ namespace erc {
 
 int qInitResources_shaders();
 
-namespace graphic_toolkit {
+namespace gtools {
   namespace opengl {
 
     static const erc::package_id package_id( "opengl" );
@@ -98,12 +98,12 @@ namespace graphic_toolkit {
 
         //
         if ( !ef )
-          throw std::runtime_error( "[graphic_toolkit::quick_text] Impossible to locate from ressource the bff texture : " + fr.base_name );
+          throw std::runtime_error( "[gtools::quick_text] Impossible to locate from ressource the bff texture : " + fr.base_name );
 
         // //
         // QFile bff_file( file_ressource_path );
         // if ( !bff_file.open( QIODevice::OpenModeFlag::ReadOnly ) )
-        //   throw std::runtime_error( "[graphic_toolkit::quick_text] Can't open ressource in ReadOnly : " + file_ressource_path.toStdString() );
+        //   throw std::runtime_error( "[gtools::quick_text] Can't open ressource in ReadOnly : " + file_ressource_path.toStdString() );
 
         //
         font_allocated_assoc & faa( *loaded_fonts.emplace( loaded_fonts.end(), id, ef->get_proper_data() ) );

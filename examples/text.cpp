@@ -1,15 +1,14 @@
-#include <AbstractPainter.hpp>
-#include <ModelViewProjection.hpp>
-#include <Window.hpp>
+#include <gtools/render/painter_context.hpp>
+#include <gtools/window/glfw.hpp>
 
 #include <raiigl/shader.hpp>
 #include <raiigl/program.hpp>
 #include <raiigl/uniform_variable.hpp>
 
-#include <graphic_toolkit/basic_colors.h>
-#include <graphic_toolkit/opengl/quick_program.h>
-#include <graphic_toolkit/opengl/quick_text.h>
-#include <graphic_toolkit/opengl/quick_text_expander.h>
+#include <gtools/basic_colors.hpp>
+#include <gtools/opengl/quick_program.hpp>
+#include <gtools/opengl/quick_text.hpp>
+#include <gtools/opengl/quick_text_expander.hpp>
 
 #include <erc/package_id.h>
 
@@ -27,49 +26,50 @@
 
 static const erc::package_id shader_erc_id( "shaders" );
 
-struct TextPainter : public AbstractPainter
+struct text_painter : public gtools::render::painter::abstract
 {
  private:
   const raiigl::program program
   {
-    graphic_toolkit::opengl::quick_program::open_from_local_erc(
+    gtools::opengl::quick_program::open_from_local_erc(
       shader_erc_id.from( "shader.vert" ),
       shader_erc_id.from( "shader.frag" )
     )
   };
 
-  graphic_toolkit::opengl::quick_text calibri{graphic_toolkit::opengl::quick_text_fonts::CalibriLight_1024};
+  gtools::opengl::quick_text calibri{ gtools::opengl::quick_text_fonts::CalibriLight_1024 };
 
  private:
   const raiigl::uniform_variable uniform_vertex_mvp{ program, "MVP" };
 
  private:
-  ModelViewProjection mvp;
   raiigl::gl330 gl;
 
  public:
-  TextPainter() {
+  text_painter( gtools::matrices::projection& _projection ) :
+    abstract( _projection )
+  {
 
     {
-      graphic_toolkit::opengl::text_expander yop( calibri.complete_text( "Yop ! Yap !" ) );
-      yop.color = graphic_toolkit::basic_colors::intense_green;
-      yop.align_h = graphic_toolkit::opengl::text_expander::center;
+      gtools::opengl::text_expander yop( calibri.complete_text( "Yop ! Yap !" ) );
+      yop.color = gtools::basic_colors::intense_green;
+      yop.align_h = gtools::opengl::text_expander::center;
       yop.normal_size = 1.f;
     }
 
   }
 
-
-  void paint( GLFWwindow * ) {
+  void paint() override
+  {
 
     // Utilise notre shader
     program.use();
 
     // Send our transformation
-    uniform_vertex_mvp.set( mvp.mvpRefresh() );
+    uniform_vertex_mvp.set( camera );
 
     //
-    calibri.draw( gl, mvp.mvp() );
+    calibri.draw( gl, camera );
   }
 
 };
@@ -77,32 +77,33 @@ struct TextPainter : public AbstractPainter
 
 int main()
 {
+  gtools::window::glfw_render_opengl_property windows_property{};
+  windows_property.orginal_resolution = { 800, 600 };
+  windows_property.title = "Draw Text on GLFW Windows";
+  windows_property.antialiasing = 4;
+  windows_property.major = 3;
+  windows_property.minor = 3;
+  windows_property.core_profile = true;
 
-  try
-  {
-    //
-    Window win( 800, 600, "Draw Triangle GLFW Windows" );
 
-    //
-    win.painters.push_back( std::make_unique<TextPainter>() );
-
-    //
-    win.handleClose.push_back( []( GLFWwindow * window )
-    {
-      return glfwWindowShouldClose( window )
-             || ( glfwGetKey( window, GLFW_KEY_ESCAPE ) == GLFW_PRESS );
-    } );
+  try {
 
     //
-    win.run();
+    gtools::render::painter_context context;
+    gtools::window::glfw glfw_window( context, windows_property );
+
+    //
+    context.push_painter( std::make_unique<text_painter>( context.projection ) );
+
+    //
+    glfw_window.run();
 
   }
-  catch ( const std::exception & e )
+  catch( const std::exception& e )
   {
     std::cerr << "Error : " <<  e.what() << std::endl;
-    return 1;
+    return -1;
   }
 
   return 0;
 }
-

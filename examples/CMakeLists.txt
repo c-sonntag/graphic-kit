@@ -43,9 +43,9 @@ link_libraries(${PROJECT_SUBPROJECT_LINKING})
 ## COMMON
 #
 
-include_directories("common")
-file(GLOB_RECURSE COMMON_FILES "common/*.c"  "common/*.cpp"  "common/*.hpp")
-add_library(common SHARED ${COMMON_FILES})
+## include_directories("common")
+## file(GLOB_RECURSE COMMON_FILES "common/*.c"  "common/*.cpp"  "common/*.hpp")
+## add_library(common SHARED ${COMMON_FILES})
 
 
 #
@@ -80,7 +80,15 @@ foreach(FILE_PATH ${files} )
   endif()
 
   #
-  target_link_libraries(${EXECUTABLE_NAME} PRIVATE common)
+  ## target_link_libraries(${EXECUTABLE_NAME} PRIVATE common)
+
+  # --- TO EXEC FROM BIN DIR ---
+  set_target_properties(${EXECUTABLE_NAME}
+    PROPERTIES
+    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/"
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/"
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/"
+  )
 
   # --- INSTALL THIS TOOLS ---
   install(TARGETS ${EXECUTABLE_NAME}

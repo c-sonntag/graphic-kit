@@ -1,6 +1,5 @@
-#include <AbstractPainter.hpp>
-#include <ModelViewProjection.hpp>
-#include <Window.hpp>
+#include <gtools/render/painter_context.hpp>
+#include <gtools/window/glfw.hpp>
 
 #include <raiigl/shader.hpp>
 #include <raiigl/program.hpp>
@@ -8,10 +7,10 @@
 #include <raiigl/gl330.hpp>
 #include <raiigl/texture.hpp>
 
-#include <graphic_toolkit/image.h>
-#include <graphic_toolkit/opengl/texture.h>
-#include <graphic_toolkit/opengl/quick_program.h>
-#include <graphic_toolkit/opengl/primitives_heap.h>
+#include <gtools/image.hpp>
+#include <gtools/opengl/texture.hpp>
+#include <gtools/opengl/quick_program.hpp>
+#include <gtools/opengl/primitives_heap.hpp>
 
 #include <erc/package_id.h>
 
@@ -34,21 +33,22 @@ static const erc::package_id resource_erc_id( "res" );
 struct image_with_texture
 {
   const erc::file_id erc_id;
-  const graphic_toolkit::image img;
+  const gtools::image img;
   const raiigl::texture tex;
 
   inline image_with_texture( const erc::file_id _erc_id ) :
     erc_id( std::move( _erc_id ) ),
-    img( graphic_toolkit::image::load_from_local_erc( erc_id ) ),
-    tex( graphic_toolkit::opengl::texture_from_image( img ) )
+    img( gtools::image::load_from_local_erc( erc_id ) ),
+    tex( gtools::opengl::texture_from_image( img ) )
   {}
 
-  inline void print_info() {
+  inline void print_info()
+  {
     std::cout << "Image '" << erc_id.file_path << "' info : " << std::endl
               << "    dimension : " << img.width << "x" << img.height << " by " << img.channels << "bits" << std::endl
               << "    size      : " << img.size << std::endl
               << "    is_flip ? : " << std::boolalpha << img.is_vertical_flip << std::endl
-              << std::endl ;
+              << std::endl;
   }
 };
 
@@ -56,13 +56,13 @@ struct image_with_texture
 
 
 
-struct EasyTriangleHeapPainter : public AbstractPainter
+struct triangle_textured_painter : public gtools::render::painter::abstract
 {
  private:
   raiigl::gl330 gl330;
   raiigl::program program
   {
-    graphic_toolkit::opengl::quick_program::open_from_local_erc(
+    gtools::opengl::quick_program::open_from_local_erc(
       resource_erc_id.from( "shader.vert" ),
       resource_erc_id.from( "shader.frag" )
     )
@@ -74,22 +74,21 @@ struct EasyTriangleHeapPainter : public AbstractPainter
   const raiigl::uniform_variable sampler_texture{ program, "sampler_texture" };
 
  private:
-  using heap_vertices_t = graphic_toolkit::opengl::primitives_heap<glm::vec2, glm::vec2> ;
+  using heap_vertices_t = gtools::opengl::primitives_heap<glm::vec2, glm::vec2>;
   heap_vertices_t heap_vertices;
 
  private:
-  image_with_texture iwt_transparent{resource_erc_id.from( "texture_transparent.png" )};
-  image_with_texture iwt_opaque{resource_erc_id.from( "texture_opaque.png" )};
-
- private:
-  ModelViewProjection mvp;
+  image_with_texture iwt_transparent{ resource_erc_id.from( "texture_transparent.png" ) };
+  image_with_texture iwt_opaque{ resource_erc_id.from( "texture_opaque.png" ) };
 
  public:
-  EasyTriangleHeapPainter() :
+  triangle_textured_painter( gtools::matrices::projection& _projection ) :
+    abstract( _projection ),
     heap_vertices(
-      graphic_toolkit::opengl::attrib_pointer( 0, 2, raiigl::data_type::Float, true ),
-      graphic_toolkit::opengl::attrib_pointer( 1, 2, raiigl::data_type::Float, true )
-    ) {
+      gtools::opengl::attrib_pointer( 0, 2, raiigl::data_type::Float, true ),
+      gtools::opengl::attrib_pointer( 1, 2, raiigl::data_type::Float, true )
+    )
+  {
 
     uniform_model_decal.set( glm::vec2( 0.f, 0.f ) );
 
@@ -115,12 +114,12 @@ struct EasyTriangleHeapPainter : public AbstractPainter
     //
     //gl330.activate_texture( raiigl::textures_num::Texture0 );
 
-    const auto expander_triangles_push( []( heap_vertices_t::vertex_expander & triangles ) {
-      triangles.reserve( 3 );
-      triangles.push( glm::vec2( -1.0f, -1.0f ), glm::vec2( 0.f, 1.f ) );
-      triangles.push( glm::vec2( 1.0f, -1.0f ), glm::vec2( 1.f, 1.f ) );
-      triangles.push( glm::vec2( 0.0f,  1.0f ), glm::vec2( 0.5f, 0.f ) );
-    } );
+    const auto expander_triangles_push( []( heap_vertices_t::vertex_expander& triangles ) {
+        triangles.reserve( 3 );
+        triangles.push( glm::vec2( -1.0f, -1.0f ), glm::vec2( 0.f, 1.f ) );
+        triangles.push( glm::vec2( 1.0f, -1.0f ), glm::vec2( 1.f, 1.f ) );
+        triangles.push( glm::vec2( 0.0f,  1.0f ), glm::vec2( 0.5f, 0.f ) );
+      } );
 
     //
     {
@@ -145,13 +144,14 @@ struct EasyTriangleHeapPainter : public AbstractPainter
 
   float red_curve_count = 0.f;
 
-  void paint( GLFWwindow * ) {
+  void paint() override
+  {
 
     // Utilise notre shader
     program.use();
 
     // Send our transformation
-    uniform_mvp.set( mvp.mvpRefresh() );
+    uniform_mvp.set( camera );
 
     //
     heap_vertices.draw( gl330, program );
@@ -160,30 +160,31 @@ struct EasyTriangleHeapPainter : public AbstractPainter
 
 };
 
-
 int main()
 {
+  gtools::window::glfw_render_opengl_property windows_property{};
+  windows_property.orginal_resolution = { 800, 600 };
+  windows_property.title = "Draw Triangle textured";
+  windows_property.antialiasing = 4;
+  windows_property.major = 3;
+  windows_property.minor = 3;
+  windows_property.core_profile = true;
 
-  try
-  {
-    //
-    Window win( 800, 600, "Draw Triangle GLFW Windows" );
 
-    //
-    win.painters.push_back( std::make_unique<EasyTriangleHeapPainter>() );
-
-    //
-    win.handleClose.push_back( []( GLFWwindow * window )
-    {
-      return glfwWindowShouldClose( window )
-             || ( glfwGetKey( window, GLFW_KEY_ESCAPE ) == GLFW_PRESS );
-    } );
+  try {
 
     //
-    win.run();
+    gtools::render::painter_context context;
+    gtools::window::glfw glfw_window( context, windows_property );
+
+    //
+    context.push_painter( std::make_unique<triangle_textured_painter>( context.projection ) );
+
+    //
+    glfw_window.run();
 
   }
-  catch ( std::exception & e )
+  catch( const std::exception& e )
   {
     std::cerr << "Error : " <<  e.what() << std::endl;
     return -1;
@@ -191,4 +192,3 @@ int main()
 
   return 0;
 }
-
