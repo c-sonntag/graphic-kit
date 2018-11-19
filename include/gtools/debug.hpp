@@ -23,3 +23,4 @@ inline std::ostream& operator <<( std::ostream& os, const glm::vec3& v3 )
   return os;
 }
 
+#define debug_cout std::cout

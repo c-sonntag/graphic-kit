@@ -6,7 +6,7 @@
 
 #include <raiigl/shader.hpp>
 
-#include <graphic_toolkit/opengl/quick_shader.h>
+#include <gtools/opengl/quick_shader.h>
 
 #include <memory>
 #include <map>
@@ -32,12 +32,12 @@ namespace resource_manager {
       {
         return std::unique_ptr<raiigl::shader>(
           new raiigl::shader(
-            graphic_toolkit::opengl::quick_shader::open_from_local_erc(
+            gtools::opengl::quick_shader::open_from_local_erc(
               package_id.from( erc_path ), type
             ) )
         );
         // return std::make_unique<raiigl::shader>(
-        //   graphic_toolkit::opengl::quick_shader::open_from_local_erc(
+        //   gtools::opengl::quick_shader::open_from_local_erc(
         //     package_id.from( erc_path ), type
         //   ) );
       } );

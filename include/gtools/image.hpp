@@ -1,6 +1,6 @@
 #pragma once
-#ifndef graphic_toolkit_image_h
-#define graphic_toolkit_image_h
+#ifndef gtools_image_h
+#define gtools_image_h
 
 
 
@@ -71,7 +71,7 @@ namespace gtools {
     ~image();
 
    public:
-    graphic_toolkit_classes_non_copyable_movable( image )
+    gtools_classes_non_copyable_movable( image )
 
    public:
     inline const uchar * data() const { return m_data; }

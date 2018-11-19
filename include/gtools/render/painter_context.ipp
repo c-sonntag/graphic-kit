@@ -20,16 +20,11 @@ namespace gtools {
 
     inline void painter_context::prepare()
     {
-      // //
-      // bool run = true;
-      //
-      // //
-      // while( run )
-      // {
 
-      // window.poll();
+
+      // ---- ----
+
       fps_limiter.cadence();
-
 
       // ---- ----
 
@@ -37,23 +32,24 @@ namespace gtools {
       {
         const gtools::time time( fps_limiter.time() );
         for( std::unique_ptr<painter::abstract>&painter : painters )
-          painter->anime( time );
+          if( any( painter->mode & painter::modes::anime ) )
+            painter->anime( time );
       }
 
       // ---- ----
 
-      //  if( any( painters_mode & painter::modes::paint_debug_gui ) )
-      //  {
-      //    // Start the Dear ImGui frame
-      //    ImGui_ImplOpenGL3_NewFrame();
-      //    ImGui_ImplGlfw_NewFrame();
-      //    ImGui::NewFrame();
-      //
-      //    for( std::unique_ptr<painter::abstract>&painter : painters )
-      //      painter->paint_gui_debug();
-      //
-      //    ImGui::Render();
-      //  }
+      if( gui_up )
+        if( any( painters_mode & painter::modes::paint_debug_gui ) )
+        {
+          // Start the Dear ImGui frame
+          gui_up->new_frame();
+
+          for( std::unique_ptr<painter::abstract>&painter : painters )
+            if( any( painter->mode & painter::modes::paint_debug_gui ) )
+              painter->paint_debug_gui( *gui_up );
+
+          gui_up->render_frame();
+        }
 
       // ---- ----
 
@@ -62,16 +58,18 @@ namespace gtools {
     inline void painter_context::execute()
     {
 
-      for( std::unique_ptr<painter::abstract>&painter : painters )
-        painter->paint();
+      // ---- ----
+
+      if( any( painters_mode & painter::modes::paint ) )
+        for( std::unique_ptr<painter::abstract>&painter : painters )
+          if( any( painter->mode & painter::modes::paint ) )
+            painter->paint();
 
       // ---- ----
 
-      // ImGui_ImplOpenGL3_RenderDrawData( ImGui::GetDrawData() );
-
-      // ---- ----
-
-      // window.swap();
+      if( gui_up )
+        if( any( painters_mode & painter::modes::paint_debug_gui ) )
+          gui_up->draw_render();
 
       // ---- ----
 

@@ -3,6 +3,7 @@
 #include <gtools/types.hpp>
 #include <gtools/enum_bits.hpp>
 #include <gtools/time.hpp>
+#include <gtools/gui/abstract.hpp>
 
 #include <gtools/matrices/view_lookat.hpp>
 #include <gtools/matrices/base_camera.hpp>
@@ -46,8 +47,8 @@ namespace gtools {
 
        public:
         virtual void paint() = 0;
-        inline virtual void anime( const gtools::time & t ) { /*nothing */ }
-        inline virtual void paint_debug_gui() { /*nothing */ }
+        virtual void anime( const gtools::time& ) { /*nothing */ }
+        virtual void paint_debug_gui( gtools::gui::abstract&  ) { /*nothing */ }
       };
 
     }

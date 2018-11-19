@@ -1,7 +1,5 @@
 <?xml?>
 <erc default-compress="true">
-  <file>quick_text/CalibriLight-32x32-512-lum.bff</file>
-  <file>quick_text/CalibriLight-64x64-1024-lum.bff</file>
-  <file>quick_text/text_triangles.frag</file>
-  <file>quick_text/text_triangles.vert</file>
+  <directory prefix="glsl/">glsl/</directory>
+  <directory prefix="quick_text/">quick_text/</directory>
 </erc>

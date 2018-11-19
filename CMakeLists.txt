@@ -6,11 +6,11 @@
 project(GraphicTools)
 cmake_minimum_required(VERSION 3.2)
 #
-set(GraphicTools_VERSION_MAJOR 1)
-set(GraphicTools_VERSION_MINOR 0)
-set(PROJECT_GraphicTools_STATIC "${PROJECT_NAME}_static")
-set(PROJECT_GraphicTools_SHARED "${PROJECT_NAME}_shared")
-set(PROJECT_GraphicTools_LIB_NAME "gtools")
+set(GTOOLS_VERSION_MAJOR 1)
+set(GTOOLS_VERSION_MINOR 0)
+set(PROJECT_GTOOLS_STATIC "${PROJECT_NAME}_static")
+set(PROJECT_GTOOLS_SHARED "${PROJECT_NAME}_shared")
+set(PROJECT_GTOOLS_LIB_NAME "gtools")
 
 # --- EXTERNALS LIBS ---
 include("external/CMakeLists.txt")
@@ -113,13 +113,13 @@ include_directories(${HEADER_PATH})
 #
 
 # --- BUILD OPTIONS : STATIC/SHARED ---
-SET(GraphicTools_SHARED ON CACHE BOOL "Build shared GraphicTools library")
-SET(GraphicTools_STATIC ON CACHE BOOL "Build static GraphicTools library")
+SET(GTOOLS_SHARED ON CACHE BOOL "Build shared GraphicTools library")
+SET(GTOOLS_STATIC ON CACHE BOOL "Build static GraphicTools library")
 
 # --- CHECK BUILD OPTIONS ---
-if( (NOT ${GraphicTools_SHARED}) AND (NOT ${GraphicTools_STATIC}) )
+if( (NOT ${GTOOLS_SHARED}) AND (NOT ${GTOOLS_STATIC}) )
   message(FATAL_ERROR, "\n\n   !! Require one of SHARED or STATIC for GraphicTools !! \n\n")
-  set(GraphicTools_FOUND OFF)
+  set(GTOOLS_FOUND OFF)
   return()
 endif()
 
@@ -129,17 +129,20 @@ endif()
 #
 
 # --- BUILD OPTIONS  ---
-## set(GraphicTools_BUILD_TOOLS    ON CACHE BOOL "Build tools for GraphicTools library")
-## set(GraphicTools_BUILD_TESTS    ON CACHE BOOL "Build tests for GraphicTools library")
-set(GraphicTools_BUILD_EXAMPLES ON CACHE BOOL "Build examples for GraphicTools library")
+## set(GTOOLS_BUILD_TOOLS    ON CACHE BOOL "Build tools for GraphicTools library")
+## set(GTOOLS_BUILD_TESTS    ON CACHE BOOL "Build tests for GraphicTools library")
+option(GTOOLS_BUILD_EXAMPLES "Build examples for GraphicTools library" ON)
 
 # --- SUB BUILD LINKING ---
 set(PROJECT_SUBPROJECT_HEADER_PATH "${CMAKE_CURRENT_LIST_DIR}/${HEADER_PATH}")
-if(GraphicTools_SHARED)
-  set(PROJECT_SUBPROJECT_LINKING ${PROJECT_GraphicTools_SHARED})
-elseif(GraphicTools_STATIC)
-  set(PROJECT_SUBPROJECT_LINKING ${PROJECT_GraphicTools_STATIC})
+set(PROJECT_SUBPROJECT_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR})
+if(GTOOLS_SHARED)
+  set(PROJECT_SUBPROJECT_LINKING ${PROJECT_GTOOLS_SHARED})
+elseif(GTOOLS_STATIC)
+  set(PROJECT_SUBPROJECT_LINKING ${PROJECT_GTOOLS_STATIC})
 endif()
+
+
 
 #
 ##
@@ -151,40 +154,40 @@ set(RESOURCES_FILES
 )
 
 # --- BUILDS LIB TARGET STATIC ---
-if(${GraphicTools_STATIC})
+if(${GTOOLS_STATIC})
 
   # --- ---
-  add_library(${PROJECT_GraphicTools_STATIC} STATIC ${TARGET_SRC_FILES} ${TARGET_HEADER_FILES} ${generated_files_path} ${embedded_resource_generation_FILES})
-  set_target_properties(${PROJECT_GraphicTools_STATIC} PROPERTIES OUTPUT_NAME ${PROJECT_GraphicTools_LIB_NAME})
+  add_library(${PROJECT_GTOOLS_STATIC} STATIC ${TARGET_SRC_FILES} ${TARGET_HEADER_FILES} ${generated_files_path} ${embedded_resource_generation_FILES})
+  set_target_properties(${PROJECT_GTOOLS_STATIC} PROPERTIES OUTPUT_NAME ${PROJECT_GTOOLS_LIB_NAME})
   
   # --- PRIVATE LIBS ---
-  LINK_PRIVATE_LIB_STB_IMAGE(${PROJECT_GraphicTools_STATIC})
+  LINK_PRIVATE_LIB_STB_IMAGE(${PROJECT_GTOOLS_STATIC})
 
   # --- EMBEDDED RESOURCES ---
-  erc_add_resources(${PROJECT_GraphicTools_STATIC} ADD_INTO_IDE ${RESOURCES_FILES})
+  erc_add_resources(${PROJECT_GTOOLS_STATIC} ADD_INTO_IDE ${RESOURCES_FILES})
 
   # --- INSTALL LIB ---
-  install(TARGETS ${PROJECT_GraphicTools_STATIC}
+  install(TARGETS ${PROJECT_GTOOLS_STATIC}
           LIBRARY DESTINATION "lib"
           ARCHIVE DESTINATION "lib")
 
 endif()
 
 # --- BUILDS LIB TARGET SHARED ---
-if(${GraphicTools_SHARED})
+if(${GTOOLS_SHARED})
 
   # --- ---
-  add_library(${PROJECT_GraphicTools_SHARED} SHARED ${TARGET_SRC_FILES} ${TARGET_HEADER_FILES})
-  set_target_properties(${PROJECT_GraphicTools_SHARED} PROPERTIES OUTPUT_NAME ${PROJECT_GraphicTools_LIB_NAME})
+  add_library(${PROJECT_GTOOLS_SHARED} SHARED ${TARGET_SRC_FILES} ${TARGET_HEADER_FILES})
+  set_target_properties(${PROJECT_GTOOLS_SHARED} PROPERTIES OUTPUT_NAME ${PROJECT_GTOOLS_LIB_NAME})
 
   # --- PRIVATE LIBS ---
-  LINK_PRIVATE_LIB_STB_IMAGE(${PROJECT_GraphicTools_SHARED})
+  LINK_PRIVATE_LIB_STB_IMAGE(${PROJECT_GTOOLS_SHARED})
 
   # --- EMBEDDED RESOURCES ---
-  erc_add_resources(${PROJECT_GraphicTools_SHARED} ADD_INTO_IDE ${RESOURCES_FILES})
+  erc_add_resources(${PROJECT_GTOOLS_SHARED} ADD_INTO_IDE ${RESOURCES_FILES})
 
   # --- INSTALL LIB ---
-  install(TARGETS ${PROJECT_GraphicTools_SHARED}
+  install(TARGETS ${PROJECT_GTOOLS_SHARED}
           RUNTIME DESTINATION "bin"
           LIBRARY DESTINATION "lib"
           ARCHIVE DESTINATION "lib")
@@ -198,7 +201,7 @@ install(DIRECTORY "${HEADER_PATH}/." DESTINATION "include")
 ## Subproject
 #
 
-set(PROJECT_GraphicTools_HEADER_PATH "${CMAKE_CURRENT_LIST_DIR}/${HEADER_PATH}")
+set(PROJECT_GTOOLS_HEADER_PATH "${CMAKE_CURRENT_LIST_DIR}/${HEADER_PATH}")
 
 
 #
@@ -206,16 +209,16 @@ set(PROJECT_GraphicTools_HEADER_PATH "${CMAKE_CURRENT_LIST_DIR}/${HEADER_PATH}")
 #
 
 # # --- BUILDS TOOLS  ---
-# if(${GraphicTools_BUILD_TOOLS})
+# if(${GTOOLS_BUILD_TOOLS})
 #   ##add_subdirectory("tools/")
 # endif()
 
 # --- BUILDS EXAMPLES ---
-if(${GraphicTools_BUILD_EXAMPLES})
+if(${GTOOLS_BUILD_EXAMPLES})
  add_subdirectory("examples/")
 endif()
 
 # # --- BUILDS TESTS ---
-# if(${GraphicTools_BUILD_TESTS} AND EXISTS ${ERC_BINARY_PACKAGER})
+# if(${GTOOLS_BUILD_TESTS} AND EXISTS ${ERC_BINARY_PACKAGER})
 #   add_subdirectory("tests/")
 # endif()

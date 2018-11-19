@@ -7,6 +7,7 @@
 #include <thread>
 
 namespace gtools {
+
   struct frame_limiter
   {
    public:
@@ -67,4 +68,5 @@ namespace gtools {
    public:
     inline uint current_fps() const { return static_cast<uint>( 1. / ( static_cast<double>( deltatime_microseconds ) * 0.000'001 ) ); }
   };
+
 }

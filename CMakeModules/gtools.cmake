@@ -4,7 +4,7 @@
 function(gtools_copy_sharedlibs target_from target_dist ) 
 
   #
-  set(path_suffix_check_list "." "../" "../bin")
+
   
   #
   set(copied_files_list)

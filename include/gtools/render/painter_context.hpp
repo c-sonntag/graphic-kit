@@ -5,7 +5,7 @@
 #include <gtools/render/painter/abstract.hpp>
 #include <gtools/window/abstract_receiver.hpp>
 
-// #include <gtools/gui/abstract.hpp>
+#include <gtools/gui/abstract.hpp>
 
 #include <gtools/frame_limiter.hpp>
 
@@ -31,7 +31,7 @@ namespace gtools {
       gtools::frame_limiter fps_limiter{ 30 };
 
      protected:
-      //gtools::gui::abstract& gui;
+      std::unique_ptr<gtools::gui::abstract> gui_up;
 
      private:
       std::vector<std::unique_ptr<painter::abstract>> painters;
@@ -59,11 +59,15 @@ namespace gtools {
       } window_receiver{ *this };
 
      public:
-      inline void push_painter( std::unique_ptr<painter::abstract>&& p )
+      inline void push_painter( std::unique_ptr<painter::abstract> p )
       { painters.emplace_back( std::move( p ) ); }
 
       inline void clear_painters()
       { painters.clear(); }
+
+     public:
+      inline void set_debug_gui( std::unique_ptr<gtools::gui::abstract> _gui_up )
+      { gui_up = std::move( _gui_up ); }
 
      public:
       painter_context() = default;

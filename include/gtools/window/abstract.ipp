@@ -28,7 +28,6 @@ namespace gtools {
         swap();
 
         //
-
         if( check_close() )
           run = false;
       }
