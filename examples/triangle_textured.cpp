@@ -1,5 +1,5 @@
-#include <gtools/render/painter_context.hpp>
-#include <gtools/window/glfw.hpp>
+#include <gtk/render/painter_context.hpp>
+#include <gtk/window/glfw.hpp>
 
 #include <raiigl/shader.hpp>
 #include <raiigl/program.hpp>
@@ -7,10 +7,10 @@
 #include <raiigl/gl330.hpp>
 #include <raiigl/texture.hpp>
 
-#include <gtools/image.hpp>
-#include <gtools/opengl/texture.hpp>
-#include <gtools/opengl/quick_program.hpp>
-#include <gtools/opengl/primitives_heap.hpp>
+#include <gtk/image.hpp>
+#include <gtk/opengl/texture.hpp>
+#include <gtk/opengl/quick_program.hpp>
+#include <gtk/opengl/primitives_heap.hpp>
 
 #include <erc/package_id.h>
 
@@ -33,13 +33,13 @@ static const erc::package_id resource_erc_id( "res" );
 struct image_with_texture
 {
   const erc::file_id erc_id;
-  const gtools::image img;
+  const gtk::image img;
   const raiigl::texture tex;
 
   inline image_with_texture( const erc::file_id _erc_id ) :
     erc_id( std::move( _erc_id ) ),
-    img( gtools::image::load_from_local_erc( erc_id ) ),
-    tex( gtools::opengl::texture_from_image( img ) )
+    img( gtk::image::load_from_local_erc( erc_id ) ),
+    tex( gtk::opengl::texture_from_image( img ) )
   {}
 
   inline void print_info()
@@ -56,13 +56,13 @@ struct image_with_texture
 
 
 
-struct triangle_textured_painter : public gtools::render::painter::abstract
+struct triangle_textured_painter : public gtk::render::painter::abstract
 {
  private:
   raiigl::gl330 gl330;
   raiigl::program program
   {
-    gtools::opengl::quick_program::open_from_local_erc(
+    gtk::opengl::quick_program::open_from_local_erc(
       resource_erc_id.from( "shader.vert" ),
       resource_erc_id.from( "shader.frag" )
     )
@@ -74,7 +74,7 @@ struct triangle_textured_painter : public gtools::render::painter::abstract
   const raiigl::uniform_variable sampler_texture{ program, "sampler_texture" };
 
  private:
-  using heap_vertices_t = gtools::opengl::primitives_heap<glm::vec2, glm::vec2>;
+  using heap_vertices_t = gtk::opengl::primitives_heap<glm::vec2, glm::vec2>;
   heap_vertices_t heap_vertices;
 
  private:
@@ -82,11 +82,11 @@ struct triangle_textured_painter : public gtools::render::painter::abstract
   image_with_texture iwt_opaque{ resource_erc_id.from( "texture_opaque.png" ) };
 
  public:
-  triangle_textured_painter( gtools::matrices::projection& _projection ) :
+  triangle_textured_painter( gtk::matrices::projection& _projection ) :
     abstract( _projection ),
     heap_vertices(
-      gtools::opengl::attrib_pointer( 0, 2, raiigl::data_type::Float, true ),
-      gtools::opengl::attrib_pointer( 1, 2, raiigl::data_type::Float, true )
+      gtk::opengl::attrib_pointer( 0, 2, raiigl::data_type::Float, true ),
+      gtk::opengl::attrib_pointer( 1, 2, raiigl::data_type::Float, true )
     )
   {
 
@@ -162,7 +162,7 @@ struct triangle_textured_painter : public gtools::render::painter::abstract
 
 int main()
 {
-  gtools::window::glfw_render_opengl_property windows_property{};
+  gtk::window::glfw_render_opengl_property windows_property{};
   windows_property.orginal_resolution = { 800, 600 };
   windows_property.title = "Draw Triangle textured";
   windows_property.antialiasing = 4;
@@ -174,8 +174,8 @@ int main()
   try {
 
     //
-    gtools::render::painter_context context;
-    gtools::window::glfw glfw_window( context, windows_property );
+    gtk::render::painter_context context;
+    gtk::window::glfw glfw_window( context, windows_property );
 
     //
     context.push_painter( std::make_unique<triangle_textured_painter>( context.projection ) );

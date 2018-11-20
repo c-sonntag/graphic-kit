@@ -1,11 +1,11 @@
-#include <gtools/render/painter_context.hpp>
-#include <gtools/window/glfw.hpp>
+#include <gtk/render/painter_context.hpp>
+#include <gtk/window/glfw.hpp>
 
 #include <raiigl/shader.hpp>
 #include <raiigl/program.hpp>
 #include <raiigl/uniform_variable.hpp>
 
-#include <gtools/opengl/quick_program.hpp>
+#include <gtk/opengl/quick_program.hpp>
 
 #include <erc/package_id.h>
 
@@ -22,12 +22,12 @@
 
 static const erc::package_id shader_erc_id( "shaders" );
 
-struct easy_triangle_painter : public gtools::render::painter::abstract
+struct easy_triangle_painter : public gtk::render::painter::abstract
 {
  private:
   const raiigl::program program
   {
-    gtools::opengl::quick_program::open_from_local_erc(
+    gtk::opengl::quick_program::open_from_local_erc(
       shader_erc_id.from( "shader.vert" ),
       shader_erc_id.from( "shader.frag" )
     )
@@ -42,7 +42,7 @@ struct easy_triangle_painter : public gtools::render::painter::abstract
   GLuint vertex_array_id;
 
  public:
-  easy_triangle_painter( gtools::matrices::projection& _projection ) :
+  easy_triangle_painter( gtk::matrices::projection& _projection ) :
     abstract( _projection )
   {
 
@@ -112,7 +112,7 @@ struct easy_triangle_painter : public gtools::render::painter::abstract
 
 int main()
 {
-  gtools::window::glfw_render_opengl_property windows_property{};
+  gtk::window::glfw_render_opengl_property windows_property{};
   windows_property.orginal_resolution = { 800, 600 };
   windows_property.title = "Draw Triangle GLFW Windows";
   windows_property.antialiasing = 4;
@@ -124,8 +124,8 @@ int main()
   try {
 
     //
-    gtools::render::painter_context context;
-    gtools::window::glfw glfw_window( context, windows_property );
+    gtk::render::painter_context context;
+    gtk::window::glfw glfw_window( context, windows_property );
 
     //
     context.push_painter( std::make_unique<easy_triangle_painter>( context.projection ) );

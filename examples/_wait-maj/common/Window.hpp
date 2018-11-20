@@ -2,7 +2,7 @@
 
 #include <AbstractPainter.hpp>
 
-#include <gtools/frame_limiter.hpp>
+#include <gtk/frame_limiter.hpp>
 
 #include <cstdint>
 
@@ -31,7 +31,7 @@ struct Window
   std::vector<HandleTester_pf_t> handleClose;
 
  private:
-  gtools::frame_limiter fps_limiter{30};
+  gtk::frame_limiter fps_limiter{30};
 
  public:
   Window( uint32_t width, uint32_t height, const std::string & title );

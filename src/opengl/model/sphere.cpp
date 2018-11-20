@@ -1,15 +1,15 @@
-#include <gtools/opengl/model/sphere.hpp>
+#include <gtk/opengl/model/sphere.hpp>
 
-#include <gtools/types.hpp>
-#include <gtools/structures_pack/vertex_uv_norm.hpp>
-#include <gtools/opengl/quick_program.hpp>
+#include <gtk/types.hpp>
+#include <gtk/structures_pack/vertex_uv_norm.hpp>
+#include <gtk/opengl/quick_program.hpp>
 
 #include <erc/package_id.h>
 #include <erc/inventory_package.h>
 
 #include <vector>
 
-namespace gtools {
+namespace gtk {
   namespace opengl {
     namespace model {
 
@@ -21,7 +21,7 @@ namespace gtools {
 
       sphere::gl_support::gl_support() :
         glsl(
-          gtools::opengl::quick_program::open_from_local_erc(
+          gtk::opengl::quick_program::open_from_local_erc(
             package_id.from( "glsl/vertex/basic_vertex.vert" ),
             package_id.from( "glsl/fragment/colored_by_uniform_color.frag" )
           )

@@ -1,13 +1,13 @@
-#include <gtools/render/painter_context.hpp>
-#include <gtools/window/glfw.hpp>
+#include <gtk/render/painter_context.hpp>
+#include <gtk/window/glfw.hpp>
 
 #include <raiigl/shader.hpp>
 #include <raiigl/program.hpp>
 #include <raiigl/uniform_variable.hpp>
 #include <raiigl/gl330.hpp>
 
-#include <gtools/opengl/quick_program.hpp>
-#include <gtools/opengl/primitives_heap.hpp>
+#include <gtk/opengl/quick_program.hpp>
+#include <gtk/opengl/primitives_heap.hpp>
 
 #include <erc/package_id.h>
 
@@ -26,13 +26,13 @@
 
 static const erc::package_id shader_erc_id( "shaders" );
 
-struct easy_triangle_heap_painter : public gtools::render::painter::abstract
+struct easy_triangle_heap_painter : public gtk::render::painter::abstract
 {
  private:
   raiigl::gl330 gl330;
   raiigl::program program
   {
-    gtools::opengl::quick_program::open_from_local_erc(
+    gtk::opengl::quick_program::open_from_local_erc(
       shader_erc_id.from( "shader.vert" ),
       shader_erc_id.from( "shader.frag" )
     )
@@ -43,13 +43,13 @@ struct easy_triangle_heap_painter : public gtools::render::painter::abstract
   const raiigl::uniform_variable uniform_color{ program, "uniform_color" };
 
  private:
-  using heap_vertices_t = gtools::opengl::primitives_heap<glm::vec2>;
+  using heap_vertices_t = gtk::opengl::primitives_heap<glm::vec2>;
   heap_vertices_t heap_vertices;
 
  public:
-  easy_triangle_heap_painter( gtools::matrices::projection& _projection ) :
+  easy_triangle_heap_painter( gtk::matrices::projection& _projection ) :
     abstract( _projection ),
-    heap_vertices( gtools::opengl::attrib_pointer( 0, 2, raiigl::data_type::Float, true ) )
+    heap_vertices( gtk::opengl::attrib_pointer( 0, 2, raiigl::data_type::Float, true ) )
   {
     //
     {
@@ -90,7 +90,7 @@ struct easy_triangle_heap_painter : public gtools::render::painter::abstract
 
 int main()
 {
-  gtools::window::glfw_render_opengl_property windows_property{};
+  gtk::window::glfw_render_opengl_property windows_property{};
   windows_property.orginal_resolution = { 800, 600 };
   windows_property.title = "Draw Triangle GLFW Windows";
   windows_property.antialiasing = 4;
@@ -102,8 +102,8 @@ int main()
   try {
 
     //
-    gtools::render::painter_context context;
-    gtools::window::glfw glfw_window( context, windows_property );
+    gtk::render::painter_context context;
+    gtk::window::glfw glfw_window( context, windows_property );
 
     //
     context.push_painter( std::make_unique<easy_triangle_heap_painter>( context.projection ) );

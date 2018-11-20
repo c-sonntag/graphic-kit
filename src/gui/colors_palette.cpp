@@ -1,6 +1,6 @@
-#include <gtools/gui/colors_palette.hpp>
+#include <gtk/gui/colors_palette.hpp>
 
-namespace gtools {
+namespace gtk {
   namespace gui {
 
     color_palette color_palette_default;

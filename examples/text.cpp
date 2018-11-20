@@ -1,14 +1,14 @@
-#include <gtools/render/painter_context.hpp>
-#include <gtools/window/glfw.hpp>
+#include <gtk/render/painter_context.hpp>
+#include <gtk/window/glfw.hpp>
 
 #include <raiigl/shader.hpp>
 #include <raiigl/program.hpp>
 #include <raiigl/uniform_variable.hpp>
 
-#include <gtools/basic_colors.hpp>
-#include <gtools/opengl/quick_program.hpp>
-#include <gtools/opengl/quick_text.hpp>
-#include <gtools/opengl/quick_text_expander.hpp>
+#include <gtk/color/list.hpp>
+#include <gtk/opengl/quick_program.hpp>
+#include <gtk/opengl/quick_text.hpp>
+#include <gtk/opengl/quick_text_expander.hpp>
 
 #include <erc/package_id.h>
 
@@ -26,18 +26,18 @@
 
 static const erc::package_id shader_erc_id( "shaders" );
 
-struct text_painter : public gtools::render::painter::abstract
+struct text_painter : public gtk::render::painter::abstract
 {
  private:
   const raiigl::program program
   {
-    gtools::opengl::quick_program::open_from_local_erc(
+    gtk::opengl::quick_program::open_from_local_erc(
       shader_erc_id.from( "shader.vert" ),
       shader_erc_id.from( "shader.frag" )
     )
   };
 
-  gtools::opengl::quick_text calibri{ gtools::opengl::quick_text_fonts::CalibriLight_1024 };
+  gtk::opengl::quick_text calibri{ gtk::opengl::quick_text_fonts::CalibriLight_1024 };
 
  private:
   const raiigl::uniform_variable uniform_vertex_mvp{ program, "MVP" };
@@ -46,14 +46,14 @@ struct text_painter : public gtools::render::painter::abstract
   raiigl::gl330 gl;
 
  public:
-  text_painter( gtools::matrices::projection& _projection ) :
+  text_painter( gtk::matrices::projection& _projection ) :
     abstract( _projection )
   {
 
     {
-      gtools::opengl::text_expander yop( calibri.complete_text( "Yop ! Yap !" ) );
-      yop.color = gtools::basic_colors::intense_green;
-      yop.align_h = gtools::opengl::text_expander::center;
+      gtk::opengl::text_expander yop( calibri.complete_text( "Yop ! Yap !" ) );
+      yop.color = gtk::color::list::intense_green;
+      yop.align_h = gtk::opengl::text_expander::center;
       yop.normal_size = 1.f;
     }
 
@@ -77,7 +77,7 @@ struct text_painter : public gtools::render::painter::abstract
 
 int main()
 {
-  gtools::window::glfw_render_opengl_property windows_property{};
+  gtk::window::glfw_render_opengl_property windows_property{};
   windows_property.orginal_resolution = { 800, 600 };
   windows_property.title = "Draw Text on GLFW Windows";
   windows_property.antialiasing = 4;
@@ -89,8 +89,8 @@ int main()
   try {
 
     //
-    gtools::render::painter_context context;
-    gtools::window::glfw glfw_window( context, windows_property );
+    gtk::render::painter_context context;
+    gtk::window::glfw glfw_window( context, windows_property );
 
     //
     context.push_painter( std::make_unique<text_painter>( context.projection ) );
