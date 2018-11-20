@@ -7,7 +7,7 @@
 #include <raiigl/gl330.hpp>
 #include <raiigl/texture.hpp>
 
-#include <gtk/image.hpp>
+#include <gtk/encoder/image.hpp>
 #include <gtk/opengl/texture.hpp>
 #include <gtk/opengl/quick_program.hpp>
 #include <gtk/opengl/primitives_heap.hpp>
@@ -33,12 +33,12 @@ static const erc::package_id resource_erc_id( "res" );
 struct image_with_texture
 {
   const erc::file_id erc_id;
-  const gtk::image img;
+  const gtk::encoder::image img;
   const raiigl::texture tex;
 
   inline image_with_texture( const erc::file_id _erc_id ) :
     erc_id( std::move( _erc_id ) ),
-    img( gtk::image::load_from_local_erc( erc_id ) ),
+    img( gtk::encoder::image::load_from_local_erc( erc_id ) ),
     tex( gtk::opengl::texture_from_image( img ) )
   {}
 

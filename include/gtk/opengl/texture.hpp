@@ -1,6 +1,6 @@
 #pragma once
 
-#include <gtk/image.hpp>
+#include <gtk/encoder/image.hpp>
 #include <gtk/math.hpp>
 
 #include <raiigl/texture.hpp>
@@ -11,7 +11,7 @@
 namespace gtk {
   namespace opengl {
 
-    inline raiigl::texture texture_from_image( const image & img )
+    inline raiigl::texture texture_from_image( const encoder::image & img )
     {
 
       //

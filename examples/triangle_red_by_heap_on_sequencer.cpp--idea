@@ -52,16 +52,50 @@ struct easy_triangle_heap_painter : public gtk::render::painter::abstract
     heap_vertices( gtk::opengl::attrib_pointer( 0, 2, raiigl::data_type::Float, true ) )
   {
     //
+
     {
-      heap_vertices_t::vertex_expander triangles( heap_vertices.complete_primitive( raiigl::primitive_type::Triangles ) );
-      triangles.reserve( 3 );
-      triangles.push( glm::vec2( -1.0f, -1.0f ) );
-      triangles.push( glm::vec2( 1.0f, -1.0f ) );
-      triangles.push( glm::vec2( 0.0f,  1.0f ) );
+      // sequenced_primitive_heap & triangles(sequencer.new_heap( gtk::opengl::attrib_pointer( 0, 2, raiigl::data_type::Float, true )  ));
+      // sequenced_primitive_heap& triangles(
+      //   sequencer.new_heap(
+      //     raiigl::primitive_type::Triangles,
+      //     gtk::opengl::attrib_pointer( "vertex", 2, raiigl::data_type::Float, true )
+      //   )
+      // );
+
+      {
+        heap_vertices_t::vertex_expander triangles( heap_vertices.complete_primitive( raiigl::primitive_type::Triangles ) );
+        triangles.reserve( 3 );
+        triangles.push( glm::vec2( -1.0f, -1.0f ) );
+        triangles.push( glm::vec2( 1.0f, -1.0f ) );
+        triangles.push( glm::vec2( 0.0f,  1.0f ) );
+      }
+
+      // sequencer.push_heap(heap);
     }
 
-    //
-    heap_vertices.init_buffer();
+    {
+      // sequenced_primitive_heap& triangles_placement(
+      //   sequencer.new_heap(
+      //     sequence_divisor(1),
+      //     gtk::opengl::attrib_pointer( "position", 2, raiigl::data_type::Float, true )
+      //   )
+      // );
+
+      {
+        heap_vertices_t::vertex_expander triangles_placement( heap_vertices.complete_primitive( raiigl::primitive_type::Triangles ) );
+        triangles_placement.reserve( 3 );
+        triangles_placement.push( glm::vec2( -2.0f, -2.0f ) );
+        triangles_placement.push( glm::vec2( 2.0f, -2.0f ) );
+        triangles_placement.push( glm::vec2( 0.0f,  2.0f ) );
+      }
+
+      // sequencer.push_heap(heap);
+    }
+
+
+
+
+
   }
 
   float red_curve_count = 0.f;
@@ -97,6 +131,11 @@ int main()
   windows_property.major = 3;
   windows_property.minor = 3;
   windows_property.core_profile = true;
+
+  int n = 0;
+  glGetIntegerv( GL_MAX_VERTEX_ATTRIBS, &n );
+  std::cout << "GL_MAX_VERTEX_ATTRIBS : " << n << std::endl;
+
 
   try {
 

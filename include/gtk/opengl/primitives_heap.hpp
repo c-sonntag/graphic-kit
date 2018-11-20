@@ -26,27 +26,35 @@
 namespace gtk {
   namespace opengl {
 
-    template<typename  ... TListTypes>
+    template<typename ... TListTypes>
     struct vertex_expander;
 
-    template<typename  ... TListTypes>
+    template<typename ... TListTypes>
     struct index_expander;
 
     struct uniform_lap;
 
     // ---- ---- ---- ----
 
-    template<typename  ... TListTypes>
+    //    struct primitives_heap_configuration
+    //    {
+    //      uint buffer_1rst_divisor_layout;
+    //      uint buffer_2nd_divisor_layout;
+    //    };
+
+    // ---- ---- ---- ----
+
+    template<typename ... TListTypes>
     class primitives_heap
     {
      public:
       static constexpr uint nb_types { sizeof...( TListTypes ) };
 
      public:
-      using primitives_heap_t = primitives_heap<TListTypes...>;
+      using primitives_heap_t = primitives_heap<TListTypes ...>;
 
      public:
-      using vertices_t = opengl::vertex_buffer<TListTypes...>;
+      using vertices_t = opengl::vertex_buffer<TListTypes ...>;
       using indices_t = opengl::index_buffer;
       using uniforms_laps_up_t = std::vector<abstract_expander_property_support::uniform_container_up_t>;
 
@@ -55,11 +63,11 @@ namespace gtk {
       indices_t indices;
 
      protected:
-      using attrib_pointers_t = attribs_pointers_by_offset<TListTypes...>;
+      using attrib_pointers_t = attribs_pointers_by_offset<TListTypes ...>;
       const attrib_pointers_t attrib_pointers;
 
      public:
-      template< typename... Args >
+      template<typename ... Args>
       primitives_heap( Args ... attributes );
 
      protected:
@@ -77,18 +85,21 @@ namespace gtk {
       raiigl::vertex_array vao;
 
      protected:
-      void gl_attrib_pointer( raiigl::gl330 & gl );
-      void attrib_array_enable_all( raiigl::gl330 & gl );
-      void attrib_array_disable_all( raiigl::gl330 & gl );
+      void gl_attrib_pointer( raiigl::gl330& gl );
+      void attrib_array_enable_all( raiigl::gl330& gl );
+      void attrib_array_disable_all( raiigl::gl330& gl );
 
-     public: /**< @todo */ // protected
+     protected: /**< @todo */  // protected
       virtual void bind_buffer();
+
+     protected:
+      void configure_vao(raiigl::gl330& gl);
 
      public:
       //void configure_vao( raiigl::gl330 & gl, raiigl::program & program );
 
-      void draw( raiigl::gl330 & gl, raiigl::program & program );
-      void multiple_instance_draw( raiigl::gl430 & gl, raiigl::program & program, const uint nb_instance );
+      void draw( raiigl::gl330& gl, raiigl::program& program );
+      void multiple_instance_draw( raiigl::gl430& gl, raiigl::program& program, const uint nb_instance );
 
      public:
       using abstract_expander_property_up_t = std::unique_ptr<opengl::abstract_expander_property>;
@@ -108,13 +119,13 @@ namespace gtk {
       struct expander_property_support_inherited : public opengl::abstract_expander_property_support
       {
        protected:
-        primitives_heap_t & heap;
+        primitives_heap_t& heap;
 
        private:
         inline void check_busy();
 
        public:
-        expander_property_support_inherited( primitives_heap_t & _heap );
+        expander_property_support_inherited( primitives_heap_t& _heap );
         void lock();
         void unlock( abstract_expander_property_up_t property_up );
         void unlock( uniform_container_up_t uniform_container_up );
@@ -126,11 +137,11 @@ namespace gtk {
       bool is_busy() const;
 
      public:
-      conditional_uniform_set & conditionals_uniforms_sets;
+      conditional_uniform_set& conditionals_uniforms_sets;
 
      public:
-      using vertex_expander = opengl::vertex_expander<TListTypes...>;
-      using index_expander = opengl::index_expander<TListTypes...>;
+      using vertex_expander = opengl::vertex_expander<TListTypes ...>;
+      using index_expander = opengl::index_expander<TListTypes ...>;
       using uniform_lap = opengl::uniform_lap;
 
      public:
