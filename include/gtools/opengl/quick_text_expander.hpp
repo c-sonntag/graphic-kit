@@ -1,7 +1,7 @@
 #pragma once
 
 #include <gtools/types.hpp>
-#include <gtools/basic_colors.hpp>
+#include <gtools/color/list.hpp>
 #include <gtools/opengl/quick_text.hpp>
 
 #include <glm/vec3.hpp>
@@ -25,7 +25,7 @@ namespace gtools {
       float normal_size = 0.1f;
       glm::vec3 pos { 0.f, 0.f, 0.f };
       glm::vec3 degree_angle_3d {0.f, 0.f, 0.f};
-      glm::vec3 color {basic_colors::white};
+      glm::vec3 color {color::list::white};
       horizontal_align align_h = left;
       vertical_align align_v = middle;
       bool text_auto_width = true;

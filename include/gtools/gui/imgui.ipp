@@ -1,6 +1,8 @@
 #pragma once
 
 #include <gtools/gui/imgui.hpp>
+#include <gtools/gui/colors_palette.hpp>
+
 
 namespace ImGui {
 
@@ -71,7 +73,6 @@ namespace gtools {
       // ---- ---- ---- ----
 
       static constexpr float mouse_ratio { 0.01f };
-      static const ImVec4 reset_button_color { ImColor::HSV( 0.f, 1.f, 0.66f ) };
 
       inline void text( const float& v )      { ImGui::Text( "(%3.3f)", double(v) ); }
       inline void text( const glm::vec2& v )  { ImGui::Text( "(%3.3f,%3.3f)", double(v.x), double(v.y) ); }
@@ -207,7 +208,7 @@ namespace gtools {
 
               if( change )
                 projection.compute();
-              if( ImGui::ButtonStyle( "Reset", reset_button_color ) )
+              if( ImGui::ButtonStyle( "Reset", ImGui::glm( gtools::gui::color_palette_default.reset_button ) ) )
                 projection.reset();
             }
             ImGui::TreePop();
@@ -237,7 +238,7 @@ namespace gtools {
 
               if( change )
                 view.compute();
-              if( ImGui::ButtonStyle( "Reset", reset_button_color ) )
+               if( ImGui::ButtonStyle( "Reset", ImGui::glm( gtools::gui::color_palette_default.reset_button ) ) )
                 view.reset();
             }
             ImGui::TreePop();
@@ -269,7 +270,7 @@ namespace gtools {
 
               if( change )
                 model.compute();
-              if( ImGui::ButtonStyle( "Reset", reset_button_color ) )
+               if( ImGui::ButtonStyle( "Reset", ImGui::glm( gtools::gui::color_palette_default.reset_button ) ) )
                 model.reset();
             }
             ImGui::TreePop();

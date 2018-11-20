@@ -1,7 +1,7 @@
 #pragma once
 
 #include <gtools/image.hpp>
-#include <gtools/base_format.hpp>
+#include <gtools/math.hpp>
 
 #include <raiigl/texture.hpp>
 
@@ -16,8 +16,8 @@ namespace gtools {
 
       //
       const bool good_image_format(
-        gtools::base_format::is_pow_of( 2u, img.width ) &&
-        gtools::base_format::is_pow_of( 2u, img.height )
+        gtools::math::is_pow_of( 2u, img.width ) &&
+        gtools::math::is_pow_of( 2u, img.height )
       );
       if ( !good_image_format )
       {

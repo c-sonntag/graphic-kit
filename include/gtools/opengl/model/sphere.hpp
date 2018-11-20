@@ -14,7 +14,7 @@ namespace gtools {
   namespace opengl {
     namespace model {
 
-      struct sphere : public abstract
+      struct sphere : public abstract_by_color
       {
        public:
         static constexpr float latitudeBands = 30.f;
@@ -46,7 +46,7 @@ namespace gtools {
 
        public:
         void paint( raiigl::gl330& gl, const matrices::base_camera& camera, const glm::mat4& model ) override;
-        void set_color( const glm::vec4& color );
+        void set_color( const glm::vec4& color ) override;
       };
 
 

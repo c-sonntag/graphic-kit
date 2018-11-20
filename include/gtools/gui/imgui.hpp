@@ -15,6 +15,9 @@ namespace ImGui {
   bool SliderUInt( const char* label, uint* v, uint v_min, uint v_max, const char* format = "%d" );
   bool ButtonStyle( const char* label, const ImVec4& c, const ImVec2& size = ImVec2(0, 0) );
 
+  inline ImVec4& glm( glm::vec4& v ) { return reinterpret_cast<ImVec4&>( v ); }
+  inline const ImVec4& glm( const glm::vec4& v ) { return reinterpret_cast<const ImVec4&>( v ); }
+
 }
 
 // ---- ---- ----  ----

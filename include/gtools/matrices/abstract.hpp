@@ -20,6 +20,10 @@ namespace gtools {
      public:
       /** @brief glm::Mat4x4 Cast Operator */
       inline operator const glm::mat4& ( ) const { return m; }
+      inline operator const void*() const { return &m[0][0]; }
+
+      template<typename T>
+      const T* cast() const { return reinterpret_cast<T*>( &m[0][0] ); }
 
      public:
       virtual const mat4x4_t& compute() = 0;
@@ -50,7 +54,8 @@ namespace gtools {
       { reinterpret_cast<TMatrice&>( *this ) = from; }
 
      public:
-      inline const mat4x4_t& reset() override {
+      inline const mat4x4_t& reset() override
+      {
         if( default_m_up )
         {
           auto k( default_m_up );
@@ -63,7 +68,8 @@ namespace gtools {
       }
 
      public:
-      inline void set_default( const TMatrice& d ) {
+      inline void set_default( const TMatrice& d )
+      {
         default_m_up = std::make_unique<TMatrice>( d );
         default_m_up->compute();
       }

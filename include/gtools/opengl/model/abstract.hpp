@@ -21,6 +21,15 @@ namespace gtools {
         virtual void anime( const gtools::time& ) { /*nothing */ }
       };
 
+      struct abstract_by_color : public abstract
+      {
+       public:
+        virtual ~abstract_by_color() = default;
+
+       public:
+        virtual void set_color( const glm::vec4& color ) = 0;
+      };
+
     }
   }
 }

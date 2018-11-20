@@ -1,20 +1,26 @@
 #pragma once
 
-#include <gtools/types.hpp>
-
 #include <cmath>
 
 namespace gtools {
-  namespace base_format {
+  namespace math {
 
-    template <typename T>
+    static constexpr float pi = float(M_PI);
+    static constexpr float pi_tour = float(2.0 * M_PI);
+    static constexpr float demi_pi = float(M_PI_2);
+    static constexpr float quart_pi = float(M_PI_4);
+
+
+    template<typename T>
     inline bool is_pow_of( T base, T number )
     {
       // @see https://www.geeksforgeeks.org/check-if-a-number-is-power-of-another-number/
       // logarithm function to calculate value
       const double r( std::log( number ) / std::log( base ) );
-      return ( std::floor( r ) == r );
+      return std::floor( r ) == r;
     }
 
   }
 }
+
+
