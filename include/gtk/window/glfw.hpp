@@ -1,6 +1,7 @@
 #pragma once
 
 #include <gtk/window/abstract.hpp>
+#include <gtk/window/glfw_controller.hpp>
 
 #include <string>
 #include <memory>
@@ -11,14 +12,38 @@ struct GLFWwindow;
 namespace gtk {
   namespace window {
 
-    struct glfw_render_property
+    struct glfw_context_property
     {
+
+      /**
+       * @group Window context
+       * @{
+       */
+
+      enum class cursor_mode { normal = 0, hidden, disabled };
+
       glm::uvec2 orginal_resolution{ 800, 600 };
       std::string title{ "unknown window name" };
       uint antialiasing{ 4 };
+
+      cursor_mode cursor{ cursor_mode::normal };
+
+      /**
+       * }@
+       * @group Inputs :
+       * @{
+       */
+
+      bool capture_key{ true };
+      bool capture_mouse{ true };
+
+      /**
+       * }@
+       */
+
     };
 
-    struct glfw_render_opengl_property : public glfw_render_property
+    struct glfw_render_opengl_property : public glfw_context_property
     {
       uint major{ 3 }, minor{ 3 };
       bool core_profile{ true };
@@ -30,26 +55,8 @@ namespace gtk {
 
     struct glfw : public abstract
     {
-     public:
-      struct controller : public abstract_controller
-      {
-       protected:
-        glfw& parent;
-        friend glfw;
-        inline controller( glfw& _parent ) : parent( _parent ) {}
-
-       protected:
-        window::key_modifier m_key_modifier = window::key_modifier::_none;
-        bool glfw_key_pressed( uint k );
-        void poll();
-
-       public:
-        void active_cursor( bool enable = true ) override;
-        void set_cursor( const glm::uvec2& position ) override;
-        bool key_pressed( const window::key& k ) override;
-        window::key_modifier key_modifier() override;
-      }
-      controller{ *this };
+     protected:
+      glfw_controller m_controller{ *this };
 
      public:
       typedef bool (* test_function_pf_t)( GLFWwindow* const w );
@@ -64,8 +71,7 @@ namespace gtk {
 
      public:
       GLFWwindow* const window;
-
-     public:
+      static glfw& get( GLFWwindow* w );
 
      public:
       std::vector<test_function_pf_t> close_functions;
@@ -79,14 +85,18 @@ namespace gtk {
       virtual ~glfw() override;
 
      protected:
-      double current_time = 0.;
-      double last_time = 0.;
-      float delta_time = 0.;
+      glm::uvec2 m_screen_size;
+
+     public:
+      const glm::uvec2& screen_size() const { return m_screen_size; }
 
      public:
       virtual void poll() override;
       virtual void clear() override;
       virtual void swap() override;
+
+     public:
+      virtual glfw_controller& controller() override;
 
      public:
       virtual bool check_close() override;
@@ -99,9 +109,6 @@ namespace gtk {
       struct callback
       {
        public:
-        static __forceinline glfw& get( GLFWwindow* w );
-
-       public:
         static void error( int error, const char* description );
 
        public:
@@ -109,7 +116,6 @@ namespace gtk {
         static void window_size( GLFWwindow* window, int width, int height );
         static void resize( GLFWwindow* window, int width, int height );
       };
-
 
      public:
       inline void push_close_function( const test_function_pf_t&& ht )

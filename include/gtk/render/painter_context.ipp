@@ -24,12 +24,21 @@ namespace gtk {
       // ---- ----
 
       fps_limiter.cadence();
+      const gtk::time time( fps_limiter.time() );
+
+      // ---- ----
+
+      if( any( painters_mode & painter::modes::check_commands ) )
+      {
+        for( std::unique_ptr<painter::abstract>&painter : painters )
+          if( any( painter->mode & painter::modes::check_commands ) )
+            painter->check_commands( time );
+      }
 
       // ---- ----
 
       if( any( painters_mode & painter::modes::anime ) )
       {
-        const gtk::time time( fps_limiter.time() );
         for( std::unique_ptr<painter::abstract>&painter : painters )
           if( any( painter->mode & painter::modes::anime ) )
             painter->anime( time );

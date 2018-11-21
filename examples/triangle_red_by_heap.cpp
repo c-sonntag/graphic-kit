@@ -105,7 +105,7 @@ int main()
     gtk::window::glfw glfw_window( context, windows_property );
 
     //
-    context.push_painter( std::make_unique<easy_triangle_heap_painter>( context.projection ) );
+    context.push_painter<easy_triangle_heap_painter>( context.projection );
 
     //
     glfw_window.run();

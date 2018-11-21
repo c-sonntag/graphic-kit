@@ -24,10 +24,18 @@ namespace gtk {
       AltRight     = 0b00010000,
     )
 
+    gtk_enum_bits( mouse_button, uint16_t,
+      left = 1,
+      middle = 2,
+      right = 4
+    )
+
+
   }
 }
 
 gtk_enum_bits_operator( gtk::window::key_modifier, gtk::uchar )
+gtk_enum_bits_operator( gtk::window::mouse_button, uint16_t )
 
 // ---- ---- ---- ----
 
@@ -41,8 +49,18 @@ namespace gtk {
 
      public:
       virtual void active_cursor( bool enable = true ) = 0;
-      virtual void set_cursor( const glm::uvec2& position ) = 0;
-      virtual bool key_pressed( const window::key& k ) = 0;
+
+      virtual void set_cursor_position( const glm::dvec2& position ) = 0;
+
+      virtual const glm::dvec2& cursor_position() const = 0;
+
+      virtual const glm::dvec2& mouse_wheel() const = 0;
+
+      virtual const glm::uvec2& screen_size() const = 0;
+
+      virtual bool is_clicked( const window::mouse_button& b ) = 0;
+      virtual bool is_pressed( const window::key& k ) = 0;
+
       virtual key_modifier key_modifier() = 0;
     };
 

@@ -36,6 +36,36 @@ set(CMAKE_CXX_STANDARD 14)
 # --- LINK CONFIG ---
 set(INTERNAL_DEV_BUILD_MODE ON)
 
+# --- COMPATIBLE OPTIONS : STATIC/SHARED ---
+SET(GraphicToolkit_WITH_GLFW   ON CACHE BOOL "Build compatible GLFW library")
+SET(GraphicToolkit_WITH_VULKAN ON CACHE BOOL "Build compatible VULKAN library")
+# ? SET(GraphicToolkit_WITH_OPENGL ON CACHE BOOL "Build compatible OPENGL library")
+
+
+
+#
+##
+#
+
+if(GraphicToolkit_WITH_GLFW)
+
+  # --- LIB : GLFW ---
+  set(GLFW_USE_STATIC_LIBS OFF)
+  find_package(GLFW REQUIRED)
+  include_directories(${GLFW_INCLUDE_DIRS})
+  link_directories(${GLFW_DIRECTORIES})
+  link_libraries(${GLFW_LIBRARIES})
+  add_definitions(${GLFW_DEFINITIONS})
+
+endif()
+
+if(GraphicToolkit_WITH_VULKAN)
+
+  # --- LIB : VULKAN ---
+  # TODO
+
+endif()
+
 #
 ##
 #

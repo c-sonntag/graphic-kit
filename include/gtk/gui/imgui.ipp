@@ -2,6 +2,7 @@
 
 #include <gtk/gui/imgui.hpp>
 #include <gtk/gui/colors_palette.hpp>
+#include <gtk/math.hpp>
 
 
 namespace ImGui {
@@ -115,12 +116,12 @@ namespace gtk {
         const ImGuiIO& io( ImGui::GetIO() );
         return draging_button( var, label, [&] ()
           {
-            ImDrawList* draw_list = ImGui::GetWindowDrawList();
+            ImDrawList* const draw_list( ImGui::GetWindowDrawList() );
             draw_list->PushClipRectFullScreen();
             draw_list->AddLine( io.MouseClickedPos[0], io.MousePos, ImGui::GetColorU32( ImGuiCol_Button ), 4.0f );
             draw_list->PopClipRect();
-            ImVec2 value_raw = ImGui::GetMouseDragDelta( 0, 0.0f );
-            func( var, value_raw.x, value_raw.y );
+            const ImVec2 value_raw( ImGui::GetMouseDragDelta( 0, 0.0f ) );
+            func( var, mouse_ratio * value_raw.x, mouse_ratio * value_raw.y );
           } );
       }
 
@@ -130,50 +131,15 @@ namespace gtk {
         const ImGuiIO& io( ImGui::GetIO() );
         return draging_button( var, label, [&] ()
           {
-            ImDrawList* draw_list = ImGui::GetWindowDrawList();
+            ImDrawList* const draw_list( ImGui::GetWindowDrawList() );
             draw_list->PushClipRectFullScreen();
             const ImVec2 click_pos { io.MouseClickedPos[0] };
             const ImVec2 drag_line { ( !drag_on_y ? io.MousePos.x : click_pos.x ), ( drag_on_y ? io.MousePos.y : click_pos.y ) };
             draw_list->AddLine( click_pos, drag_line, ImGui::GetColorU32( ImGuiCol_Button ), 4.0f );
             draw_list->PopClipRect();
-            ImVec2 value_raw = ImGui::GetMouseDragDelta( 0, 0.0f );
-            func( var, drag_on_y ? value_raw.y : value_raw.x );
+            const ImVec2 value_raw( ImGui::GetMouseDragDelta( 0, 0.0f ) );
+            func( var, mouse_ratio * ( drag_on_y ? value_raw.y : value_raw.x ) );
           } );
-      }
-
-      // ---- ---- ---- ----
-
-      inline in_circle_property::in_circle_property( const float x, const float y, const float x_center, const float y_center ) :
-        base_x( x - x_center ), base_y( y - y_center ),
-        rayon( std::sqrt( base_x * base_x + base_y * base_y ) + 0.0001f ),
-        part( std::atan2( base_y, base_x ) ) {}
-
-      // ---- ----
-
-      inline void dist_xyz( glm::vec3& position, const float x )
-      {
-        in_circle_property in_circle_xz( position.x, position.z );
-        in_circle_property in_circle_xy( position.x, position.y );
-        const float decal { x* mouse_ratio };
-        position.x = std::cos( in_circle_xz.part ) * ( in_circle_xz.rayon + decal );
-        position.z = std::sin( in_circle_xz.part ) * ( in_circle_xz.rayon + decal );
-        position.y = std::sin( in_circle_xy.part ) * ( in_circle_xy.rayon + decal );
-      }
-
-      inline void rot_xz( glm::vec3& position, const float x )
-      {
-        in_circle_property in_circle( position.x, position.z );
-        const float decal { x* mouse_ratio };
-        position.x = std::cos( in_circle.part + decal ) * in_circle.rayon;
-        position.z = std::sin( in_circle.part + decal ) * in_circle.rayon;
-      }
-
-      inline void rot_zy( glm::vec3& position, const float x )
-      {
-        in_circle_property in_circle( position.z, position.y );
-        const float decal { x* mouse_ratio };
-        position.z = std::cos( in_circle.part + decal ) * in_circle.rayon;
-        position.y = std::sin( in_circle.part + decal ) * in_circle.rayon;
       }
 
       // ---- ---- ---- ----
@@ -228,17 +194,17 @@ namespace gtk {
                 change |= draging_button_x_or_y( view.position, "Z", [&] ( auto& position, auto z ) { position.z += z * mouse_ratio; } );
               }
               {
-                change |= draging_button_x_or_y( view.position, "D(XYZ)", dist_xyz );
+                change |= draging_button_x_or_y( view.position, "D(XYZ)", math::dist_xyz );
               }
               {
-                change |= draging_button_x_or_y( view.position, "R(XZ)", rot_xz );
+                change |= draging_button_x_or_y( view.position, "R(XZ)", math::rot_xz );
                 ImGui::SameLine();
-                change |= draging_button_x_or_y( view.position, "R(ZY)", rot_zy, true );
+                change |= draging_button_x_or_y( view.position, "R(ZY)", math::rot_zy, true );
               }
 
               if( change )
                 view.compute();
-               if( ImGui::ButtonStyle( "Reset", ImGui::glm( gtk::gui::color_palette_default.reset_button ) ) )
+              if( ImGui::ButtonStyle( "Reset", ImGui::glm( gtk::gui::color_palette_default.reset_button ) ) )
                 view.reset();
             }
             ImGui::TreePop();
@@ -270,7 +236,7 @@ namespace gtk {
 
               if( change )
                 model.compute();
-               if( ImGui::ButtonStyle( "Reset", ImGui::glm( gtk::gui::color_palette_default.reset_button ) ) )
+              if( ImGui::ButtonStyle( "Reset", ImGui::glm( gtk::gui::color_palette_default.reset_button ) ) )
                 model.reset();
             }
             ImGui::TreePop();

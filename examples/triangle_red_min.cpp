@@ -76,6 +76,8 @@ struct triangle_red_min_painter : public gtk::render::painter::abstract
   void paint() override
   {
     program.use();
+
+    camera.compute();
     uniform_vertex_mvp.set( camera );
 
     color_curve_count += 0.1f;
@@ -110,8 +112,8 @@ int main()
     gtk::window::glfw glfw_window( context, windows_property );
 
     //
-    context.push_painter( std::make_unique<triangle_red_min_painter>( context.projection ) );
-    glfw_window.push_command( std::make_unique<gtk::window::command::mouse_lookat_center>( context,  ) );
+    auto& painter( context.push_painter<triangle_red_min_painter>( context.projection ) );
+    painter.push_command<gtk::window::command::mouse_lookat_center>( glfw_window.controller(), gtk::window::key_modifier::Control );
 
     //
     glfw_window.run();

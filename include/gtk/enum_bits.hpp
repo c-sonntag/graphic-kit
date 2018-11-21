@@ -26,10 +26,6 @@
   enum class enum_name : enum_type                                         \
   { _all = gtk_enum_bits_value_all( enum_type ), _none = 0, __VA_ARGS__  };
 
-// #define ADD_ENUM_BITS( enum_name, enum_type, ... )                            \
-//   enum class enum_name : enum_type                                       \
-//   { _all = ADD_ENUM_BITS_VALUE_ALL( enum_type ), _none = 0, __VA_ARGS__  };
-
 
 
 // //PRINT_ENUM_BITS( print_flag )

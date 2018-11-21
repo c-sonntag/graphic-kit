@@ -59,8 +59,20 @@ namespace gtk {
       } window_receiver{ *this };
 
      public:
-      inline void push_painter( std::unique_ptr<painter::abstract> p )
-      { painters.emplace_back( std::move( p ) ); }
+      /**
+       * @brief push_painter : create unique_ptr painter of base instance gtk::render::painter::abstract
+       * @param args : arguments of commands
+       */
+      template<
+        typename TPainter, typename ... Args,
+        typename = std::enable_if_t<std::is_base_of<painter::abstract, TPainter>::value>
+      >
+      inline TPainter& push_painter( Args&& ... args )
+      {
+        painters.emplace_back( std::unique_ptr<TPainter>( new TPainter( args ... ) ) );
+        // painters.emplace_back( std::make_unique<TPainter>( args ... ) );
+        return *reinterpret_cast<TPainter*>( painters.back().get() );
+      }
 
       inline void clear_painters()
       { painters.clear(); }

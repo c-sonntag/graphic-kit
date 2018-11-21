@@ -61,20 +61,6 @@ namespace gtk {
 
       // ---- ---- ---- ----
 
-      struct in_circle_property
-      {
-        const float base_x, base_y;
-        const float rayon;
-        const float part;
-        in_circle_property( const float x, const float y, const float x_center = 0.f, const float y_center = 0.f );
-      };
-
-      void dist_xyz( glm::vec3& position, const float x );
-      void rot_xz( glm::vec3& position, const float x );
-      void rot_zy( glm::vec3& position, const float x );
-
-      // ---- ---- ---- ----
-
       namespace button_slider {
         bool xyz( glm::vec3& position );
       }

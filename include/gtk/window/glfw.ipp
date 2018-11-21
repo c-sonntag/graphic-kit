@@ -1,6 +1,7 @@
 #pragma once
 
 #include <gtk/window/glfw.hpp>
+#include <gtk/window/glfw_controller.ipp>
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -18,47 +19,6 @@
 
 namespace gtk {
   namespace window {
-
-    inline bool glfw::controller::glfw_key_pressed( uint k )
-    { return glfwGetKey( parent.window, uint( k ) ) == GLFW_PRESS; }
-
-    inline void glfw::controller::poll()
-    {
-      glfwPollEvents();
-
-      //
-      m_key_modifier =
-        window::key_modifier::_none
-        | ( glfw_key_pressed( GLFW_KEY_LEFT_SHIFT )    * window::key_modifier::ShiftLeft )
-        | ( glfw_key_pressed( GLFW_KEY_RIGHT_SHIFT )   * window::key_modifier::ShiftRight )
-        | ( glfw_key_pressed( GLFW_KEY_LEFT_CONTROL )  * window::key_modifier::ControlLeft )
-        | ( glfw_key_pressed( GLFW_KEY_RIGHT_CONTROL ) * window::key_modifier::ControlRight )
-        | ( glfw_key_pressed( GLFW_KEY_LEFT_ALT )      * window::key_modifier::AltLeft )
-        | ( glfw_key_pressed( GLFW_KEY_RIGHT_ALT )     * window::key_modifier::AltRight );
-
-      //
-
-
-    }
-
-    // ---- ----
-
-    inline void glfw::controller::active_cursor( bool enable )
-    {
-      if( enable ) glfwSetInputMode( parent.window, GLFW_CURSOR, GLFW_CURSOR_NORMAL );
-      else glfwSetInputMode( parent.window, GLFW_CURSOR, GLFW_CURSOR_DISABLED );
-    }
-
-    inline void glfw::controller::set_cursor( const glm::uvec2& position )
-    { glfwSetCursorPos( parent.window, position.x, position.y ); }
-
-    inline bool glfw::controller::key_pressed( const window::key& k )
-    { return glfw_key_pressed( uint( k ) ); }
-
-    inline window::key_modifier glfw::controller::key_modifier()
-    { return m_key_modifier; }
-
-    // ---- ---- ---- ----
 
     inline GLFWwindow* glfw::create_window( const glfw_render_opengl_property& property )
     {
@@ -103,6 +63,15 @@ namespace gtk {
 
     // ---- ---- ---- ----
 
+    __forceinline glfw& glfw::get( GLFWwindow* w )
+    {
+      glfw* const t { static_cast<glfw * >( glfwGetWindowUserPointer( w ) ) };
+      if( t ) return *t;
+      else throw std::runtime_error( "[gtk::window::glfw] No valid UserPointer" );
+    }
+
+    // ---- ---- ---- ----
+
     inline glfw::glfw(
       gtk::render::painter_context& _context,
       const glfw_render_opengl_property& property,
@@ -111,7 +80,6 @@ namespace gtk {
       abstract( _context ),
       window( create_window( property ) )
     {
-
       // Config internal
       glfwSetWindowUserPointer( window, this );
 
@@ -124,14 +92,29 @@ namespace gtk {
       if( glewInit() != GLEW_OK )
         throw std::runtime_error( "Failed to initialize GLEW\n" );
 
-      // Ensure we can capture the escape key being pressed below
-      glfwSetInputMode( window, GLFW_STICKY_KEYS, GL_TRUE );
-      // Hide the mouse and enable unlimited mouvement
-      glfwSetInputMode( window, GLFW_CURSOR, GLFW_CURSOR_NORMAL );
+      //
+      if( property.capture_key )
+        glfwSetInputMode( window, GLFW_STICKY_KEYS, GL_TRUE );
+
+      //
+      if( property.cursor == glfw_context_property::cursor_mode::normal )
+        glfwSetInputMode( window, GLFW_CURSOR, GLFW_CURSOR_NORMAL );
+      else if( property.cursor == glfw_context_property::cursor_mode::hidden )
+        glfwSetInputMode( window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN );
+      else if( property.cursor == glfw_context_property::cursor_mode::disabled )
+        glfwSetInputMode( window, GLFW_CURSOR, GLFW_CURSOR_DISABLED );
 
       //
       glfwSetFramebufferSizeCallback( window, callback::framebuffer_size );
       glfwSetWindowSizeCallback( window, callback::window_size );
+
+      //
+      if( property.capture_mouse )
+      {
+        glfwSetScrollCallback( window, glfw_controller::mouse_wheel_callback );
+        glfwSetCursorPosCallback( window, glfw_controller::cursor_position_callback );
+        // glfwSetMouseButtonCallback( window, glfw_controller::cursor_click_callback );
+      }
 
       // //
       // imgui_support::init( window );
@@ -161,15 +144,6 @@ namespace gtk {
 
     // ---- ---- ---- ----
 
-    __forceinline glfw& glfw::callback::get( GLFWwindow* w )
-    {
-      glfw* const t { static_cast<glfw * >( glfwGetWindowUserPointer( w ) ) };
-      if( t ) return *t;
-      else throw std::runtime_error( "[gtk::window::glfw] No valid UserPointer" );
-    }
-
-    // ---- ----
-
     inline void glfw::callback::framebuffer_size( GLFWwindow* window, int width, int height )
     { glfw::callback::resize( window, width, height ); }
 
@@ -179,7 +153,10 @@ namespace gtk {
     inline void glfw::callback::resize( GLFWwindow* window, int width, int height )
     {
       if( width >= 0 && height >= 0 )
-        get( window ).receiver.reshape( {width, height} );
+      {
+        glfw::get( window ).receiver.reshape( {width, height} );
+        glfw::get( window ).m_screen_size = {width, height};
+      }
       glfwSwapBuffers( window );
     }
 
@@ -187,15 +164,7 @@ namespace gtk {
 
     inline void glfw::poll()
     {
-      current_time = glfwGetTime();
-      delta_time = float(current_time - last_time);
-      last_time = current_time;
-
-      controller.poll();
-
-      for( std::unique_ptr<command::abstract>&command_up : commands )
-        if( command_up )
-          command_up->check( controller, delta_time );
+      m_controller.poll();
     }
 
     inline void glfw::clear()
@@ -213,6 +182,9 @@ namespace gtk {
       glfwMakeContextCurrent( window );
       glfwSwapBuffers( window );
     }
+
+    inline glfw_controller& glfw::controller()
+    { return m_controller; }
 
     // ---- ----
 

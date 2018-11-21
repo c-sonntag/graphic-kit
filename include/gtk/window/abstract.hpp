@@ -2,9 +2,13 @@
 
 #include <gtk/types.hpp>
 #include <gtk/window/abstract_receiver.hpp>
-#include <gtk/window/command/abstract.hpp>
+#include <gtk/window/abstract_controller.hpp>
 
 #include <gtk/render/painter_context.hpp>
+
+#include <type_traits>
+#include <vector>
+#include <memory>
 
 namespace gtk {
   namespace window {
@@ -14,9 +18,6 @@ namespace gtk {
      protected:
       gtk::render::painter_context& context;
       abstract_receiver& receiver;
-
-     protected:
-      std::vector<std::unique_ptr<command::abstract>> commands;
 
      public:
       inline abstract( gtk::render::painter_context& _context ) :
@@ -28,16 +29,15 @@ namespace gtk {
       virtual ~abstract() = default;
 
      public:
-      virtual void push_command( std::unique_ptr<command::abstract> command )
-      { commands.emplace_back( std::move( command ) ); }
-
-     public:
       virtual void run();
 
      public:
       virtual void poll() = 0; // at top in "run" loop
       virtual void clear() = 0; // at middle in "run" loop
       virtual void swap() = 0; // at bottom in "run" loop
+
+    public:
+      virtual abstract_controller & controller() = 0;
 
      public:
       virtual bool check_close() = 0;

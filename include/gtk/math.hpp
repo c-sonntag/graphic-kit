@@ -1,10 +1,9 @@
 #pragma once
 
 #include <cmath>
+#include <glm/vec3.hpp>
 
 namespace gtk {
-
-
   namespace math {
 
     static constexpr float pi = float(M_PI);
@@ -12,17 +11,31 @@ namespace gtk {
     static constexpr float demi_pi = float(M_PI_2);
     static constexpr float quart_pi = float(M_PI_4);
 
+    // ---- ---- ---- ----
 
     template<typename T>
-    inline bool is_pow_of( T base, T number )
+    inline bool is_pow_of( T base, T number );
+
+    // ---- ---- ---- ----
+
+    struct in_circle_property
     {
-      // @see https://www.geeksforgeeks.org/check-if-a-number-is-power-of-another-number/
-      // logarithm function to calculate value
-      const double r( std::log( number ) / std::log( base ) );
-      return std::floor( r ) == r;
-    }
+      float base_x, base_y;
+      float rayon;
+      float part;
+      in_circle_property( const float x, const float y, const float x_center = 0.f, const float y_center = 0.f );
+    };
+
+    void dist_xyz( glm::vec3& position, const float x );
+    void rot_xz( glm::vec3& position, const float x );
+    void rot_zy( glm::vec3& position, const float x );
+
+    // ---- ---- ---- ----
+
 
   }
 }
 
+// ---- ---- ---- ----
 
+#include <gtk/math.ipp>
