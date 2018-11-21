@@ -1,5 +1,6 @@
 #include <gtk/render/painter_context.hpp>
 #include <gtk/window/glfw.hpp>
+#include <gtk/window/command/mouse_lookat_center.hpp>
 
 #include <raiigl/shader.hpp>
 #include <raiigl/program.hpp>
@@ -110,6 +111,7 @@ int main()
 
     //
     context.push_painter( std::make_unique<triangle_red_min_painter>( context.projection ) );
+    glfw_window.push_command( std::make_unique<gtk::window::command::mouse_lookat_center>( context,  ) );
 
     //
     glfw_window.run();

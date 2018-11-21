@@ -21,7 +21,6 @@ namespace gtk {
     inline void painter_context::prepare()
     {
 
-
       // ---- ----
 
       fps_limiter.cadence();

@@ -2,6 +2,7 @@
 
 #include <gtk/types.hpp>
 #include <gtk/window/abstract_receiver.hpp>
+#include <gtk/window/command/abstract.hpp>
 
 #include <gtk/render/painter_context.hpp>
 
@@ -10,9 +11,12 @@ namespace gtk {
 
     struct abstract
     {
-     public:
+     protected:
       gtk::render::painter_context& context;
       abstract_receiver& receiver;
+
+     protected:
+      std::vector<std::unique_ptr<command::abstract>> commands;
 
      public:
       inline abstract( gtk::render::painter_context& _context ) :
@@ -22,6 +26,10 @@ namespace gtk {
 
      public:
       virtual ~abstract() = default;
+
+     public:
+      virtual void push_command( std::unique_ptr<command::abstract> command )
+      { commands.emplace_back( std::move( command ) ); }
 
      public:
       virtual void run();

@@ -13,7 +13,7 @@
 namespace gtk {
   namespace render {
     namespace painter {
-      ADD_ENUM_BITS ( modes, uint32_t,
+      gtk_enum_bits( modes, uint32_t,
         paint = 1, anime = 2,
         paint_debug_gui = 4
       )
@@ -21,7 +21,7 @@ namespace gtk {
   }
 }
 
-ADD_ENUM_OPERATOR( gtk::render::painter::modes, uint32_t )
+gtk_enum_bits_operator( gtk::render::painter::modes, uint32_t )
 
 // ---- ---- ---- ----
 
@@ -34,7 +34,7 @@ namespace gtk {
        public:
         gtk::render::painter::modes mode{ modes::_all };
 
-       protected:
+       public:
         matrices::view_lookat view;
         matrices::base_camera camera;
 

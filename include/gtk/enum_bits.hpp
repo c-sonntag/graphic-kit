@@ -2,28 +2,33 @@
 
 #include <ostream>
 
-#define BIT_OF( num ) ( 1 << num )
+#define gtk_bit_of( num ) ( 1 << num )
 
-#define ADD_ENUM_BITS_VALUE_ALL( enum_type ) ( ( ( sizeof( enum_type ) ) * 256 ) - 1 )
+#define gtk_enum_bits_value_all( enum_type ) ( ( ( sizeof( enum_type ) ) * 256 ) - 1 )
 
-#define ADD_ENUM_OPERATOR( enum_name, enum_type ) \
+#define gtk_enum_bits_operator( enum_name, enum_type )                                                                  \
   inline enum_name operator |( enum_name a, enum_name b ) {return enum_name( enum_type( a ) | enum_type( b ) );}        \
   inline enum_name operator &( enum_name a, enum_name b ) {return enum_name( enum_type( a ) & enum_type( b ) );}        \
   inline enum_name operator -( enum_name a, enum_name b ) {return enum_name( enum_type( a ) & ( ~enum_type( b ) ) );}   \
-  inline enum_name& operator |=( enum_name& a, enum_name b ) {return a = a | b;}                                  \
-  inline enum_name& operator &=( enum_name& a, enum_name b ) {return a = a & b;}                                  \
-  inline enum_name& operator -=( enum_name& a, enum_name b ) {return a = a - b;}                                  \
+  inline enum_name& operator |=( enum_name& a, enum_name b ) {return a = a | b;}                                        \
+  inline enum_name& operator &=( enum_name& a, enum_name b ) {return a = a & b;}                                        \
+  inline enum_name& operator -=( enum_name& a, enum_name b ) {return a = a - b;}                                        \
   inline bool operator ==( enum_name a, enum_name b ) { return enum_type( a ) == enum_type( b ); }                      \
   inline bool operator !=( enum_name a, enum_name b ) { return enum_type( a ) != enum_type( b ); }                      \
   inline bool operator !( enum_name a ) {return enum_type( a ) == 0;}                                                   \
-  inline bool any( enum_name a ) { return enum_type( a ) > 0; }                                                        \
+  inline enum_name operator *( enum_name a, bool cond ) {return cond ? a : enum_name( 0 );}                             \
+  inline enum_name operator *( bool cond, enum_name a ) {return cond ? a : enum_name( 0 );}                             \
+  inline bool any( enum_name a ) { return enum_type( a ) > 0; }                                                         \
   inline std::ostream& operator <<( std::ostream& os, enum_name a ) { os << int(a); return os; }
 
 
-#define ADD_ENUM_BITS( enum_name, enum_type, ... )                            \
-  enum class enum_name : enum_type                                       \
-  { _all = ADD_ENUM_BITS_VALUE_ALL( enum_type ), _none = 0, __VA_ARGS__  };
+#define gtk_enum_bits( enum_name, enum_type, ... )                         \
+  enum class enum_name : enum_type                                         \
+  { _all = gtk_enum_bits_value_all( enum_type ), _none = 0, __VA_ARGS__  };
 
+// #define ADD_ENUM_BITS( enum_name, enum_type, ... )                            \
+//   enum class enum_name : enum_type                                       \
+//   { _all = ADD_ENUM_BITS_VALUE_ALL( enum_type ), _none = 0, __VA_ARGS__  };
 
 
 

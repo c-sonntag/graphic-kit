@@ -19,6 +19,47 @@
 namespace gtk {
   namespace window {
 
+    inline bool glfw::controller::glfw_key_pressed( uint k )
+    { return glfwGetKey( parent.window, uint( k ) ) == GLFW_PRESS; }
+
+    inline void glfw::controller::poll()
+    {
+      glfwPollEvents();
+
+      //
+      m_key_modifier =
+        window::key_modifier::_none
+        | ( glfw_key_pressed( GLFW_KEY_LEFT_SHIFT )    * window::key_modifier::ShiftLeft )
+        | ( glfw_key_pressed( GLFW_KEY_RIGHT_SHIFT )   * window::key_modifier::ShiftRight )
+        | ( glfw_key_pressed( GLFW_KEY_LEFT_CONTROL )  * window::key_modifier::ControlLeft )
+        | ( glfw_key_pressed( GLFW_KEY_RIGHT_CONTROL ) * window::key_modifier::ControlRight )
+        | ( glfw_key_pressed( GLFW_KEY_LEFT_ALT )      * window::key_modifier::AltLeft )
+        | ( glfw_key_pressed( GLFW_KEY_RIGHT_ALT )     * window::key_modifier::AltRight );
+
+      //
+
+
+    }
+
+    // ---- ----
+
+    inline void glfw::controller::active_cursor( bool enable )
+    {
+      if( enable ) glfwSetInputMode( parent.window, GLFW_CURSOR, GLFW_CURSOR_NORMAL );
+      else glfwSetInputMode( parent.window, GLFW_CURSOR, GLFW_CURSOR_DISABLED );
+    }
+
+    inline void glfw::controller::set_cursor( const glm::uvec2& position )
+    { glfwSetCursorPos( parent.window, position.x, position.y ); }
+
+    inline bool glfw::controller::key_pressed( const window::key& k )
+    { return glfw_key_pressed( uint( k ) ); }
+
+    inline window::key_modifier glfw::controller::key_modifier()
+    { return m_key_modifier; }
+
+    // ---- ---- ---- ----
+
     inline GLFWwindow* glfw::create_window( const glfw_render_opengl_property& property )
     {
       //
@@ -146,7 +187,15 @@ namespace gtk {
 
     inline void glfw::poll()
     {
-      glfwPollEvents();
+      current_time = glfwGetTime();
+      delta_time = float(current_time - last_time);
+      last_time = current_time;
+
+      controller.poll();
+
+      for( std::unique_ptr<command::abstract>&command_up : commands )
+        if( command_up )
+          command_up->check( controller, delta_time );
     }
 
     inline void glfw::clear()

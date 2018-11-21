@@ -3,6 +3,8 @@
 #include <cmath>
 
 namespace gtk {
+
+
   namespace math {
 
     static constexpr float pi = float(M_PI);

@@ -31,6 +31,27 @@ namespace gtk {
     struct glfw : public abstract
     {
      public:
+      struct controller : public abstract_controller
+      {
+       protected:
+        glfw& parent;
+        friend glfw;
+        inline controller( glfw& _parent ) : parent( _parent ) {}
+
+       protected:
+        window::key_modifier m_key_modifier = window::key_modifier::_none;
+        bool glfw_key_pressed( uint k );
+        void poll();
+
+       public:
+        void active_cursor( bool enable = true ) override;
+        void set_cursor( const glm::uvec2& position ) override;
+        bool key_pressed( const window::key& k ) override;
+        window::key_modifier key_modifier() override;
+      }
+      controller{ *this };
+
+     public:
       typedef bool (* test_function_pf_t)( GLFWwindow* const w );
 
      private:
@@ -45,6 +66,8 @@ namespace gtk {
       GLFWwindow* const window;
 
      public:
+
+     public:
       std::vector<test_function_pf_t> close_functions;
 
      public:
@@ -54,6 +77,11 @@ namespace gtk {
         bool add_default_close = true
       );
       virtual ~glfw() override;
+
+     protected:
+      double current_time = 0.;
+      double last_time = 0.;
+      float delta_time = 0.;
 
      public:
       virtual void poll() override;
