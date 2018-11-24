@@ -59,11 +59,11 @@ namespace gk {
         std::vector<std::unique_ptr<window::command::abstract>> commands;
 
        public:
-        virtual void check_commands( const gk::time& t )
+        virtual void apply_commands( const gk::time& t )
         {
           for( std::unique_ptr<window::command::abstract>& command_up : commands )
             if( command_up )
-              command_up->check( *this, t );
+              command_up->apply( *this, t );
         }
 
        public:

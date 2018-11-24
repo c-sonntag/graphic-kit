@@ -32,7 +32,7 @@ namespace gk {
       {
         for( std::unique_ptr<painter::abstract>&painter : painters )
           if( any( painter->mode & painter::modes::check_commands ) )
-            painter->check_commands( time );
+            painter->apply_commands( time );
       }
 
       // ---- ----

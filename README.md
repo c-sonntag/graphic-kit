@@ -11,7 +11,7 @@ Use OpenGL 330 and OpenGl 430.
 In progress for vulkan...
 
 ## Documentation
-<https://libs.u4a.at/GraphicToolkit/html/>
+<https://libs.u4a.at/GraphicKit/html/>
 
 ##  Dependent library :
 * <https://github.com/c-sonntag/cpp-raiigl>

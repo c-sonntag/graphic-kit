@@ -17,9 +17,10 @@
 #include <memory>
 #include <vector>
 
-namespace gk { namespace window { struct abstract; }}
-
 namespace gk {
+
+  namespace window { struct abstract; }
+
   namespace render {
 
     struct painter_context : public abstract

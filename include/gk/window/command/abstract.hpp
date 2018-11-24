@@ -32,7 +32,7 @@ namespace gk {
         virtual ~abstract() = default;
 
        public:
-        virtual void check( render::painter::abstract& painter, const gk::time& t ) = 0;
+        virtual void apply( render::painter::abstract& painter, const gk::time& t ) = 0;
 
         // public:
         //  virtual void on_mouse_move( const glm::uvec2& pos ) = 0;

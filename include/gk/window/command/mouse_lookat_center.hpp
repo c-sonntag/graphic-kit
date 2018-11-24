@@ -33,7 +33,7 @@ namespace gk {
         {}
 
        public:
-        virtual void check( render::painter::abstract& painter, const gk::time& t ) override
+        virtual void apply( render::painter::abstract& painter, const gk::time& t ) override
         {
           //
           // distance += controller.mouse_wheel().x;
