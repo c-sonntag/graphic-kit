@@ -1,14 +1,14 @@
-#include <gtk/opengl/model/colored_ground.hpp>
+#include <gk/opengl/model/colored_ground.hpp>
 
-#include <gtk/structures_pack/vertex_uv.hpp>
+#include <gk/structures_pack/vertex_uv.hpp>
 
 #include <erc/package_id.h>
 #include <erc/inventory_package.h>
 
-#include <gtk/opengl/quick_program.hpp>
+#include <gk/opengl/quick_program.hpp>
 
 
-namespace gtk {
+namespace gk {
   namespace opengl {
     namespace model {
 
@@ -28,7 +28,7 @@ namespace gtk {
 
       colored_ground::gl_support::gl_support() :
         glsl(
-          gtk::opengl::quick_program::open_from_local_erc(
+          gk::opengl::quick_program::open_from_local_erc(
             package_id.from( "glsl/vertex/basic_vertex_uv.vert" ),
             package_id.from( "glsl/fragment/uv_colored_by_time.frag" )
           )
@@ -65,7 +65,7 @@ namespace gtk {
         glsl.unuse();
       }
 
-      void colored_ground::gl_support::anime( const gtk::time& t )
+      void colored_ground::gl_support::anime( const gk::time& t )
       {
         seconds_elpased = t.seconds_elpased;
       }
@@ -84,7 +84,7 @@ namespace gtk {
           gl_support_up->paint( gl, camera * model );
       }
 
-      void colored_ground::anime( const gtk::time& t )
+      void colored_ground::anime( const gk::time& t )
       {
         if( gl_support_up )
           gl_support_up->anime( t );

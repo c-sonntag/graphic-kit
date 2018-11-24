@@ -1,4 +1,4 @@
-#include <gtk/opengl/quick_text_expander.hpp>
+#include <gk/opengl/quick_text_expander.hpp>
 
 #include <stdexcept>
 #include <bits/move.h>
@@ -6,7 +6,7 @@
 #include <glm/mat4x4.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-namespace gtk {
+namespace gk {
   namespace opengl {
 
 
@@ -100,7 +100,7 @@ namespace gtk {
       //
       const quick_text_bbf_wrapper * const bbf_p( qt.get_font() );
       if ( !bbf_p )
-        throw std::runtime_error( "[gtk::opengl::text_expander::push_text] Can't get quick_text_bbf_wrapper" );
+        throw std::runtime_error( "[gk::opengl::text_expander::push_text] Can't get quick_text_bbf_wrapper" );
       //if ( !bbf_p ) return;
       const quick_text_bbf_wrapper & bbf( *bbf_p );
 

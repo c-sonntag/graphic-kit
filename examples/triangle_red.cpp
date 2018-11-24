@@ -1,11 +1,12 @@
-#include <gtk/render/painter_context.hpp>
-#include <gtk/window/glfw.hpp>
+#include <gk/render/painter_context.hpp>
+#include <gk/window/glfw.hpp>
+#include <gk/window/command/mouse_lookat_center.hpp>
 
 #include <raiigl/shader.hpp>
 #include <raiigl/program.hpp>
 #include <raiigl/uniform_variable.hpp>
 
-#include <gtk/opengl/quick_program.hpp>
+#include <gk/opengl/quick_program.hpp>
 
 #include <erc/package_id.h>
 
@@ -22,12 +23,12 @@
 
 static const erc::package_id shader_erc_id( "shaders" );
 
-struct easy_triangle_painter : public gtk::render::painter::abstract
+struct easy_triangle_painter : public gk::render::painter::abstract
 {
  private:
   const raiigl::program program
   {
-    gtk::opengl::quick_program::open_from_local_erc(
+    gk::opengl::quick_program::open_from_local_erc(
       shader_erc_id.from( "shader.vert" ),
       shader_erc_id.from( "shader.frag" )
     )
@@ -42,7 +43,7 @@ struct easy_triangle_painter : public gtk::render::painter::abstract
   GLuint vertex_array_id;
 
  public:
-  easy_triangle_painter( gtk::matrices::projection& _projection ) :
+  easy_triangle_painter( gk::matrices::projection& _projection ) :
     abstract( _projection )
   {
 
@@ -112,7 +113,7 @@ struct easy_triangle_painter : public gtk::render::painter::abstract
 
 int main()
 {
-  gtk::window::glfw_render_opengl_property windows_property{};
+  gk::window::glfw_render_opengl_property windows_property{};
   windows_property.orginal_resolution = { 800, 600 };
   windows_property.title = "Draw Triangle GLFW Windows";
   windows_property.antialiasing = 4;
@@ -124,11 +125,12 @@ int main()
   try {
 
     //
-    gtk::render::painter_context context;
-    gtk::window::glfw glfw_window( context, windows_property );
+    gk::render::painter_context context;
+    gk::window::glfw glfw_window( context, windows_property );
 
     //
-    context.push_painter<easy_triangle_painter>( context.projection );
+    auto& painter( context.push_painter<easy_triangle_painter>( context.projection ) );
+    painter.push_command<gk::window::command::mouse_lookat_center>( glfw_window.controller(), gk::window::key_modifier::Control );
 
     //
     glfw_window.run();

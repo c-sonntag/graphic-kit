@@ -1,8 +1,8 @@
-#include <gtk/opengl/model/cube_box.hpp>
+#include <gk/opengl/model/cube_box.hpp>
 
-#include <gtk/types.hpp>
-#include <gtk/structures_pack/vertex.hpp>
-#include <gtk/opengl/quick_program.hpp>
+#include <gk/types.hpp>
+#include <gk/structures_pack/vertex.hpp>
+#include <gk/opengl/quick_program.hpp>
 
 #include <erc/package_id.h>
 #include <erc/inventory_package.h>
@@ -10,7 +10,7 @@
 #include <chrono>
 #include <iostream>
 
-namespace gtk {
+namespace gk {
   namespace opengl {
     namespace model {
 
@@ -40,7 +40,7 @@ namespace gtk {
 
       cube_box::gl_support::gl_support() :
         glsl(
-          gtk::opengl::quick_program::open_from_local_erc(
+          gk::opengl::quick_program::open_from_local_erc(
             package_id.from( "glsl/vertex/basic_vertex.vert" ),
             package_id.from( "glsl/fragment/colored_by_uniform_color.frag" )
           )

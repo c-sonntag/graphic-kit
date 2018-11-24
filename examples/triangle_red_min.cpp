@@ -1,6 +1,6 @@
-#include <gtk/render/painter_context.hpp>
-#include <gtk/window/glfw.hpp>
-#include <gtk/window/command/mouse_lookat_center.hpp>
+#include <gk/render/painter_context.hpp>
+#include <gk/window/glfw.hpp>
+#include <gk/window/command/mouse_lookat_center.hpp>
 
 #include <raiigl/shader.hpp>
 #include <raiigl/program.hpp>
@@ -9,7 +9,7 @@
 #include <raiigl/buffer.hpp>
 #include <raiigl/gl330.hpp>
 
-#include <gtk/opengl/quick_program.hpp>
+#include <gk/opengl/quick_program.hpp>
 
 #include <erc/package_id.h>
 
@@ -28,12 +28,12 @@
 
 static raiigl::gl330 gl;
 
-struct triangle_red_min_painter : public gtk::render::painter::abstract
+struct triangle_red_min_painter : public gk::render::painter::abstract
 {
  private:
   const raiigl::program program
   {
-    gtk::opengl::quick_program::open_from_sources(
+    gk::opengl::quick_program::open_from_sources(
       "#version 330 core\n" \
       "layout( location = 0 ) in vec3 vertex_from_buffer;\n" \
       "uniform mat4 MVP;\n" \
@@ -57,7 +57,7 @@ struct triangle_red_min_painter : public gtk::render::painter::abstract
   const raiigl::uniform_variable uniform_color{ program, "uniform_color" };
 
  public:
-  triangle_red_min_painter( gtk::matrices::projection& _projection ) :
+  triangle_red_min_painter( gk::matrices::projection& _projection ) :
     abstract( _projection )
   {
     static const GLfloat g_vertex_buffer_data[]
@@ -96,7 +96,7 @@ struct triangle_red_min_painter : public gtk::render::painter::abstract
 
 int main()
 {
-  gtk::window::glfw_render_opengl_property windows_property{};
+  gk::window::glfw_render_opengl_property windows_property{};
   windows_property.orginal_resolution = { 800, 600 };
   windows_property.title = "Draw Triangle red min";
   windows_property.antialiasing = 4;
@@ -108,12 +108,12 @@ int main()
   try {
 
     //
-    gtk::render::painter_context context;
-    gtk::window::glfw glfw_window( context, windows_property );
+    gk::render::painter_context context;
+    gk::window::glfw glfw_window( context, windows_property );
 
     //
     auto& painter( context.push_painter<triangle_red_min_painter>( context.projection ) );
-    painter.push_command<gtk::window::command::mouse_lookat_center>( glfw_window.controller(), gtk::window::key_modifier::Control );
+    painter.push_command<gk::window::command::mouse_lookat_center>( glfw_window.controller(), gk::window::key_modifier::Control );
 
     //
     glfw_window.run();

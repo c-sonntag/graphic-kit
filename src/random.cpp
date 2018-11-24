@@ -1,9 +1,9 @@
-#include <gtk/random.hpp>
+#include <gk/random.hpp>
 
 #include <random>
 #include <chrono>
 
-namespace gtk {
+namespace gk {
   namespace random {
 
     static std::ranlux48_base rand_generator( unsigned(std::chrono::system_clock::now().time_since_epoch().count() ) );
