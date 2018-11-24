@@ -3,7 +3,7 @@
 Graphic Kit, a useful library for creating any graphical applications.
 Currently with OpenGL.
 
-![You don't have to reinvent the Wheel](https://libs.u4a.at/GraphicKit/you_don-t_have_to_reinvent_the_wheel.jpg)
+![You don't have to reinvent the Wheel](http://libs.u4a.at/GraphicKit/you_don-t_have_to_reinvent_the_wheel.jpg)
 
 ## Modern ! 
 Written in C++ 14 ( Const-Correctness, Move-Semantics, constexpr, etc... ).
