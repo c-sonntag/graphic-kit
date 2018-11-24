@@ -196,10 +196,10 @@ namespace gtk {
               {
                 change |= draging_button_x_or_y( view.position, "D(XYZ)", math::dist_xyz );
               }
-              {
+              {              
                 change |= draging_button_x_or_y( view.position, "R(XZ)", math::rot_xz );
                 ImGui::SameLine();
-                change |= draging_button_x_or_y( view.position, "R(ZY)", math::rot_zy, true );
+                change |= draging_button_x_or_y( view.position, "R(Y)", math::rot_y, true );
               }
 
               if( change )

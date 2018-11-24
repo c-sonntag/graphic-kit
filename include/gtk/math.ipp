@@ -49,6 +49,17 @@ namespace gtk {
       position.y = std::sin( in_circle.part + decal ) * in_circle.rayon;
     }
 
+    inline void rot_y( glm::vec3& position, const float decal )
+    {
+      // in_circle_property in_circle_z( position.z, position.y );
+      // in_circle_property in_circle_x( position.x, position.y );
+      //
+      // position.x = std::cos( in_circle_x.part + decal ) * in_circle_x.rayon;
+      // position.z = std::cos( in_circle_z.part + decal ) * in_circle_z.rayon;
+      position.y += decal * 10.f;
+      //position.y += decal;
+    }
+
 
   }
 }
