@@ -78,6 +78,7 @@ struct easy_triangle_painter : public gk::render::painter::abstract
     program.use();
 
     // Send our transformation
+    camera.compute_only_composition();
     uniform_vertex_mvp.set( camera );
 
     //

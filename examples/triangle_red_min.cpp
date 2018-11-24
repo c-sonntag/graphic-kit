@@ -77,7 +77,7 @@ struct triangle_red_min_painter : public gk::render::painter::abstract
   {
     program.use();
 
-    camera.compute();
+    camera.compute_only_composition();
     uniform_vertex_mvp.set( camera );
 
     color_curve_count += 0.1f;
