@@ -17,4 +17,4 @@ void main()
 
   // Output to screen
   color = vec4( col, 1.0 );
-};
+}

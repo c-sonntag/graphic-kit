@@ -22,8 +22,8 @@ namespace gk {
       sphere::gl_support::gl_support() :
         glsl(
           gk::opengl::quick_program::open_from_local_erc(
-            package_id.from( "glsl/vertex/basic_vertex.vert" ),
-            package_id.from( "glsl/fragment/colored_by_uniform_color.frag" )
+            package_id.from( "glsl/vertex/basic_vertex_uv.vert" ),
+            package_id.from( "glsl/fragment/uv_colored_by_uniform_color.frag" )
           )
         ),
         buffer( raiigl::buffer_type::Array, raiigl::buffer_usage::StaticDraw ),
@@ -87,6 +87,7 @@ namespace gk {
         //
         vao.bind();
         vao.attrib( buffer, 0, 3, raiigl::data_type::Float, false, sizeof( structures_pack::vertex_uv_norm ), offsetof( structures_pack::vertex_uv_norm, vec ) );
+        vao.attrib( buffer, 1, 2, raiigl::data_type::Float, false, sizeof( structures_pack::vertex_uv_norm ), offsetof( structures_pack::vertex_uv_norm, uv ) );
 
         buffer.bind_and_send( sphere );
         index_buffer.bind_and_send( sphere_indexes );

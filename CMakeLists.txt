@@ -52,7 +52,7 @@ SET(GraphicKit_WITH_VULKAN ON CACHE BOOL "Build compatible VULKAN library")
 if(GraphicKit_WITH_GLFW)
 
   # --- LIB : GLFW ---
-  set(GLFW_USE_STATIC_LIBS OFF)
+  set(GLFW_SHARED ON)
   find_package(GLFW REQUIRED)
   include_directories(${GLFW_INCLUDE_DIRS})
   link_directories(${GLFW_DIRECTORIES})
@@ -100,6 +100,7 @@ link_libraries(${OPENGL_LIBRARIES})
 add_definitions(${OPENGL_DEFINITIONS})
 
 # --- LIB : GLEW ---
+set(GLEW_SHARED ON)
 find_package(GLEW REQUIRED)
 include_directories(${GLEW_INCLUDE_DIRS})
 link_directories(${GLEW_DIRECTORIES})

@@ -17,4 +17,4 @@ void main()
 
   //
   gl_Position = uniform_mvp * vec4( vertex_from_buffer, 1.f );
-};
+}
