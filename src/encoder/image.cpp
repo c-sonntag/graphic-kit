@@ -80,7 +80,7 @@ namespace gk {
 
     image image::load_from_erc( const erc::embedded_file& erc, const bool vertical_flip_it )
     {
-      const std::string input_data( erc.get_proper_data() );
+      const std::string& input_data( erc.get_proper_data() );
       try {
         return internal_make_image_from_memory( input_data, vertical_flip_it );
       }

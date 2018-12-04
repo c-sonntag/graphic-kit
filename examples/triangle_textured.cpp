@@ -106,6 +106,9 @@ struct triangle_textured_painter : public gk::render::painter::abstract
     const raiigl::textures_num iwt_opaque_sampler_id( raiigl::textures_num::Texture02 );
     iwt_transparent.tex.bind_on_texture( iwt_transparent_sampler_id );
     iwt_opaque.tex.bind_on_texture( iwt_opaque_sampler_id );
+    iwt_transparent.tex.unbind();
+    iwt_opaque.tex.unbind();
+
 
     //gl330.activate_texture( iwt_transparent_sampler_id );
     //iwt_transparent.tex.bind();
@@ -147,6 +150,8 @@ struct triangle_textured_painter : public gk::render::painter::abstract
 
   void paint() override
   {
+    iwt_transparent.tex.bind();
+    iwt_opaque.tex.bind();
 
     // Utilise notre shader
     program.use();
@@ -158,6 +163,8 @@ struct triangle_textured_painter : public gk::render::painter::abstract
     //
     heap_vertices.draw( gl330, program );
 
+    iwt_transparent.tex.unbind();
+    iwt_opaque.tex.unbind();
   }
 
 };

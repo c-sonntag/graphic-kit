@@ -3,6 +3,7 @@
 #include <gk/encoder/image.hpp>
 #include <gk/math.hpp>
 
+#include <raiigl/program.hpp>
 #include <raiigl/texture.hpp>
 
 #include <stdexcept>
@@ -11,15 +12,14 @@
 namespace gk {
   namespace opengl {
 
-    inline raiigl::texture texture_from_image( const encoder::image & img )
+    inline raiigl::texture texture_from_image( const encoder::image& img )
     {
-
       //
       const bool good_image_format(
         gk::math::is_pow_of( 2u, img.width ) &&
         gk::math::is_pow_of( 2u, img.height )
       );
-      if ( !good_image_format )
+      if( !good_image_format )
       {
         std::ostringstream oss;
         oss << "[gk::opengl::texture_from_image] Incompatible image dimension ("
@@ -30,12 +30,12 @@ namespace gk {
       //
       raiigl::internal_format_type internal_format_type;
       raiigl::pixel_format pixel_format;
-      if ( img.channels == 3 )
+      if( img.channels == 3 )
       {
         internal_format_type = raiigl::internal_format_type::RGB;
         pixel_format = raiigl::pixel_format::RGB;
       }
-      else if ( img.channels == 4 )
+      else if( img.channels == 4 )
       {
         internal_format_type = raiigl::internal_format_type::RGBA;
         pixel_format = raiigl::pixel_format::RGBA;
@@ -66,6 +66,27 @@ namespace gk {
       //
       return tex;
     }
+
+    struct texture_binded
+    {
+     public:
+      raiigl::texture texture;
+      const raiigl::textures_num texture_num;
+
+     public:
+      inline texture_binded( raiigl::texture&& _texture ) :
+        texture( std::move( _texture ) ),
+        texture_num( raiigl::program::new_texture_index() )
+      { texture.bind_on_texture( texture_num ); texture.unbind(); }
+
+     public:
+      inline texture_binded( const encoder::image& img ) :
+        texture_binded( texture_from_image( img ) ) {}
+
+     public:
+      inline ~texture_binded()
+      { raiigl::program::free_texture_index( texture_num ); }
+    };
 
   }
 }
