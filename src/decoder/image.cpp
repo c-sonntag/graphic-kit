@@ -1,4 +1,4 @@
-#include <gk/encoder/image.hpp>
+#include <gk/decoder/image.hpp>
 
 #include <stdexcept>
 #include <cstring>
@@ -12,7 +12,7 @@
 #include <stb_image.h>
 
 namespace gk {
-  namespace encoder {
+  namespace decoder {
 
     static image internal_make_image( const int width, const int height, const int channels, const bool vertical_flip_it, uchar* const data )
     {
@@ -52,7 +52,7 @@ namespace gk {
         return internal_make_image( width, height, channels, vertical_flip_it, data );
       }
       catch( const std::exception& e )
-      { throw std::runtime_error( "[gk::encoder::image::load_from_file] " + std::string( e.what() ) ); }
+      { throw std::runtime_error( "[gk::decoder::image::load_from_file] " + std::string( e.what() ) ); }
     }
 
     // ---- ----
@@ -75,7 +75,7 @@ namespace gk {
         return internal_make_image_from_memory( input_data, vertical_flip_it );
       }
       catch( const std::exception& e )
-      { throw std::runtime_error( "[gk::encoder::image::load_from_memory] " + std::string( e.what() ) ); }
+      { throw std::runtime_error( "[gk::decoder::image::load_from_memory] " + std::string( e.what() ) ); }
     }
 
     image image::load_from_erc( const erc::embedded_file& erc, const bool vertical_flip_it )
@@ -85,7 +85,7 @@ namespace gk {
         return internal_make_image_from_memory( input_data, vertical_flip_it );
       }
       catch( const std::exception& e )
-      { throw std::runtime_error( "[gk::encoder::image::load_from_erc] (file:" + erc.path + ") " + std::string( e.what() ) ); }
+      { throw std::runtime_error( "[gk::decoder::image::load_from_erc] (file:" + erc.path + ") " + std::string( e.what() ) ); }
     }
 
     // ---- ---- ---- ----

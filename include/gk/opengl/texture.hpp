@@ -1,6 +1,6 @@
 #pragma once
 
-#include <gk/encoder/image.hpp>
+#include <gk/decoder/image.hpp>
 #include <gk/math.hpp>
 
 #include <raiigl/program.hpp>
@@ -12,7 +12,7 @@
 namespace gk {
   namespace opengl {
 
-    inline raiigl::texture texture_from_image( const encoder::image& img )
+    inline raiigl::texture texture_from_image( const decoder::image& img )
     {
       //
       const bool good_image_format(
@@ -80,7 +80,7 @@ namespace gk {
       { texture.bind_on_texture( texture_num ); texture.unbind(); }
 
      public:
-      inline texture_binded( const encoder::image& img ) :
+      inline texture_binded( const decoder::image& img ) :
         texture_binded( texture_from_image( img ) ) {}
 
      public:

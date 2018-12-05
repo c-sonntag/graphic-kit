@@ -12,7 +12,7 @@
 
 
 namespace gk {
-  namespace encoder {
+  namespace decoder {
 
     //enum class image_format
     //{
@@ -81,7 +81,7 @@ namespace gk {
 
     __forceinline image image::load_from_local_erc( const erc::file_id& erc_id, const bool vertical_flip_it )
     {
-      const erc::embedded_file& erc( erc::inventory_package::get_local_first_embedded_file( erc_id, "gk::encoder::image::load_from_local_erc" ) );
+      const erc::embedded_file& erc( erc::inventory_package::get_local_first_embedded_file( erc_id, "gk::decoder::image::load_from_local_erc" ) );
       image img( load_from_erc( erc, vertical_flip_it ) );
       erc.unallocate_proper_data();
       return img;

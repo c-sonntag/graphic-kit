@@ -32,7 +32,7 @@ namespace gk {
 
       // ---- ----
 
-      from_object::shared_glsl& from_object::return_shared( const encoder::object::element& el )
+      from_object::shared_glsl& from_object::return_shared( const decoder::object::element& el )
       {
         const bool have_vertices( get_vec( el.finalized_vertices, el.vertices ).size() > 0 );
         const bool have_texture2d_coords( get_vec( el.finalized_texture2d_coords, el.texture2d_coords ).size() > 0 );
@@ -84,7 +84,7 @@ namespace gk {
       /**
        * @see http://www.opengl-tutorial.org/fr/beginners-tutorials/tutorial-7-model-loading/
        */
-      from_object::from_object( const encoder::object::element& el ) :
+      from_object::from_object( const decoder::object::element& el ) :
         glsl( return_shared( el ) ),
         buffer( raiigl::buffer_type::Array, raiigl::buffer_usage::StaticDraw )
       {
@@ -139,7 +139,7 @@ namespace gk {
 
       }
 
-      //   from_object::from_object( const encoder::object& o, std::unique_ptr<raiigl::texture> _texture_up ) :
+      //   from_object::from_object( const decoder::object& o, std::unique_ptr<raiigl::texture> _texture_up ) :
       //     from_object( o )
       //   { set_texture( std::move( _texture_up ) );  }
 

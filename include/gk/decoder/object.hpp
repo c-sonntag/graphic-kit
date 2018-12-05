@@ -17,7 +17,7 @@
 
 
 namespace gk {
-  namespace encoder {
+  namespace decoder {
 
     struct object_importer_option
     {
@@ -104,7 +104,7 @@ namespace gk {
 
     __forceinline object object::load_from_local_erc( const erc::file_id& erc_id, const object_importer_option& option )
     {
-      const erc::embedded_file& erc( erc::inventory_package::get_local_first_embedded_file( erc_id, "gk::encoder::object::load_from_local_erc" ) );
+      const erc::embedded_file& erc( erc::inventory_package::get_local_first_embedded_file( erc_id, "gk::decoder::object::load_from_local_erc" ) );
       object o( load_from_erc( erc, option ) );
       erc.unallocate_proper_data();
       return o;

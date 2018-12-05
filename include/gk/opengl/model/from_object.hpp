@@ -1,7 +1,7 @@
 #pragma once
 
 #include <gk/opengl/model/abstract.hpp>
-#include <gk/encoder/object.hpp>
+#include <gk/decoder/object.hpp>
 #include <gk/opengl/texture.hpp>
 
 #include <raiigl/vertex_array.hpp>
@@ -35,7 +35,7 @@ namespace gk {
         };
 
        protected:
-        static shared_glsl& return_shared( const encoder::object::element& el );
+        static shared_glsl& return_shared( const decoder::object::element& el );
         static std::unique_ptr<shared_glsl> glsl_vertex, glsl_vertex_uv, glsl_vertex_uv_norm;
 
        public:
@@ -57,8 +57,8 @@ namespace gk {
         //std::unique_ptr<raiigl::buffer> index_buffer;
 
        public:
-        from_object( const encoder::object::element& el );
-        //from_object( const encoder::object& o, std::unique_ptr<raiigl::texture> _texture_up );
+        from_object( const decoder::object::element& el );
+        //from_object( const decoder::object& o, std::unique_ptr<raiigl::texture> _texture_up );
 
        public:
         void paint( raiigl::gl330& gl, const matrices::base_camera& camera, const glm::mat4& model ) override;

@@ -34,12 +34,12 @@ static const erc::package_id resource_erc_id( "res" );
 struct image_with_texture
 {
   const erc::file_id erc_id;
-  const gk::encoder::image img;
+  const gk::decoder::image img;
   const raiigl::texture tex;
 
   inline image_with_texture( const erc::file_id _erc_id ) :
     erc_id( std::move( _erc_id ) ),
-    img( gk::encoder::image::load_from_local_erc( erc_id ) ),
+    img( gk::decoder::image::load_from_local_erc( erc_id ) ),
     tex( gk::opengl::texture_from_image( img ) )
   {}
 

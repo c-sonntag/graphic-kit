@@ -1,4 +1,4 @@
-#include <gk/encoder/object.hpp>
+#include <gk/decoder/object.hpp>
 
 #include <gk/istream.hpp>
 
@@ -27,7 +27,7 @@ std::ostream& operator <<( std::ostream& os, const std::smatch& match )
 
 
 namespace gk {
-  namespace encoder {
+  namespace decoder {
 
 
     object object::load_from_file( const std::string& file_path, const object_importer_option& option )
@@ -38,7 +38,7 @@ namespace gk {
         return object( ifs, option );
       }
       catch( const std::exception& e )
-      { throw std::runtime_error( "[gk::encoder::object::load_from_file] " + std::string( e.what() ) ); }
+      { throw std::runtime_error( "[gk::decoder::object::load_from_file] " + std::string( e.what() ) ); }
     }
 
     object object::load_from_memory( const std::string& input_data, const object_importer_option& option )
@@ -48,7 +48,7 @@ namespace gk {
         return object( ims, option );
       }
       catch( const std::exception& e )
-      { throw std::runtime_error( "[gk::encoder::object::load_from_memory] " + std::string( e.what() ) ); }
+      { throw std::runtime_error( "[gk::decoder::object::load_from_memory] " + std::string( e.what() ) ); }
     }
 
     object object::load_from_stream( std::istream& is, const object_importer_option& option )
@@ -57,7 +57,7 @@ namespace gk {
         return object( is, option );
       }
       catch( const std::exception& e )
-      { throw std::runtime_error( "[gk::encoder::object::load_from_stream] " + std::string( e.what() ) ); }
+      { throw std::runtime_error( "[gk::decoder::object::load_from_stream] " + std::string( e.what() ) ); }
     }
 
     object object::load_from_erc( const erc::embedded_file& erc, const object_importer_option& option )
@@ -67,7 +67,7 @@ namespace gk {
         return object( ims, option );
       }
       catch( const std::exception& e )
-      { throw std::runtime_error( "[gk::encoder::object::load_from_erc] (file:" + erc.path + ") " + std::string( e.what() ) ); }
+      { throw std::runtime_error( "[gk::decoder::object::load_from_erc] (file:" + erc.path + ") " + std::string( e.what() ) ); }
     }
 
     // ---- ---- ---- ----
