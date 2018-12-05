@@ -142,6 +142,7 @@ namespace gk {
         vao.bind();
 
         //
+        gl.depth_func( raiigl::deth_func_type::LessEqual );
         glsl.uniform_mvp.set( camera * model );
         glsl.uniform_texture_mode.set( int(tex2d_mode) );
 
@@ -150,13 +151,7 @@ namespace gk {
           glsl.uniform_color.set( color );
         else
         {
-          //texture_sp->bind();
-          //texture_sp->texture.bind_on_texture( texture_sp->texture_num );
-          //texture_sp->texture.bind();
-          //texture_sp->bind();
           texture_sp->bind_on_texture( texture_sp->texture_num );
-          //glsl.uniform_sampler_texture2d.set( texture_sp->texture_num );
-          //glsl.uniform_sampler_texture2d.set( raiigl::textures_num::Texture00 );
           glsl.uniform_sampler_texture2d.set( texture_sp->texture_num );
         }
 
@@ -164,8 +159,8 @@ namespace gk {
         gl.draw_arrays( raiigl::primitive_type::Triangles, vertices_first, vertices_count );
 
         //
-        // if( use_texture )
-        //   texture_sp->texture.unbind();
+        if( tex2d_mode != texture_mode::color )
+          texture_sp->unbind();
 
         //
         vao.unbind();

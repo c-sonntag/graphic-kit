@@ -12,7 +12,21 @@
 namespace gk {
   namespace opengl {
 
-    inline raiigl::texture texture_from_image( const decoder::image& img )
+    struct texture_from_image_option
+    {
+     public:
+      raiigl::minifying_filter_type min = raiigl::minifying_filter_type::NearestMipmapLinear;
+      raiigl::magnification_filter_type mag = raiigl::magnification_filter_type::Linear;
+      raiigl::wrap_type str = raiigl::wrap_type::Repeat;
+
+     public:
+      texture_from_image_option() = default;
+    };
+
+
+    // ---- ---- ---- ----
+
+    inline raiigl::texture texture_from_image( const decoder::image& img, const texture_from_image_option& option = {} )
     {
       //
       const bool good_image_format(
@@ -57,16 +71,15 @@ namespace gk {
         raiigl::pixel_type::UnsignedByte,
         img.data()
       );
-      tex.set_param_minifying_and_magnification_filter(
-        raiigl::minifying_filter_type::Nearest,
-        raiigl::magnification_filter_type::Nearest
-      );
-      tex.set_param_wrap_str();
+      tex.set_param_minifying_and_magnification_filter( option.min, option.mag );
+      tex.set_param_wrap( option.str );
       tex.unbind();
 
       //
       return tex;
     }
+
+    // ---- ---- ---- ----
 
     struct texture_binded : public raiigl::texture
     {
@@ -83,8 +96,8 @@ namespace gk {
       { bind_on_texture( texture_num ); unbind(); }
 
      public:
-      inline texture_binded( const decoder::image& img ) :
-        texture( texture_from_image( img ) ),
+      inline texture_binded( const decoder::image& img, const texture_from_image_option& option = {} ) :
+        texture( texture_from_image( img, option ) ),
         texture_num( raiigl::program::new_texture_index() )
       { bind_on_texture( texture_num ); unbind(); }
 

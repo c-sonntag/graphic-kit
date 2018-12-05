@@ -67,6 +67,20 @@ namespace gk {
        public:
         from_vectors( const vec::vertices_vector& v, const vec::texture2d_coords_vector& uv2d = {}, const vec::normals_vector& norm = {} );
 
+        /**< @todo */
+        //  void anime( const gk::time& t ) override
+        //  {
+        //    static const raiigl::wrap_type wrap_types[] { raiigl::wrap_type::Repeat, raiigl::wrap_type::ClampToEdge, raiigl::wrap_type::MirroredRepeat, raiigl::wrap_type::MirrorClampToEdge };
+        //    if( texture_sp ){
+        //      texture_sp->bind();
+        //      texture_sp->set_param_wrap(
+        //            wrap_types[uint( t.seconds_elpased ) % 4]
+        //          );
+        //      texture_sp->unbind();
+        //    }
+        //    /*nothing */
+        //  }
+
        public:
         virtual void paint( raiigl::gl330& gl, const matrices::base_camera& camera, const glm::mat4& model ) override;
 
