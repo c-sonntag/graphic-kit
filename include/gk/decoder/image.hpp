@@ -1,7 +1,7 @@
 #pragma once
 
 #include <gk/types.hpp>
-#include <gk/classes/non_copyable_movable.hpp>
+#include <gk/classes/non_copyable.hpp>
 
 #include <erc/file.h>
 #include <erc/file_id.h>
@@ -36,7 +36,7 @@ namespace gk {
      *    BMP non-1bpp, non-RLE
      *    GIF (*comp always reports as 4-channel)
      */
-    struct image
+    struct image : public gk::classes::non_copyable
     {
      public:
       static image load_from_file( const std::string& file_path, const bool vertical_flip_it = false );
@@ -53,7 +53,7 @@ namespace gk {
       const size_t size;
 
      private:
-      uchar* const m_data;
+      uchar* m_data;
 
      public:
       inline image( const uint _width, const uint _height, const ushort _channels, const bool _is_vertical_flip, uchar* const _data ) :
@@ -67,8 +67,18 @@ namespace gk {
      public:
       ~image();
 
+     protected:
+      bool invalid_state = false;
+
      public:
-      gtk_classes_non_copyable_movable( image )
+      inline image( image&& i ) :
+        width( std::move( i.width ) ), height( std::move( i.height ) ),
+        channels( std::move( i.channels ) ),
+        is_vertical_flip( std::move( i.is_vertical_flip ) ),
+        size( std::move( i.size ) ),
+        m_data( std::move( i.m_data ) ),
+        invalid_state( std::move( i.invalid_state ) )
+      { i.invalid_state = true; }
 
      public:
       inline const uchar* data() const { return m_data; }

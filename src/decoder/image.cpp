@@ -92,7 +92,9 @@ namespace gk {
 
     image::~image()
     {
-      stbi_image_free( m_data );
+      if( !invalid_state && m_data )
+        stbi_image_free( m_data );
+      invalid_state = true;
     }
 
     // ---- ---- ---- ----

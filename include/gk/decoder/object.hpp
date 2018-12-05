@@ -7,12 +7,10 @@
 #include <erc/file_id.h>
 #include <erc/inventory_package.h>
 
-#include <glm/vec2.hpp>
-#include <glm/vec3.hpp>
-#include <glm/vec4.hpp>
+#include <gk/vectors.hpp>
 
 #include <vector>
-#include <string>
+#include <unordered_set>
 #include <memory>
 
 
@@ -21,9 +19,15 @@ namespace gk {
 
     struct object_importer_option
     {
+     public:
       bool force_texture2d_coords = true;
-      bool do_not_finalize_element = false;
+      bool force_finalize_element = false;
       bool convert_quad_face_to_quad_triangle = true;
+      std::unordered_set<std::string> only_import_element_name;
+      std::unordered_set<std::string> not_import_element_name;
+
+     public:
+      object_importer_option() = default;
     };
 
 
@@ -36,40 +40,60 @@ namespace gk {
     {
      public:
       static object load_from_file( const std::string& file_path, const object_importer_option& option = {} );
-      static object load_from_memory( const std::string& input_data,  const object_importer_option& option = {} );
-      static object load_from_stream( std::istream& is,  const object_importer_option& option = {} );
-      static object load_from_erc( const erc::embedded_file& erc,  const object_importer_option& option = {} );
+      static object load_from_memory( const char* data, const uint size, const object_importer_option& option = {} );
+      static object load_from_stream( std::istream& is, const object_importer_option& option = {} );
+      static object load_from_erc( const erc::embedded_file& erc, const object_importer_option& option = {} );
 
       static __forceinline object load_from_local_erc( const erc::file_id& erc_id, const object_importer_option& option = {} );
 
      public:
+      vec::vertices_vector vertices;
+      vec::normals_vector normals;
+
+     public:
+      bool use_texture3d = false;
+      vec::texture2d_coords_vector texture2d_coords;
+      vec::texture3d_coords_vector texture3d_coords;
+
+     public:
       struct element
       {
+        struct finalized
+        {
+         public:
+          const element& el;
+
+         public:
+          vec::vertices_vector vertices;
+          vec::normals_vector normals;
+          vec::texture2d_coords_vector texture2d_coords;
+          vec::texture3d_coords_vector texture3d_coords;
+
+         protected:
+          friend element;
+          finalized( const element& el );
+
+        };
+
        public:
         std::string name;
 
        public:
-        std::vector<glm::vec3> vertices;
-        std::vector<glm::vec3> normals;
-
-       public:
-        bool use_texture3d = false;
-        std::vector<glm::vec2> texture2d_coords;
-        std::vector<glm::vec3> texture3d_coords;
-
-       public:
+        /**< like :
+         * 1=v
+         * 2=v vt
+         * 3=v vt vn
+         */
+        uint face_vec_size_format = 0;
         bool have_indices = false;
         bool have_quad_face = false;
-        std::vector<uint> vertex_indices;
-        std::vector<uint> tex_coord_indices;
-        std::vector<uint> normal_indices;
+        vec::index_vector vertex_indices;
+        vec::index_vector tex_coord_indices;
+        vec::index_vector normal_indices;
 
-       public:
-        bool is_finalized = false;
-        std::vector<glm::vec3> finalized_vertices;
-        std::vector<glm::vec3> finalized_normals;
-        std::vector<glm::vec2> finalized_texture2d_coords;
-        std::vector<glm::vec3> finalized_texture3d_coords;
+       protected:
+        bool stop_import_face = false;
+        std::unique_ptr<finalized> m_finalized_up;
 
        public:
         inline element( object& _p ) : parent( _p ) {}
@@ -80,8 +104,13 @@ namespace gk {
        protected:
         friend object;
         object& parent;
+
+       protected:
         void parse( uint line_number, const std::string& line );
-        void finalise_it();
+        void close();
+
+       public:
+        const finalized& get_finalized();
 
        private:
         void apply_name( const std::string _name );
@@ -97,7 +126,7 @@ namespace gk {
       const object_importer_option option;
 
      protected:
-      object( std::istream& is,  const object_importer_option _option );
+      object( std::istream& is, const object_importer_option& _option = {} );
     };
 
     // ---- ----

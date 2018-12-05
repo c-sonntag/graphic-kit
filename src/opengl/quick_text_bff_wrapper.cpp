@@ -145,7 +145,6 @@ namespace gk {
           raiigl::internal_format_type::RGBA8 )
       );
 
-
       //
       texture.send_image2d(
         0,

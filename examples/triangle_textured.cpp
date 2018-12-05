@@ -8,7 +8,7 @@
 #include <raiigl/gl330.hpp>
 #include <raiigl/texture.hpp>
 
-#include <gk/encoder/image.hpp>
+#include <gk/decoder/image.hpp>
 #include <gk/opengl/texture.hpp>
 #include <gk/opengl/quick_program.hpp>
 #include <gk/opengl/primitives_heap.hpp>

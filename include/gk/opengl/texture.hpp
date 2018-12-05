@@ -61,31 +61,53 @@ namespace gk {
         raiigl::minifying_filter_type::Nearest,
         raiigl::magnification_filter_type::Nearest
       );
+      tex.set_param_wrap_str();
       tex.unbind();
 
       //
       return tex;
     }
 
-    struct texture_binded
+    struct texture_binded : public raiigl::texture
     {
      public:
-      raiigl::texture texture;
       const raiigl::textures_num texture_num;
+
+     protected:
+      bool invalid_state = false;
 
      public:
       inline texture_binded( raiigl::texture&& _texture ) :
         texture( std::move( _texture ) ),
         texture_num( raiigl::program::new_texture_index() )
-      { texture.bind_on_texture( texture_num ); texture.unbind(); }
+      { bind_on_texture( texture_num ); unbind(); }
 
      public:
       inline texture_binded( const decoder::image& img ) :
-        texture_binded( texture_from_image( img ) ) {}
+        texture( texture_from_image( img ) ),
+        texture_num( raiigl::program::new_texture_index() )
+      { bind_on_texture( texture_num ); unbind(); }
 
      public:
-      inline ~texture_binded()
-      { raiigl::program::free_texture_index( texture_num ); }
+      inline ~texture_binded() override
+      {
+        if( ( texture_num != raiigl::textures_num::None ) && !invalid_state )
+          raiigl::program::free_texture_index( texture_num );
+        invalid_state = true;
+      }
+
+     public:
+      texture_binded( texture_binded& _t ) = default;
+      texture_binded( const texture_binded& _t ) = default;
+
+     public:
+      inline texture_binded( texture_binded&& t ) :
+        texture( std::move( dynamic_cast<raiigl::texture&&>( t ) ) ),
+        texture_num( std::move( t.texture_num ) ),
+        invalid_state( std::move( t.invalid_state ) )
+      { const_cast<raiigl::textures_num&>( t.texture_num ) = raiigl::textures_num::None; t.invalid_state = true; }
+
+
     };
 
   }
