@@ -159,8 +159,9 @@ namespace gk {
         //
         if( use_texture )
         {
-          texture_sp->texture.bind();
+          //texture_sp->texture.bind();
           glsl.sampler_texture.set( texture_sp->texture_num );
+          texture_sp->texture.bind_on_texture( texture_sp->texture_num );
         }
         else
           glsl.uniform_color.set( color );

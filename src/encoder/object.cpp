@@ -19,7 +19,7 @@ std::ostream& operator <<( std::ostream& os, const std::smatch& match )
   for( size_t i = 0; i < match.size(); ++i )
   {
     const std::string s( match[i].str() );
-    os << "{" << i << "=" << s << "}";// << std::endl;
+    os << "{" << i << "=" << s << "}";// << '\n';
   }
   os << ")";
   return os;
@@ -64,11 +64,7 @@ namespace gk {
     {
       try {
         imemstream ims( erc.get_proper_data() );
-        //return object( ims, option );
-        debug_cout << "   load" << std::endl;
-        object o( ims, option );
-        debug_cout << "  return" << std::endl;
-        return o;
+        return object( ims, option );
       }
       catch( const std::exception& e )
       { throw std::runtime_error( "[gk::encoder::object::load_from_erc] (file:" + erc.path + ") " + std::string( e.what() ) ); }
@@ -89,18 +85,13 @@ namespace gk {
       while( std::getline( is, line ) )
       {
         ++line_counter;
-        std::cout << line_counter << '\n';
         current_element->parse( line_counter, line );
       }
-
-      debug_cout << "text parsed" << std::endl;
 
       //
       if( !option.do_not_finalize_element )
         for( auto& el : elements )
           el.finalise_it();
-
-      debug_cout << "text finalized" << std::endl;
     }
 
     // ---- ---- ---- ----
@@ -158,7 +149,7 @@ namespace gk {
           std::smatch match_command;
           if( !std::regex_search( command_line, match_command, regex_command ) )
           {
-            cerr_parse << "Command need \"<cmd> <cmd_args>\" for : \"" << line << "\"" << std::endl;
+            cerr_parse << "Command need \"<cmd> <cmd_args>\" for : \"" << line << "\"" << '\n';
             return;
           }
 
@@ -180,6 +171,7 @@ namespace gk {
 
           //
           std::smatch match;
+          uint face_block_format( 0 );
 
           //
           if( cmd == "g" )         { apply_name( cmd_args ); }
@@ -214,10 +206,12 @@ namespace gk {
             static const std::regex regex_face_index( R"(([0-9]+))" );
 
             //
+            uint actual_block_count( 0 );
             uint vec_size_format( 0 );
             std::string::const_iterator search_start( cmd_args.cbegin() );
             while( regex_search( search_start, cmd_args.cend(), match, regex_face_block ) )
             {
+              ++actual_block_count;
               const std::string block( match[0] );
               search_start = match.suffix().first;
 
@@ -235,32 +229,71 @@ namespace gk {
 
                 // cmd like : f v/vt/vn
 
-                //
-                if( vec_size == 1 )
-                  vertex_indices.emplace_back( index );
-                else if( vec_size == 2 )
-                  tex_coord_indices.emplace_back( index );
-                else if( vec_size == 3 )
-                  normal_indices.emplace_back( index );
+                if( ( actual_block_count == 4 ) && parent.option.convert_quad_face_to_quad_triangle )
+                {
+                  //
+                  static auto emplace_index_from_tri(
+                    []( auto& vec, const uint index ) {
+                      const std::size_t size( vec.size() );
+                      if( size > 3 )
+                      {
+                        vec.emplace_back( vec[size - 1] );
+                        vec.emplace_back( index );
+                        vec.emplace_back( vec[size - 3] );
+                      }
+                    }
+                  );
+                  if( vec_size == 1 )
+                    emplace_index_from_tri( vertex_indices, index );
+                  else if( vec_size == 2 )
+                    emplace_index_from_tri( tex_coord_indices, index );
+                  else if( vec_size == 3 )
+                    emplace_index_from_tri( normal_indices, index );
+                }
+                else
+                {
+                  if( vec_size == 1 )
+                    vertex_indices.emplace_back( index );
+                  else if( vec_size == 2 )
+                    tex_coord_indices.emplace_back( index );
+                  else if( vec_size == 3 )
+                    normal_indices.emplace_back( index );
+                }
 
                 //
                 if( vec_size_format != 0 )
                   if( vec_size > vec_size_format )
-                    cerr_parse << "Not constant face block" << std::endl;
+                    cerr_parse << "Not constant face block" << '\n';
+
+                if( vec_size > 3 )
+                { cerr_parse << "Incorrect face block actual=" << vec_size << "  need={1-3}" << '\n'; }
               }
 
               //
               if( vec_size_format == 0 )
                 vec_size_format = vec_size;
             }
+
+            //
+            if( actual_block_count > 4 || actual_block_count < 3 )
+            { cerr_parse << "Incorrect face block actual=" << actual_block_count << "  need={3|4}" << '\n'; }
+            if( face_block_format == 0 )
+              face_block_format = actual_block_count;
+            else if( actual_block_count != face_block_format )
+              cerr_parse << "Not same face block format" << '\n';
+
+            //
+            if( actual_block_count == 4 )
+              have_quad_face = true;
           }
 
         }
 
       }
+      std::cerr.flush();
     }
 
-
+    // ---- ----
     void object::element::finalise_it()
     {
       //
@@ -284,41 +317,42 @@ namespace gk {
         //
         if( !have_vertex )
           throw std::runtime_error( " object(" + name + ") have no vertices" );
-
-        //
         if( have_tex2D && have_tex3D )
           throw std::runtime_error( " object(" + name + ") have texture2d_coords and texture3d_coords. Who choose ?" );
-
-        //
-        //static const auto substract_or_null([]( uint v ) { return ( v>0 ) ? ( v - 1 ) : v; } );
 
         //
         static const auto emplace_finalized_vec(
           []( auto& finalized, const auto& original, const uint index )
           {
-            if( index < original.size() )
+            if( index <= original.size() )
               if( index > 0 )
                 finalized.emplace_back( original[index - 1] );
           }
         );
 
         //
-        if( have_vertex && have_normal && ( have_tex2D || have_tex3D ) )
+        if( have_vertex && ( have_normal || have_tex2D || have_tex3D ) )
         {
           if( have_normal && ( vertex_indices.size() != normal_indices.size() ) )
             throw std::runtime_error( " object(" + name + ") not have same indices count vertex_indices(" + std::to_string( vertex_indices.size() ) + ") normal_indices(" + std::to_string( normal_indices.size() ) + ")" );
           else if( ( have_tex2D || have_tex3D ) && ( vertex_indices.size() != tex_coord_indices.size() ) )
             throw std::runtime_error( " object(" + name + ") not have same indices count vertex_indices(" + std::to_string( vertex_indices.size() ) + ") tex_coord_indices(" + std::to_string( tex_coord_indices.size() ) + ")" );
-          // else if( have_tex3D && ( vertex_indices.size() != texture3d_coords.size() ) )
-          //   throw std::runtime_error( " object(" + name + ") not have same indices count vertex_indices(" + std::to_string( vertex_indices.size() ) + ") texture3d_coords(" + std::to_string( texture3d_coords.size() ) + ")" );
-
-          debug_cout << "   before finalize : " << vertex_indices.size() << std::endl;
 
           //
-          for( uint i( 0 ); i<vertex_indices.size(); ++i )
+          const uint vertices_indices_count( static_cast<uint>( vertex_indices.size() ) );
+          finalized_vertices.reserve( vertices_indices_count );
+
+          if( have_normal )
+            finalized_normals.reserve( vertices_indices_count );
+          if( have_tex2D )
+            finalized_texture2d_coords.reserve( vertices_indices_count );
+          if( have_tex3D )
+            finalized_texture3d_coords.reserve( vertices_indices_count );
+
+          //
+          for( uint i( 0 ); i<vertices_indices_count; ++i )
           {
             emplace_finalized_vec( finalized_vertices, vertices, vertex_indices[i] );
-
             //
             if( have_normal )
               emplace_finalized_vec( finalized_normals, normals, normal_indices[i] );
@@ -327,7 +361,6 @@ namespace gk {
             if( have_tex3D )
               emplace_finalized_vec( finalized_texture3d_coords, texture3d_coords, tex_coord_indices[i] );
           }
-          debug_cout << "   after finalize" << std::endl;
         }
 
         is_finalized = true;
@@ -335,6 +368,7 @@ namespace gk {
 
     }
 
+    // ---- ----
 
     void object::element::apply_name( const std::string _name )
     {

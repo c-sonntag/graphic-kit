@@ -23,6 +23,7 @@ namespace gk {
     {
       bool force_texture2d_coords = true;
       bool do_not_finalize_element = false;
+      bool convert_quad_face_to_quad_triangle = true;
     };
 
 
@@ -58,6 +59,7 @@ namespace gk {
 
        public:
         bool have_indices = false;
+        bool have_quad_face = false;
         std::vector<uint> vertex_indices;
         std::vector<uint> tex_coord_indices;
         std::vector<uint> normal_indices;
@@ -100,7 +102,7 @@ namespace gk {
 
     // ---- ----
 
-    __forceinline object object::load_from_local_erc( const erc::file_id& erc_id,  const object_importer_option& option )
+    __forceinline object object::load_from_local_erc( const erc::file_id& erc_id, const object_importer_option& option )
     {
       const erc::embedded_file& erc( erc::inventory_package::get_local_first_embedded_file( erc_id, "gk::encoder::object::load_from_local_erc" ) );
       object o( load_from_erc( erc, option ) );

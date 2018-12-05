@@ -36,6 +36,9 @@ namespace gk {
         // the task queue
         std::queue<std::function<void()>> tasks;
 
+       public:
+        inline bool have_tasks() const { return tasks.size() > 0; }
+
        private:
         // synchronization
         std::mutex queue_mutex;

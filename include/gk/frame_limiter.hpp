@@ -57,9 +57,11 @@ namespace gk {
    public:
     inline int64_t current_deltatime_milliseconds() const { return deltatime_milliseconds; }
     inline int64_t current_deltatime_microseconds() const { return deltatime_microseconds; }
-
-    inline float current_elapsed_seconds() const { return float(std::chrono::duration_cast<std::chrono::milliseconds>( current - start ).count() ) / 1000.f; }
     inline float current_deltatime_seconds() const { return float(deltatime_milliseconds) / 1000.f; }
+
+    /** @brief return elpased seconds from frame_limiter build time */
+    inline float current_elapsed_seconds() const { return float(std::chrono::duration_cast<std::chrono::milliseconds>( current - start ).count() ) / 1000.f; }
+
 
    public:
     gk::time time() const
