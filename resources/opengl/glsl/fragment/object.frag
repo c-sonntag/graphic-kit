@@ -18,8 +18,6 @@ out vec4 color;
  */
 void main()
 {
-  //color = length( uv + 0.5f ) * uniform_color;
-  //color = smoothstep( 0.2, 1.f, 1.0 - length( uv  - 0.5 ) ) * uniform_color;
   //  if( uniform_texture_mode == 1 )
   //    color = vec4( texture( uniform_sampler_texture2d, uv2d ).rgb, 1.f );
   //  else if( uniform_texture_mode == 2 )
@@ -29,9 +27,11 @@ void main()
   //  else
   //    color =  uniform_color;
 
-
   if( uniform_texture_mode == 0 )
-    color =  uniform_color;
+  {
+    //color = length( uv + 0.5f ) * uniform_color;
+    color = smoothstep( 0.2, 1.f, 1.0 - length( uv  - 0.5 ) ) * uniform_color;
+  }
   else
     color = vec4( texture( uniform_sampler_texture2d, uv2d ).rgb, 1.f );
 

@@ -22,6 +22,7 @@ namespace gk {
       Alt          = 0b00110000,
       AltLeft      = 0b00100000,
       AltRight     = 0b00010000,
+      None         = 0b00000000,
     )
 
     gtk_enum_bits( mouse_button, uint16_t,
@@ -61,7 +62,18 @@ namespace gk {
       virtual bool is_clicked( const window::mouse_button& b ) = 0;
       virtual bool is_pressed( const window::key& k ) = 0;
 
-      virtual key_modifier key_modifier() = 0;
+      virtual gk::window::key_modifier key_modifier() = 0;
+
+     public:
+      virtual bool have( gk::window::key_modifier m )
+      {
+        const gk::window::key_modifier k( key_modifier() );
+        return
+          ( m == k ) ?
+          true :
+          any( k & m )
+        ;
+      }
     };
 
   }

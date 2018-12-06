@@ -27,7 +27,7 @@ namespace gk {
         const key_modifier need_modifier;
 
        public:
-        mouse_lookat_center( abstract_controller& _controller, const key_modifier _need_modifier ) :
+        inline mouse_lookat_center( abstract_controller& _controller, const key_modifier _need_modifier ) :
           abstract( _controller ),
           need_modifier( std::move( _need_modifier ) )
         {}
@@ -44,7 +44,7 @@ namespace gk {
 
           const bool can_move(
             controller.is_clicked( window::mouse_button::left | window::mouse_button::right )
-            && any( controller.key_modifier() & need_modifier )
+            && controller.have( need_modifier )
           );
 
           //

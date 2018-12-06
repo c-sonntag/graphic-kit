@@ -2,6 +2,7 @@
 
 #include <gk/gui/imgui.hpp>
 #include <gk/gui/colors_palette.hpp>
+#include <gk/gui/abstract.hpp>
 #include <gk/math.hpp>
 
 
@@ -161,7 +162,7 @@ namespace gk {
 
       namespace matrices {
 
-        inline bool projection( gk::matrices::projection& projection, const char* const node_name )
+        inline bool projection( const gui::abstract& g, gk::matrices::projection& projection, const char* const node_name )
         {
           bool change( false );
           if( ImGui::TreeNode( node_name ) )
@@ -174,7 +175,7 @@ namespace gk {
 
               if( change )
                 projection.compute();
-              if( ImGui::ButtonStyle( "Reset", ImGui::glm( gk::gui::color_palette_default.reset_button ) ) )
+              if( ImGui::ButtonStyle( "Reset", ImGui::glm( g.palette().reset_button ) ) )
                 projection.reset();
             }
             ImGui::TreePop();
@@ -182,7 +183,7 @@ namespace gk {
           return change;
         }
 
-        inline bool view( gk::matrices::view_lookat& view, const char* const node_name )
+        inline bool view( const gui::abstract& g, gk::matrices::view_lookat& view, const char* const node_name )
         {
           bool change( false );
           if( ImGui::TreeNode( node_name ) )
@@ -196,7 +197,7 @@ namespace gk {
               {
                 change |= draging_button_x_or_y( view.position, "D(XYZ)", math::dist_xyz );
               }
-              {              
+              {
                 change |= draging_button_x_or_y( view.position, "R(XZ)", math::rot_xz );
                 ImGui::SameLine();
                 change |= draging_button_x_or_y( view.position, "R(Y)", math::rot_y, true );
@@ -204,7 +205,7 @@ namespace gk {
 
               if( change )
                 view.compute();
-              if( ImGui::ButtonStyle( "Reset", ImGui::glm( gk::gui::color_palette_default.reset_button ) ) )
+              if( ImGui::ButtonStyle( "Reset", ImGui::glm( g.palette().reset_button ) ) )
                 view.reset();
             }
             ImGui::TreePop();
@@ -212,7 +213,7 @@ namespace gk {
           return change;
         }
 
-        inline bool model( gk::matrices::model& model, const char* const node_name )
+        inline bool model( const gui::abstract& g, gk::matrices::model& model, const char* const node_name )
         {
           bool change( false );
           if( ImGui::TreeNode( node_name ) )
@@ -236,7 +237,7 @@ namespace gk {
 
               if( change )
                 model.compute();
-              if( ImGui::ButtonStyle( "Reset", ImGui::glm( gk::gui::color_palette_default.reset_button ) ) )
+              if( ImGui::ButtonStyle( "Reset", ImGui::glm( g.palette().reset_button ) ) )
                 model.reset();
             }
             ImGui::TreePop();

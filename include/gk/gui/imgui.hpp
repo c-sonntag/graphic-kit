@@ -1,6 +1,7 @@
 #pragma once
 
 #include <gk/matrices.hpp>
+#include <gk/gui/abstract.hpp>
 
 #include <imgui.h>
 
@@ -68,9 +69,9 @@ namespace gk {
       // ---- ---- ---- ----
 
       namespace matrices {
-        bool projection( gk::matrices::projection& projection, const char* const node_name = "Projection" );
-        bool view( gk::matrices::view_lookat& view, const char* const node_name = "LookAt" );
-        bool model( gk::matrices::model& model, const char* const node_name = "Model" );
+        bool projection( const gui::abstract& g, gk::matrices::projection& projection, const char* const node_name = "Projection" );
+        bool view( const gui::abstract& g, gk::matrices::view_lookat& view, const char* const node_name = "LookAt" );
+        bool model( const gui::abstract& g, gk::matrices::model& model, const char* const node_name = "Model" );
       }
 
     }

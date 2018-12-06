@@ -78,7 +78,8 @@ namespace gk {
       bool add_default_close
     ) :
       abstract( _context ),
-      window( create_window( property ) )
+      window( create_window( property ) ),
+      m_screen_size( property.orginal_resolution )
     {
       // Config internal
       glfwSetWindowUserPointer( window, this );

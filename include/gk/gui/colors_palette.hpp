@@ -13,7 +13,7 @@ namespace gk {
 
     };
 
-    extern color_palette color_palette_default;
+   // extern color_palette color_palette_default;
 
   }
 }

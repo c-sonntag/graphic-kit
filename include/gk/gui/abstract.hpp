@@ -1,5 +1,6 @@
 #pragma once
 
+#include <gk/gui/colors_palette.hpp>
 
 namespace gk {
 
@@ -9,6 +10,12 @@ namespace gk {
 
     class abstract
     {
+     protected:
+      color_palette m_palette;
+
+     public:
+      inline const color_palette& palette() const { return m_palette; }
+
      protected:
       friend render::painter_context;
       virtual void new_frame() = 0;

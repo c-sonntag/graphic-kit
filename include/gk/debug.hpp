@@ -13,7 +13,7 @@
 template<typename T>
 inline std::ostream& operator <<( std::ostream& os, const glm::vec<2, T>& v2 )
 {
-  os << std::setprecision( 2 );
+  os << std::setprecision( 5 );
   os << std::setw( 5 ) << v2.x << "," << std::setw( 5 ) << v2.y;
   return os;
 }
@@ -21,7 +21,7 @@ inline std::ostream& operator <<( std::ostream& os, const glm::vec<2, T>& v2 )
 template<typename T>
 inline std::ostream& operator <<( std::ostream& os, const glm::vec<3, T>& v3 )
 {
-  os << std::setprecision( 2 );
+  os << std::setprecision( 5 );
   os << std::setw( 5 ) << v3.x << "," << std::setw( 5 ) << v3.y << "," << std::setw( 5 ) << v3.z;
   return os;
 }
