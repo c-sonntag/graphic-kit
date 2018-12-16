@@ -35,7 +35,7 @@ struct image_with_texture
 {
   const erc::file_id erc_id;
   const gk::decoder::image img;
-  const raiigl::texture tex;
+  raiigl::texture tex;
 
   inline image_with_texture( const erc::file_id _erc_id ) :
     erc_id( std::move( _erc_id ) ),

@@ -14,6 +14,10 @@ set(PROJECT_GraphicKit_STATIC "${PROJECT_NAME}_static")
 set(PROJECT_GraphicKit_SHARED "${PROJECT_NAME}_shared")
 set(PROJECT_GraphicKit_LIB_NAME "GraphicKit")
 
+
+message(STATUS "CMAKE_MODULE_PATH : ${CMAKE_MODULE_PATH}")
+message(STATUS "CMAKE_PREFIX_PATH : ${CMAKE_PREFIX_PATH}")
+
 # --- EXTERNALS LIBS ---
 include("external/CMakeLists.txt")
 
@@ -74,7 +78,7 @@ endif()
 
 ## # --- SET CMAKE MODULES ---
 ## set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/CMakeModules;${CMAKE_MODULE_PATH}")
-include("CMakeAutoSharedFilesCopier")
+##include("CMakeAutoSharedFilesCopier")
 
 
 # --- LIB : EmbeddedResource ---
@@ -109,6 +113,7 @@ add_definitions(${GLEW_DEFINITIONS})
 #copy_shared_near_archives(${GLEW_LIBRARIES})
 
 # --- LIB : RAIIGL ---
+
 if(RAIIGL_BASE_DIR AND INTERNAL_DEV_BUILD_MODE)
   if(NOT TARGET raiigl_shared)
     set(RAIIGL_SHARED ON)
@@ -119,6 +124,9 @@ if(RAIIGL_BASE_DIR AND INTERNAL_DEV_BUILD_MODE)
   link_libraries(raiigl_shared)
   set_target_properties(raiigl_shared PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}" LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
 else()
+
+
+
   find_package(RAIIGL REQUIRED)
   include_directories(${RAIIGL_INCLUDE_DIRS})
   link_directories(${RAIIGL_DIRECTORIES})
