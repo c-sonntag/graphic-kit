@@ -1,5 +1,7 @@
 #pragma once
 
+#include <gk/types.hpp>
+
 #include <cmath>
 #include <glm/vec3.hpp>
 
@@ -32,6 +34,7 @@ namespace gk {
 
     // ---- ---- ---- ----
 
+    uint negative_mod( const int pos, const int m );
 
   }
 }

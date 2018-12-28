@@ -85,7 +85,7 @@ namespace gk {
       }
 
      public:
-      gtk_classes_non_copyable_movable( ffmpeg_command_line )
+      gk_classes_non_copyable_movable( ffmpeg_command_line )
 
      public:
       inline void write()
