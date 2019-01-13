@@ -96,7 +96,7 @@ int main()
 
     //
     auto& painter( context.push_painter<text_painter>( context.projection ) );
-    painter.push_command<gk::window::command::mouse_lookat_center>( glfw_window.controller(), gk::window::key_modifier::Control );
+    painter.push_command<gk::window::command::mouse_lookat_center>( glfw_window.controller(), gk::window::modifier::Control );
 
     //
     glfw_window.run();

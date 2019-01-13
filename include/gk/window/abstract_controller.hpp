@@ -12,20 +12,21 @@ namespace gk {
       A=65, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z,
     };
 
-    gtk_enum_bits( key_modifier, uchar,
-      Control      = 0b00000011,
+    gk_enum_bits( modifier, uchar,
       ControlLeft  = 0b00000010,
       ControlRight = 0b00000001,
-      Shift        = 0b00001100,
+      Control      = ControlLeft | ControlRight,
       ShiftLeft    = 0b00001000,
       ShiftRight   = 0b00000100,
-      Alt          = 0b00110000,
+      Shift        = ShiftLeft | ShiftRight,
       AltLeft      = 0b00100000,
       AltRight     = 0b00010000,
+      Alt          = AltLeft | AltRight,
+   /**< @todo   WithGui      = 0b01000000, */
       None         = 0b00000000,
     )
 
-    gtk_enum_bits( mouse_button, uint16_t,
+    gk_enum_bits( mouse_button, uint16_t,
       left = 1,
       middle = 2,
       right = 4
@@ -35,8 +36,8 @@ namespace gk {
   }
 }
 
-gtk_enum_bits_operator( gk::window::key_modifier, gk::uchar )
-gtk_enum_bits_operator( gk::window::mouse_button, uint16_t )
+gk_enum_bits_operator( gk::window::modifier, gk::uchar )
+gk_enum_bits_operator( gk::window::mouse_button, uint16_t )
 
 // ---- ---- ---- ----
 
@@ -62,12 +63,12 @@ namespace gk {
       virtual bool is_clicked( const window::mouse_button& b ) = 0;
       virtual bool is_pressed( const window::key& k ) = 0;
 
-      virtual gk::window::key_modifier key_modifier() = 0;
+      virtual gk::window::modifier modifier() = 0;
 
      public:
-      virtual bool have( gk::window::key_modifier m )
+      virtual bool have( gk::window::modifier m )
       {
-        const gk::window::key_modifier k( key_modifier() );
+        const gk::window::modifier k( modifier() );
         return
           ( m == k ) ?
           true :

@@ -36,8 +36,8 @@ namespace gk {
       virtual void clear() = 0; // at middle in "run" loop
       virtual void swap() = 0; // at bottom in "run" loop
 
-    public:
-      virtual abstract_controller & controller() = 0;
+     public:
+      virtual abstract_controller& controller() = 0;
 
      public:
       virtual bool check_close() = 0;

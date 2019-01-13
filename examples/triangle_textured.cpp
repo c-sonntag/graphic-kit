@@ -188,7 +188,7 @@ int main()
 
     //
     auto& painter( context.push_painter<triangle_textured_painter>( context.projection ) );
-    painter.push_command<gk::window::command::mouse_lookat_center>( glfw_window.controller(), gk::window::key_modifier::Control );
+    painter.push_command<gk::window::command::mouse_lookat_center>( glfw_window.controller(), gk::window::modifier::Control );
 
 
     //

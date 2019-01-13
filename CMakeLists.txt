@@ -15,8 +15,8 @@ set(PROJECT_GraphicKit_SHARED "${PROJECT_NAME}_shared")
 set(PROJECT_GraphicKit_LIB_NAME "GraphicKit")
 
 
-message(STATUS "CMAKE_MODULE_PATH : ${CMAKE_MODULE_PATH}")
-message(STATUS "CMAKE_PREFIX_PATH : ${CMAKE_PREFIX_PATH}")
+# message(STATUS "CMAKE_MODULE_PATH : ${CMAKE_MODULE_PATH}")
+# message(STATUS "CMAKE_PREFIX_PATH : ${CMAKE_PREFIX_PATH}")
 
 # --- EXTERNALS LIBS ---
 include("external/CMakeLists.txt")
@@ -40,7 +40,7 @@ endif()
 set(CMAKE_CXX_STANDARD 14)
 
 # --- LINK CONFIG ---
-set(INTERNAL_DEV_BUILD_MODE ON)
+set(INTERNAL_DEV_BUILD_MODE OFF CACHE BOOL "Internal developpement build (for RaiiGL dev ...)")
 
 # --- COMPATIBLE OPTIONS : STATIC/SHARED ---
 SET(GraphicKit_WITH_GLFW   ON CACHE BOOL "Build compatible GLFW library")
@@ -113,20 +113,16 @@ add_definitions(${GLEW_DEFINITIONS})
 #copy_shared_near_archives(${GLEW_LIBRARIES})
 
 # --- LIB : RAIIGL ---
-
+set(RAIIGL_SHARED ON)
+set(RAIIGL_STATIC OFF)
 if(RAIIGL_BASE_DIR AND INTERNAL_DEV_BUILD_MODE)
   if(NOT TARGET raiigl_shared)
-    set(RAIIGL_SHARED ON)
-    set(RAIIGL_STATIC OFF)
     add_subdirectory(${RAIIGL_BASE_DIR} "${CMAKE_BINARY_DIR}/raiigl_shared")
   endif()
   include_directories("${RAIIGL_BASE_DIR}/include")
   link_libraries(raiigl_shared)
   set_target_properties(raiigl_shared PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}" LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
 else()
-
-
-
   find_package(RAIIGL REQUIRED)
   include_directories(${RAIIGL_INCLUDE_DIRS})
   link_directories(${RAIIGL_DIRECTORIES})

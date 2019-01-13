@@ -30,7 +30,7 @@ void main()
   if( uniform_texture_mode == 0 )
   {
     //color = length( uv + 0.5f ) * uniform_color;
-    color = smoothstep( 0.2, 1.f, 1.0 - length( uv  - 0.5 ) ) * uniform_color;
+    color = smoothstep( 0.2, 1.f, 1.0 - length( uv2d  - 0.5 ) ) * uniform_color;
   }
   else
     color = vec4( texture( uniform_sampler_texture2d, uv2d ).rgb, 1.f );

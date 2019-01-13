@@ -56,7 +56,6 @@ namespace gk {
           context.projection.aspect = float(resolution.x) / float(resolution.y > 0.f ? resolution.y : 1);
           context.projection.compute();
         }
-
       } window_receiver{ *this };
 
      public:

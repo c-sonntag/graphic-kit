@@ -49,7 +49,6 @@ namespace gk {
       if( gui_up )
         if( any( painters_mode & painter::modes::paint_debug_gui ) )
         {
-          // Start the Dear ImGui frame
           gui_up->new_frame();
 
           for( std::unique_ptr<painter::abstract>&painter : painters )

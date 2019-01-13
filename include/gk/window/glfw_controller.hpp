@@ -23,11 +23,12 @@ namespace gk {
       inline glfw_controller( glfw& _parent ) : parent( _parent ) {}
 
      protected:
-      window::key_modifier m_key_modifier = window::key_modifier::_none;
+      window::modifier m_modifier = window::modifier::_none;
       glm::dvec2 m_mouse_wheel;
       glm::dvec2 m_cursor_position;
 
       //glm::bvec3 m_cursor_click;
+     protected:
       bool glfw_key_pressed( uint k );
       void poll();
 
@@ -49,8 +50,8 @@ namespace gk {
       inline bool is_pressed( const window::key& k ) override
       { return glfw_key_pressed( uint( k ) ); }
 
-      inline window::key_modifier key_modifier() override
-      { return m_key_modifier; }
+      inline window::modifier modifier() override
+      { return m_modifier; }
 
      protected:
       static void mouse_wheel_callback( GLFWwindow* window, double xoffset, double yoffset );

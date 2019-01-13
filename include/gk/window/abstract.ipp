@@ -5,7 +5,6 @@ namespace gk {
 
     inline void abstract::run()
     {
-
       //
       bool run = true;
 
@@ -31,10 +30,7 @@ namespace gk {
         if( check_close() )
           run = false;
       }
-
-
     }
-
 
   }
 }

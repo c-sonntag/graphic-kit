@@ -24,13 +24,7 @@ namespace gk {
         glm::vec2 last_cursor_position;
 
        public:
-        const key_modifier need_modifier;
-
-       public:
-        inline mouse_lookat_center( abstract_controller& _controller, const key_modifier _need_modifier ) :
-          abstract( _controller ),
-          need_modifier( std::move( _need_modifier ) )
-        {}
+        using abstract::abstract;
 
        public:
         virtual void apply( render::painter::abstract& painter, const gk::time& t ) override
@@ -43,8 +37,8 @@ namespace gk {
           // debug_cout << "cursor_click(" << controller.cursor_click() << ")" << std::endl;
 
           const bool can_move(
-            controller.is_clicked( window::mouse_button::left | window::mouse_button::right )
-            && controller.have( need_modifier )
+            controller.is_clicked( window::mouse_button::left | window::mouse_button::right ) &&
+            controller.have( m_modifier_required )
           );
 
           //
@@ -94,7 +88,6 @@ namespace gk {
 
 
           painter.view.compute();
-
 
         }
       };

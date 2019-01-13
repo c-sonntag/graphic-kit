@@ -19,14 +19,14 @@ namespace gk {
       glfwPollEvents();
 
       //
-      m_key_modifier =
-        window::key_modifier::_none
-        | ( glfw_key_pressed( GLFW_KEY_LEFT_SHIFT )    * window::key_modifier::ShiftLeft )
-        | ( glfw_key_pressed( GLFW_KEY_RIGHT_SHIFT )   * window::key_modifier::ShiftRight )
-        | ( glfw_key_pressed( GLFW_KEY_LEFT_CONTROL )  * window::key_modifier::ControlLeft )
-        | ( glfw_key_pressed( GLFW_KEY_RIGHT_CONTROL ) * window::key_modifier::ControlRight )
-        | ( glfw_key_pressed( GLFW_KEY_LEFT_ALT )      * window::key_modifier::AltLeft )
-        | ( glfw_key_pressed( GLFW_KEY_RIGHT_ALT )     * window::key_modifier::AltRight );
+      m_modifier =
+        window::modifier::_none
+        | ( glfw_key_pressed( GLFW_KEY_LEFT_SHIFT )    * window::modifier::ShiftLeft )
+        | ( glfw_key_pressed( GLFW_KEY_RIGHT_SHIFT )   * window::modifier::ShiftRight )
+        | ( glfw_key_pressed( GLFW_KEY_LEFT_CONTROL )  * window::modifier::ControlLeft )
+        | ( glfw_key_pressed( GLFW_KEY_RIGHT_CONTROL ) * window::modifier::ControlRight )
+        | ( glfw_key_pressed( GLFW_KEY_LEFT_ALT )      * window::modifier::AltLeft )
+        | ( glfw_key_pressed( GLFW_KEY_RIGHT_ALT )     * window::modifier::AltRight );
 
     }
 
